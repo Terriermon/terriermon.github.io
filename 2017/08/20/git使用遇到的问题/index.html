@@ -1,0 +1,546 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>git使用遇到的问题 | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="git log 查看前所有的提交1git log 1git log --oneline 图标形式输出所有分支的提交 1git log --oneline --decorate --graph --all 查看最近2次的提交 1git log -2 查看file1提交记录 1git log file1 查找关键key相关的提交 1git log --S关键key git log 增强 12345gi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="git使用遇到的问题">
+<meta property="og:url" content="http://yoursite.com/2017/08/20/git使用遇到的问题/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="git log 查看前所有的提交1git log 1git log --oneline 图标形式输出所有分支的提交 1git log --oneline --decorate --graph --all 查看最近2次的提交 1git log -2 查看file1提交记录 1git log file1 查找关键key相关的提交 1git log --S关键key git log 增强 12345gi">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-08T13:55:07.917Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="git使用遇到的问题">
+<meta name="twitter:description" content="git log 查看前所有的提交1git log 1git log --oneline 图标形式输出所有分支的提交 1git log --oneline --decorate --graph --all 查看最近2次的提交 1git log -2 查看file1提交记录 1git log file1 查找关键key相关的提交 1git log --S关键key git log 增强 12345gi">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/08/20/git使用遇到的问题/" title="git使用遇到的问题" itemprop="url">git使用遇到的问题</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2017-08-20T10:51:28.000Z" itemprop="datePublished"> Published 2017-08-20</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#git-log-查看前所有的提交"><span class="toc-number">1.</span> <span class="toc-text">git log 查看前所有的提交</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#git-show"><span class="toc-number">2.</span> <span class="toc-text">git show</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#git-revert的使用"><span class="toc-number">3.</span> <span class="toc-text">git revert的使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#git-diff的使用"><span class="toc-number">4.</span> <span class="toc-text">git diff的使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#git-blame使用"><span class="toc-number">5.</span> <span class="toc-text">git blame使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#git-bisect查找问题引入的版本"><span class="toc-number">6.</span> <span class="toc-text">git bisect查找问题引入的版本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#git-grep查询指定内容的位置"><span class="toc-number">7.</span> <span class="toc-text">git grep查询指定内容的位置</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="git-log-查看前所有的提交"><a href="#git-log-查看前所有的提交" class="headerlink" title="git log 查看前所有的提交"></a>git log 查看前所有的提交</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git log</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git log --oneline</span><br></pre></td></tr></table></figure>
+<p>图标形式输出所有分支的提交</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git log --oneline --decorate --graph --all</span><br></pre></td></tr></table></figure>
+<p>查看最近2次的提交</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git log -2</span><br></pre></td></tr></table></figure>
+<p>查看file1提交记录</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git log file1</span><br></pre></td></tr></table></figure>
+<p>查找关键key相关的提交</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git log --S关键key</span><br></pre></td></tr></table></figure>
+<p>git log 增强</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git config --global alias.lg &quot;log --color --graph --pretty=format:&apos;%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)&lt;%an&gt;%Creset&apos; --abbrev-commit&quot;</span><br><span class="line"></span><br><span class="line">在终端输入git lg，就能看到下面漂亮的git log了</span><br><span class="line"></span><br><span class="line">想看到git log的变化的行数，输入git lg -p</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="git-show"><a href="#git-show" class="headerlink" title="git show"></a>git show</h3><p>显示具体的代码改动情况</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git show</span><br></pre></td></tr></table></figure>
+<p>显示指定 commit 修改的内容</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git show 某一个commitId</span><br></pre></td></tr></table></figure>
+<p>统计并一行输出某一个commit的修改的内容</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git show --stat --oneline commitId</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="git-revert的使用"><a href="#git-revert的使用" class="headerlink" title="git revert的使用"></a>git revert的使用</h3><p>会回退到指定Id的代码（本地和远程都会删掉之前的代码）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git revert c011eb3c20ba6fb38cc94fe5a8dda366a3990c61</span><br></pre></td></tr></table></figure>
+<p>将当前回退的代码作为一个【新】的commitId提交</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push origin 分支名</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="git-diff的使用"><a href="#git-diff的使用" class="headerlink" title="git diff的使用"></a>git diff的使用</h3><ul>
+<li>查看暂存区与最后提交的差异</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git diff HEAD</span><br></pre></td></tr></table></figure>
+<ul>
+<li>统计一下有哪些文件被改动</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git diff --stat</span><br></pre></td></tr></table></figure>
+<ul>
+<li>查看当前目录和另外一个分支的差别</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git diff 其他分支的名字</span><br></pre></td></tr></table></figure>
+<ul>
+<li>比较两个历史版本之间的差异</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git diff SHA1 SHA2</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git diff SHA1 SHA2 --oneline</span><br></pre></td></tr></table></figure>
+<p>第一部分: 显示修改的文件.</p>
+<p>如:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">--- a/basic.lua</span><br><span class="line">+++ b/basic.lua</span><br></pre></td></tr></table></figure>
+<p>“—“ ， 表示变动前的文件.<br>“+++” ， 表示变动后的文件.</p>
+<p>第二部分: 修改文件中变动的位置.</p>
+<p>如: <code>@@ -1,7 +1,7 @@</code></p>
+<ol>
+<li>文件变动的位置使用 <code>@@</code>起始，并以<code>@@</code>结束.</li>
+<li><code>-1</code>中的负号，表示修改前的文件</li>
+<li><code>+1</code>中的正号，表示修改后的文件</li>
+<li><code>-1,7</code>表示修改之【前】的文件中，第1行到第7行</li>
+<li><code>+1,7</code>表示修改之【后】的文件中，第1行到第7行</li>
+<li><code>-1,7 +1,7</code>表示修改之【前】文件的第一行到第7行，变成了，修改之【后】文件的第1行到第7行.</li>
+</ol>
+<hr>
+<h3 id="git-blame使用"><a href="#git-blame使用" class="headerlink" title="git blame使用"></a>git blame使用</h3><ul>
+<li>查看某个文件的每一部分代码，分别是谁提交的</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git blame ./basic.lua</span><br></pre></td></tr></table></figure>
+<ul>
+<li>定位某个文件第1行到第3行，是谁修改提交的</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git blame ./basic.lua -L 1,3</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="git-bisect查找问题引入的版本"><a href="#git-bisect查找问题引入的版本" class="headerlink" title="git bisect查找问题引入的版本"></a>git bisect查找问题引入的版本</h3><p>第一步、 找到【正常】的commit和【出现问题】的commit，从前往后的顺序.</p>
+<p>示例如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">git log --oneline</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">adc1783 第十次提交        当前最新提交是有问题的提交</span><br><span class="line">744f942 第九次提交</span><br><span class="line">b789ced 第八次提交</span><br><span class="line">b7c093c 第七次提交</span><br><span class="line">24f0941 第六次提交</span><br><span class="line">e871681 第五次提交</span><br><span class="line">41b15b8 第四次提交</span><br><span class="line">66ab858 第三次提交</span><br><span class="line">5cd7090 第二次提交</span><br><span class="line">ee36a22 第一次提交        很久之前没有问题的提交</span><br></pre></td></tr></table></figure>
+<p>OK，这一步就是要找到</p>
+<ol>
+<li>【最早之前】，正常的commit.</li>
+<li>当前出现问题的，【最后】的commit.</li>
+</ol>
+<p>第二步、<code>开始git bisect</code> 查找问题版本.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git bisect start</span><br></pre></td></tr></table></figure>
+<p>第三步、<code>标记当前出现问题的commit</code>.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git bisect bad</span><br></pre></td></tr></table></figure>
+<p>第三步、<code>标记最早正常的commit</code>.</p>
+<p>假设是第一次提交，commitId是ee36a22.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git bisect good ee36a22</span><br></pre></td></tr></table></figure>
+<p>第四步、如上三个步骤之后，<code>git会自动将HEAD指向bad与good中间的commit</code>.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">命令行输出如下:</span><br><span class="line"></span><br><span class="line">Bisecting: 4 revisions left to test after this (roughly 2 steps)</span><br><span class="line">[e8716810840d33cfc540bc6599a344c827d6e16e] 第五次提交</span><br></pre></td></tr></table></figure>
+<p>第五步、<code>测试当前HEAD指向commit的代码是否是正常的</code>.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1. 如果正常，标记为good.</span><br><span class="line"></span><br><span class="line">git bisect good</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">2. 如果不正常，标记为bad.</span><br><span class="line"></span><br><span class="line">git bisect bad</span><br></pre></td></tr></table></figure>
+<p>第六步、<code>HEAD继续移动到当前的bad与good中间的commit</code>.（查找过程类似二分法）</p>
+<p>继续操作第五步，检查当前HEAD指向的commit是否是正常.</p>
+<p>第七步、<code>最终定位到出现问题的commit</code>.</p>
+<p>大概如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">41b15b83a6f9592a751e5b181419709fb76b7d61 is the first bad commit</span><br><span class="line">commit 41b15b83a6f9592a751e5b181419709fb76b7d61</span><br><span class="line">Author: xiongzenghui &lt;xiongzenghui@myhome.163.com&gt;</span><br><span class="line">Date:   Mon Sep 21 21:36:04 2015 +0800</span><br><span class="line"></span><br><span class="line">第四次提交（此次提交的描述信息...）</span><br><span class="line"></span><br><span class="line">:100644 100644 3790ef4f06d98c7000bb04563d1ef80e05301383 a0f420a2bc00e5d2cab3e20eb0f65c47afb54972 M    demo.lua</span><br></pre></td></tr></table></figure>
+<p>第八步、使用<code>git diff</code>找出这次提交做出的变化，就是产生问题的代码.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git diff 3790ef a0f420</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">命令行输出如下:</span><br><span class="line"></span><br><span class="line">diff --git a/3790ef4 b/a0f420</span><br><span class="line">index 3790ef4..a0f420a 100644</span><br><span class="line">--- a/3790ef4</span><br><span class="line">+++ b/a0f420</span><br><span class="line">@@ -1,4 +1,5 @@</span><br><span class="line"></span><br><span class="line">1</span><br><span class="line">2</span><br><span class="line">-3</span><br><span class="line">\ No newline at end of file</span><br><span class="line">+3</span><br><span class="line">+4</span><br><span class="line">\ No newline at end of file</span><br></pre></td></tr></table></figure>
+<p>即可找到出现问题: 删除3，又添加了3，然后添加4.</p>
+<p>注意:（找到了问题所在后，不要在当前HEAD指向的commit做修改，可以单独检出当前commit的一个分支进行修改，然后合并回主分支.）</p>
+<p>第九步、让HEAD恢复指向最新commit，结束git bisect查找问题commit操作.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git bisect reset</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="git-grep查询指定内容的位置"><a href="#git-grep查询指定内容的位置" class="headerlink" title="git grep查询指定内容的位置"></a><code>git grep</code>查询指定内容的位置</h3><p>查询指定内容所在行号</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git grep -n &apos;要查找的内容&apos;</span><br></pre></td></tr></table></figure>
+<p>带单个正则表达式的查找</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git grep -e 正则表达式</span><br><span class="line"></span><br><span class="line">git grep -e &apos;zhangsan&apos;</span><br></pre></td></tr></table></figure>
+<p>多个正则表达式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git grep -e 正则式1 --or -2 正则式2</span><br><span class="line"></span><br><span class="line">git grep -e &apos;zhangsan&apos; --or -e &apos;lisi&apos;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git grep -e 正则式1 --and -2 正则式2</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">git grep -e 正则式1 --and \( -e 正则式2 --or --not -e 正则式3 \)</span><br></pre></td></tr></table></figure>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2017/08/20/git使用遇到的问题/" data-title="git使用遇到的问题 | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2017/08/23/Kache、KHolder/" title="Kache、KHolder">
+  <strong>上一篇：</strong><br>
+  <span>
+  Kache、KHolder</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/08/13/TextKit学习笔记一基本使用/" title="TextKit学习笔记一基本使用">
+ <strong>下一篇：</strong><br> 
+ <span>TextKit学习笔记一基本使用
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/08/20/git使用遇到的问题/" data-title="git使用遇到的问题" data-url="http://yoursite.com/2017/08/20/git使用遇到的问题/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#git-log-查看前所有的提交"><span class="toc-number">1.</span> <span class="toc-text">git log 查看前所有的提交</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#git-show"><span class="toc-number">2.</span> <span class="toc-text">git show</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#git-revert的使用"><span class="toc-number">3.</span> <span class="toc-text">git revert的使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#git-diff的使用"><span class="toc-number">4.</span> <span class="toc-text">git diff的使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#git-blame使用"><span class="toc-number">5.</span> <span class="toc-text">git blame使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#git-bisect查找问题引入的版本"><span class="toc-number">6.</span> <span class="toc-text">git bisect查找问题引入的版本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#git-grep查询指定内容的位置"><span class="toc-number">7.</span> <span class="toc-text">git grep查询指定内容的位置</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

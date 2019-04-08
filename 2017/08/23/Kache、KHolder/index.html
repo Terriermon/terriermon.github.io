@@ -1,0 +1,457 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>Kache、KHolder | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="KHolder提供最终的缓存功能 一个KHolder对象，就是一个单独的内存块 使用这个内存块来保存一些常用的内存对象 以及将超时的缓存项、超过长度的缓存项，写入磁盘文件   123456789101112131415161718192021222324252627282930313233343536@interface KHolder ()@property (nonatomic, strong">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kache、KHolder">
+<meta property="og:url" content="http://yoursite.com/2017/08/23/Kache、KHolder/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="KHolder提供最终的缓存功能 一个KHolder对象，就是一个单独的内存块 使用这个内存块来保存一些常用的内存对象 以及将超时的缓存项、超过长度的缓存项，写入磁盘文件   123456789101112131415161718192021222324252627282930313233343536@interface KHolder ()@property (nonatomic, strong">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-08T13:57:46.271Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Kache、KHolder">
+<meta name="twitter:description" content="KHolder提供最终的缓存功能 一个KHolder对象，就是一个单独的内存块 使用这个内存块来保存一些常用的内存对象 以及将超时的缓存项、超过长度的缓存项，写入磁盘文件   123456789101112131415161718192021222324252627282930313233343536@interface KHolder ()@property (nonatomic, strong">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/08/23/Kache、KHolder/" title="Kache、KHolder" itemprop="url">Kache、KHolder</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2017-08-23T11:26:46.000Z" itemprop="datePublished"> Published 2017-08-23</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#KHolder提供最终的缓存功能"><span class="toc-number">1.</span> <span class="toc-text">KHolder提供最终的缓存功能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#KHolder对象初始化，传入一个唯一标识"><span class="toc-number">2.</span> <span class="toc-text">KHolder对象初始化，传入一个唯一标识</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#将多余的内存对象写入磁盘"><span class="toc-number">3.</span> <span class="toc-text">将多余的内存对象写入磁盘</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#清理超时缓存对象"><span class="toc-number">4.</span> <span class="toc-text">清理超时缓存对象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#缓存传入的内存对象"><span class="toc-number">5.</span> <span class="toc-text">缓存传入的内存对象</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="KHolder提供最终的缓存功能"><a href="#KHolder提供最终的缓存功能" class="headerlink" title="KHolder提供最终的缓存功能"></a>KHolder提供最终的缓存功能</h3><ul>
+<li>一个KHolder对象，就是一个单独的<code>内存块</code></li>
+<li>使用这个<code>内存块</code>来保存一些常用的内存对象</li>
+<li>以及将超时的缓存项、超过长度的缓存项，写入磁盘文件</li>
+</ul>
+<hr>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">KHolder</span> ()</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) <span class="built_in">dispatch_queue_t</span> syncThreadQueue;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 正在进行归档的状态位</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">assign</span>, atomic)      <span class="built_in">BOOL</span>                        archiving;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 正在清理超时缓存的状态位</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">assign</span>, atomic)      <span class="built_in">BOOL</span>                        cleaning;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">strong</span>, <span class="keyword">nonatomic</span>)   <span class="built_in">NSFileManager</span>               *fileManager;</span><br><span class="line"></span><br><span class="line"><span class="comment">//缓存Key列表</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">strong</span>, atomic)      <span class="built_in">NSMutableArray</span>              *keys;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 缓存大小</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">assign</span>, <span class="keyword">nonatomic</span>)   <span class="built_in">NSUInteger</span>                  size;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 缓存内容</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">strong</span>, <span class="keyword">nonatomic</span>)   <span class="built_in">NSMutableDictionary</span>         *objects;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 默认磁盘缓存路径</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">strong</span>, <span class="keyword">nonatomic</span>)   <span class="built_in">NSString</span>                    *path;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 同步锁</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">strong</span>, <span class="keyword">nonatomic</span>)   <span class="built_in">NSRecursiveLock</span>             *lock;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 把数据写到磁盘</span></span><br><span class="line">- (<span class="keyword">void</span>)doArchive;</span><br><span class="line">- (<span class="keyword">void</span>)archiveData;</span><br><span class="line">- (<span class="keyword">void</span>)archiveAllData;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)doClean;</span><br><span class="line">- (<span class="keyword">void</span>)cleanExpiredObjects;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="KHolder对象初始化，传入一个唯一标识"><a href="#KHolder对象初始化，传入一个唯一标识" class="headerlink" title="KHolder对象初始化，传入一个唯一标识"></a>KHolder对象初始化，传入一个唯一标识</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">//同步队列</span></span><br><span class="line">- (<span class="built_in">dispatch_queue_t</span>)syncThreadQueue &#123;</span><br><span class="line"><span class="keyword">if</span> (!_syncThreadQueue) &#123;</span><br><span class="line">_syncThreadQueue = dispatch_queue_create(<span class="string">"com.cn.xzh.queue"</span>, DISPATCH_QUEUE_SERIAL);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> _syncThreadQueue;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">id</span>)initWithToken:(<span class="built_in">NSString</span> *)token</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">self</span> = [<span class="keyword">super</span> init];</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">self</span>) &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//使用dispatch_async + serial queue 同步多线程</span></span><br><span class="line">__<span class="keyword">weak</span> __<span class="keyword">typeof</span>(<span class="keyword">self</span>)weakSelf = <span class="keyword">self</span>;</span><br><span class="line"><span class="built_in">dispatch_async</span>(<span class="keyword">self</span>.syncThreadQueue, ^&#123;</span><br><span class="line">__<span class="keyword">strong</span> __<span class="keyword">typeof</span>(weakSelf)strongSelf = weakSelf;</span><br><span class="line"></span><br><span class="line"><span class="comment">//1. 缓存key -- 缓存value</span></span><br><span class="line">strongSelf.objects = [[<span class="built_in">NSMutableDictionary</span> alloc] init];</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 缓存key数组</span></span><br><span class="line">strongSelf.keys = [[<span class="built_in">NSMutableArray</span> alloc] init];</span><br><span class="line"></span><br><span class="line"><span class="comment">//3. 默认初始化长度为0</span></span><br><span class="line">strongSelf.size = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//4. 同步锁，同步进行内存操作</span></span><br><span class="line"><span class="keyword">self</span>.lock = [[<span class="built_in">NSRecursiveLock</span> alloc] init];</span><br><span class="line"></span><br><span class="line"><span class="comment">//5. 磁盘缓存目录</span></span><br><span class="line"><span class="built_in">NSArray</span> *paths = <span class="built_in">NSSearchPathForDirectoriesInDomains</span>(<span class="built_in">NSLibraryDirectory</span>, <span class="built_in">NSUserDomainMask</span>, <span class="literal">YES</span>);</span><br><span class="line"><span class="built_in">NSString</span> *libDirectory = [paths objectAtIndex:<span class="number">0</span>];</span><br><span class="line">strongSelf.path = [libDirectory stringByAppendingPathComponent:[Kache_Objects_Disk_Path stringByAppendingPathExtension:token]];</span><br><span class="line"></span><br><span class="line"><span class="comment">//6. 异步执行监控内存缓存开销，将多余的内存对象写入磁盘</span></span><br><span class="line"><span class="built_in">dispatch_async</span>(dispatch_get_global_queue(<span class="number">0</span>, <span class="number">0</span>), ^&#123;</span><br><span class="line">[strongSelf doArchive];</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">//7. 异步执行清理超时缓存，写入磁盘</span></span><br><span class="line"><span class="built_in">dispatch_async</span>(dispatch_get_global_queue(<span class="number">0</span>, <span class="number">0</span>), ^&#123;</span><br><span class="line">[strongSelf doClean];</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">&#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="将多余的内存对象写入磁盘"><a href="#将多余的内存对象写入磁盘" class="headerlink" title="将多余的内存对象写入磁盘"></a>将多余的内存对象写入磁盘</h3><ul>
+<li>首先在<code>当前线程</code>的runloop注册一个NSTimer</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">- (void)doArchive</span><br><span class="line">&#123;</span><br><span class="line">//1.</span><br><span class="line">NSTimer *archivingTimer = [NSTimer timerWithTimeInterval:10.f</span><br><span class="line">target:self</span><br><span class="line">selector:@selector(archiveData)</span><br><span class="line">userInfo:nil</span><br><span class="line">repeats:YES];</span><br><span class="line">//2.</span><br><span class="line">NSRunLoop *archivingRunloop = [NSRunLoop currentRunLoop];</span><br><span class="line"></span><br><span class="line">//3.</span><br><span class="line">[archivingRunloop addTimer:archivingTimer forMode:NSDefaultRunLoopMode];</span><br><span class="line"></span><br><span class="line">//4. 写一个while循环，来防止runloop退出</span><br><span class="line">//这里其实可以模仿AFNetworking，给runloop注册为一个NSMachPort来实现</span><br><span class="line">while (YES) &#123;</span><br><span class="line">[archivingRunloop runMode:NSDefaultRunLoopMode</span><br><span class="line">beforeDate:[NSDate dateWithTimeIntervalSinceNow:2.f]];</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里可以使用一个单例子线程的runloop来完成读写优化.</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)archiveData</span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">//1. 标志正在归档操作</span></span><br><span class="line"><span class="comment">//这个属性使用atomic原子操作，不用使用同步锁控制</span></span><br><span class="line"><span class="keyword">self</span>.archiving = <span class="literal">YES</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 判断不能进行clean操作</span></span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">self</span>.cleaning) &#123;</span><br><span class="line"><span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//3. 一直归档到指定限制大小的内存开销</span></span><br><span class="line"><span class="keyword">if</span> (<span class="number">0</span> &lt; ARCHIVING_THRESHOLD</span><br><span class="line">&amp;&amp; ARCHIVING_THRESHOLD &lt; <span class="keyword">self</span>.size)</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line"><span class="built_in">BOOL</span> isDirectory = <span class="literal">NO</span>;</span><br><span class="line"><span class="keyword">if</span> (! [[<span class="built_in">NSFileManager</span> defaultManager] fileExistsAtPath:<span class="keyword">self</span>.path isDirectory:&amp;isDirectory]) &#123;</span><br><span class="line">[<span class="keyword">self</span>.fileManager createDirectoryAtPath:<span class="keyword">self</span>.self.path</span><br><span class="line">withIntermediateDirectories:<span class="literal">YES</span></span><br><span class="line">attributes:<span class="literal">nil</span></span><br><span class="line">error:<span class="literal">nil</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//锁一下，阻止其他内存操作</span></span><br><span class="line">[<span class="keyword">self</span>.lock lock];</span><br><span class="line"></span><br><span class="line"><span class="comment">//拷贝一个新的key数组，因为后面要修改key数组</span></span><br><span class="line"><span class="built_in">NSMutableArray</span> *copiedKeys = [<span class="keyword">self</span>.keys mutableCopy];</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> (<span class="number">0</span> &lt; [copiedKeys count])</span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">// 归档至阈值一半的数据</span></span><br><span class="line"><span class="keyword">if</span> ((ARCHIVING_THRESHOLD / <span class="number">2</span>) &gt;= <span class="keyword">self</span>.size) &#123;</span><br><span class="line"><span class="keyword">break</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//取出最后一个key</span></span><br><span class="line"><span class="built_in">NSString</span> *key = [copiedKeys lastObject];</span><br><span class="line"></span><br><span class="line"><span class="built_in">NSString</span> *filePath = [<span class="keyword">self</span>.path stringByAppendingPathComponent:key];</span><br><span class="line"></span><br><span class="line"><span class="built_in">NSData</span> *data = [<span class="keyword">self</span>.objects objectForKey:key];</span><br><span class="line"></span><br><span class="line">[data writeToFile:filePath atomically:<span class="literal">YES</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">self</span>.size -= data.length;</span><br><span class="line"></span><br><span class="line">[copiedKeys removeLastObject];</span><br><span class="line"></span><br><span class="line">[<span class="keyword">self</span>.objects removeObjectForKey:key];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//不再使用释放掉拷贝数组</span></span><br><span class="line">copiedKeys = <span class="literal">nil</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//释放锁，可以进行其他内存操作</span></span><br><span class="line">[<span class="keyword">self</span>.lock unlock];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//4.</span></span><br><span class="line"><span class="keyword">self</span>.archiving = <span class="literal">NO</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="清理超时缓存对象"><a href="#清理超时缓存对象" class="headerlink" title="清理超时缓存对象"></a>清理超时缓存对象</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)cleanExpiredObjects</span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">//1. 标记正在clean操作</span></span><br><span class="line"><span class="keyword">self</span>.cleaning = <span class="literal">YES</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 不能够进行achive操作</span></span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">self</span>.archiving) &#123;</span><br><span class="line"><span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//3. 同步线程</span></span><br><span class="line">[<span class="keyword">self</span>.lock lock];</span><br><span class="line"></span><br><span class="line"><span class="comment">//4. 从左往右遍历</span></span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">self</span>.keys &amp;&amp; <span class="number">0</span> &lt; [<span class="keyword">self</span>.keys count]) &#123;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; [<span class="keyword">self</span>.keys count] - <span class="number">1</span>; i ++) &#123;</span><br><span class="line"></span><br><span class="line"><span class="built_in">NSString</span> *tmpKey = [<span class="keyword">self</span>.keys objectAtIndex:i];</span><br><span class="line"></span><br><span class="line">KObject *leftObject = [<span class="keyword">self</span> objectForKey:tmpKey];</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> ([leftObject expiredTimestamp] &lt; [KUtil nowTimestamp]) &#123;</span><br><span class="line">[<span class="keyword">self</span> removeObjectForKey:tmpKey];</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"><span class="keyword">break</span>;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//解除锁，可以进行其他内存操作</span></span><br><span class="line">[<span class="keyword">self</span>.lock unlock];</span><br><span class="line"></span><br><span class="line"><span class="keyword">self</span>.cleaning = <span class="literal">NO</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="缓存传入的内存对象"><a href="#缓存传入的内存对象" class="headerlink" title="缓存传入的内存对象"></a>缓存传入的内存对象</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  @param value    内存对象</span></span><br><span class="line"><span class="comment">*  @param key      缓存key</span></span><br><span class="line"><span class="comment">*  @param duration 超时间隔</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">- (<span class="keyword">void</span>)setValue:(<span class="keyword">id</span>)value</span><br><span class="line">forKey:(<span class="built_in">NSString</span> *)key</span><br><span class="line">expiredAfter:(<span class="built_in">NSInteger</span>)duration</span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">//1. 将原始内存对象，包装成KObject对象</span></span><br><span class="line">KObject *object = [[KObject alloc] initWithData:value</span><br><span class="line">andLifeDuration:duration];</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 判断是否在进行内存归档 或 清理</span></span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">self</span>.archiving || <span class="keyword">self</span>.cleaning) &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//2.1 如果正在进行，直接将缓存写入磁盘</span></span><br><span class="line"><span class="built_in">NSString</span> *filePath = [<span class="keyword">self</span>.path stringByAppendingPathComponent:key];</span><br><span class="line">[object.data writeToFile:filePath atomically:<span class="literal">YES</span>];</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//2.2 没有进行，将缓存保存到内存</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//先字典保存</span></span><br><span class="line">[<span class="keyword">self</span>.objects setValue:object.data forKey:key];</span><br><span class="line"></span><br><span class="line"><span class="comment">//内存大小累加</span></span><br><span class="line"><span class="keyword">self</span>.size += [object size];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//3. 首先移除如果保存了当前的缓存key</span></span><br><span class="line"><span class="comment">//稍后进行按照超时时间排序，重新确定缓存key的位置</span></span><br><span class="line">[<span class="keyword">self</span>.keys removeObject:key];</span><br><span class="line"></span><br><span class="line"><span class="comment">//4. 同步线程</span></span><br><span class="line">[<span class="keyword">self</span>.lock lock];</span><br><span class="line"></span><br><span class="line"><span class="comment">//5. key数组越后面的缓存项，超时时间越晚</span></span><br><span class="line"><span class="keyword">for</span> (<span class="built_in">NSInteger</span> i = [<span class="keyword">self</span>.keys count] - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i --) &#123;</span><br><span class="line"></span><br><span class="line"><span class="built_in">NSString</span> *tmpKey = [<span class="keyword">self</span>.keys objectAtIndex:i];</span><br><span class="line"></span><br><span class="line">KObject *leftObject = [<span class="keyword">self</span> objectForKey:tmpKey];</span><br><span class="line"></span><br><span class="line"><span class="comment">// 被遍历的缓存项超时时间 与 当前即将被缓存的项超时时间 大小</span></span><br><span class="line"><span class="keyword">if</span> ([leftObject expiredTimestamp] &lt;= [object expiredTimestamp]) &#123;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (([<span class="keyword">self</span>.keys count] - <span class="number">1</span>) == i) &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//i == 最后一个位置</span></span><br><span class="line">[<span class="keyword">self</span>.keys addObject:key];</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//i == 中间的位置</span></span><br><span class="line">[<span class="keyword">self</span>.keys insertObject:key atIndex:(i + <span class="number">1</span>)];</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">break</span>;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//6.</span></span><br><span class="line">[<span class="keyword">self</span>.lock unlock];</span><br><span class="line"></span><br><span class="line"><span class="comment">//7. 未找到位置，直接添加到第一个位置</span></span><br><span class="line"><span class="keyword">if</span> (! [<span class="keyword">self</span>.keys containsObject:key]) &#123;</span><br><span class="line">[<span class="keyword">self</span>.keys insertObject:key atIndex:<span class="number">0</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//8. 超过阈值，归档</span></span><br><span class="line"><span class="comment">//此方法可能处于其他线程上，所以archiveData方法内部需要使用同步</span></span><br><span class="line"><span class="keyword">if</span> ((! <span class="keyword">self</span>.archiving)</span><br><span class="line">&amp;&amp; <span class="number">0</span> &lt; ARCHIVING_THRESHOLD</span><br><span class="line">&amp;&amp; ARCHIVING_THRESHOLD &lt; <span class="keyword">self</span>.size)</span><br><span class="line">&#123;</span><br><span class="line">[<span class="keyword">self</span> archiveData];</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2017/08/23/Kache、KHolder/" data-title="Kache、KHolder | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2017/08/23/Kache、KObject/" title="Kache、KObject">
+  <strong>上一篇：</strong><br>
+  <span>
+  Kache、KObject</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/08/20/git使用遇到的问题/" title="git使用遇到的问题">
+ <strong>下一篇：</strong><br> 
+ <span>git使用遇到的问题
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/08/23/Kache、KHolder/" data-title="Kache、KHolder" data-url="http://yoursite.com/2017/08/23/Kache、KHolder/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#KHolder提供最终的缓存功能"><span class="toc-number">1.</span> <span class="toc-text">KHolder提供最终的缓存功能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#KHolder对象初始化，传入一个唯一标识"><span class="toc-number">2.</span> <span class="toc-text">KHolder对象初始化，传入一个唯一标识</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#将多余的内存对象写入磁盘"><span class="toc-number">3.</span> <span class="toc-text">将多余的内存对象写入磁盘</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#清理超时缓存对象"><span class="toc-number">4.</span> <span class="toc-text">清理超时缓存对象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#缓存传入的内存对象"><span class="toc-number">5.</span> <span class="toc-text">缓存传入的内存对象</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

@@ -74,21 +74,22 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/11/20/UIWindow/" title="UIWindow" itemprop="url">
+    <a href="/2017/08/20/git使用遇到的问题/" title="git使用遇到的问题" itemprop="url">
   
-    <h1 itemprop="name">UIWindow</h1>
+    <h1 itemprop="name">git使用遇到的问题</h1>
     
      
-           <p itemprop="description">UIScreen、UIWindow、UIView三者之间的关系
-(1) UIScreen为硬件设备的屏幕抽象，其中一个属性是整个屏幕区域bounds
-
-(2) UIWindow为内容显示提供背景平台，一个App程序必须至少要有一个UIWindow，否则不会显示任何的东西
-
-
-12</p>
+           <p itemprop="description">git log 查看前所有的提交1git log
+1git log --oneline
+图标形式输出所有分支的提交
+1git log --oneline --decorate --graph --all
+查看最近2次的提交
+1git log -2
+查看file1提交记录
+1git</p>
         
     
-    <time datetime="2016-11-20T09:21:06.000Z" itemprop="datePublished">2016-11-20</time>
+    <time datetime="2017-08-20T10:51:28.000Z" itemprop="datePublished">2017-08-20</time>
   </a>
 </section>
 
@@ -100,20 +101,16 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/09/26/Runtime-Part13-TypeEncodings/" title="Runtime Part13 TypeEncodings" itemprop="url">
+    <a href="/2017/08/13/TextKit学习笔记一基本使用/" title="TextKit学习笔记一基本使用" itemprop="url">
   
-    <h1 itemprop="name">Runtime Part13 TypeEncodings</h1>
+    <h1 itemprop="name">TextKit学习笔记一基本使用</h1>
     
      
-           <p itemprop="description">类型编码: 苹果会对每一种数据类型，统一按照特定的格式进行编码，得到一个格式化字符串，作用是可以加快消息分发
-对所有的开发者使用的数据类型，按照特定的格式进行编码
-
-系统按照特定的格式进行解码，找到最终要执行的方法、是被方法参数，类型、返回值类型…等等
-
-而如果不使用这种特定的格</p>
+           <p itemprop="description">一直都是使用别人封装的框架完成的图文混排，于是今天自己学习一下图文混排的简单实现原理，使用ios7的TextKit。
+首先看看，使用富文本属性设置多格式字符串.12345678910111213141516171819202122//原始数据字符串NSString *string</p>
         
     
-    <time datetime="2016-09-26T07:25:28.000Z" itemprop="datePublished">2016-09-26</time>
+    <time datetime="2017-08-13T15:09:43.000Z" itemprop="datePublished">2017-08-13</time>
   </a>
 </section>
 
@@ -125,16 +122,30 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/09/25/Runtime-Part12-Intercept/" title="Runtime Part12 Intercept" itemprop="url">
+    <a href="/2017/08/12/Autolayout3/" title="Autolayout3" itemprop="url">
   
-    <h1 itemprop="name">Runtime Part12 Intercept</h1>
+    <h1 itemprop="name">Autolayout3</h1>
     
      
-           <p itemprop="description">方法拦截的途径方法一、执行一个SEL不存在Method的消息
-然后不让方法继续执行，直接拦截掉 （resolve）转发给其他具有这个Method实例的Target （forward）方法二、使用runtime api，直接替换掉SEL指向的Method实例，让其找到一个假的函数实</p>
+           <p itemprop="description">Masonry使用记录一
+使用Masonry完成如下例子
+例子1、UILabel高度动态变化、以及动态改变UIView的高度
+
+例子2、动态的添加UIView
+
+例子3、UIScrollView
+
+例子4、键盘上方的ToolBar工具栏
+
+例子5、Alert
+
+
+
+大概步骤:
+第</p>
         
     
-    <time datetime="2016-09-25T12:49:50.000Z" itemprop="datePublished">2016-09-25</time>
+    <time datetime="2017-08-12T03:00:04.000Z" itemprop="datePublished">2017-08-12</time>
   </a>
 </section>
 
@@ -146,16 +157,16 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/09/25/Runtime-Part11-NSInvocation/" title="Runtime Part11 NSInvocation" itemprop="url">
+    <a href="/2017/08/11/urlscheme/" title="urlscheme" itemprop="url">
   
-    <h1 itemprop="name">Runtime Part11 NSInvocation</h1>
+    <h1 itemprop="name">urlscheme</h1>
     
      
-           <p itemprop="description">NSInvocation学习记录首先看一个简单的示例代码
-1234567891011121314151617181920212223242526//1. 创建要调用方法的SEL标识SEL myMethod = @selector(myLog:parm:parm:);//2. 设置</p>
+           <p itemprop="description">以前使用过一些分享的SDK时，发现一个神奇的效果。点击分享后，会跳转到其他的App然后完成分享，又跳回到自己的App。一直在想这个过程是如何完成的….后来无意中在github看到了opensource开源代码后，于是clone下来，仔细看了一遍，终于知道整个过程是如何实现了。
+N</p>
         
     
-    <time datetime="2016-09-24T16:39:25.000Z" itemprop="datePublished">2016-09-25</time>
+    <time datetime="2017-08-11T06:19:51.000Z" itemprop="datePublished">2017-08-11</time>
   </a>
 </section>
 
@@ -167,22 +178,18 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/09/24/Runtime-Part10-Forward/" title="Runtime Part10 Forward" itemprop="url">
+    <a href="/2017/08/09/BaseViewController设计、统一管理Push/" title="BaseViewController设计、统一管理Push" itemprop="url">
   
-    <h1 itemprop="name">Runtime Part10 Forward</h1>
+    <h1 itemprop="name">BaseViewController设计、统一管理Push</h1>
     
      
-           <p itemprop="description">完整的消息转发阶段
-foward to a target 
-forward with NSInvocation
+           <p itemprop="description">在BaseViewController提供一个统一使用push viewController的方法，来统一管理控制器压栈.BaseViewController.h
+每一个ViewController对应一个唯一的Id
 
-
-当向对象或类发送一个没有对应方法实现的消息SEL时，由系统自动调用消息转发的几个系统函数。注意： 必须是执行一个不存在方法实现的SEL，才会调用如下的几个函数.
-
-</p>
+123456789typedef NS_ENUM(NSInt</p>
         
     
-    <time datetime="2016-09-23T16:26:56.000Z" itemprop="datePublished">2016-09-24</time>
+    <time datetime="2017-08-09T14:11:38.000Z" itemprop="datePublished">2017-08-09</time>
   </a>
 </section>
 
@@ -194,19 +201,21 @@ forward with NSInvocation
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/09/24/Runtime-Part9-Resolve/" title="Runtime Part9  Resolve" itemprop="url">
+    <a href="/2017/08/09/BaseTableViewController设计/" title="BaseTableViewController设计" itemprop="url">
   
-    <h1 itemprop="name">Runtime Part9  Resolve</h1>
+    <h1 itemprop="name">BaseTableViewController设计</h1>
     
      
-           <p itemprop="description">在没有找到发送消息中的SEL对应的Method时，系统会调用指定的系统函数，来处理这种情况.
-可以是实现方法拦截的思路之一.
-
-本文介绍使用 Resolve 动态决议的方式处理 没有找到 SEL对应的方法实现时进行消息转发.
-动态方法决议、可以对类方法与对象方法进行拦截对象方法、</p>
+           <p itemprop="description">提供一个Base TableViewController基类，提供一些公关的代码给其继承的子类。
+各自的UITableViewCell类型
+各自的cell类型
+多个cell类型共存
+BaseCell根据对应实体类对象进行初始化subviews显示数据
+Cell高度的动态计算
+数据</p>
         
     
-    <time datetime="2016-09-23T16:18:44.000Z" itemprop="datePublished">2016-09-24</time>
+    <time datetime="2017-08-09T11:31:38.000Z" itemprop="datePublished">2017-08-09</time>
   </a>
 </section>
 
@@ -218,23 +227,17 @@ forward with NSInvocation
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/09/24/Runtime-Part8-Associate/" title="Runtime Part8 Associate" itemprop="url">
+    <a href="/2017/07/13/CocoaPods-module-source/" title="CocoaPods module source" itemprop="url">
   
-    <h1 itemprop="name">Runtime Part8 Associate</h1>
+    <h1 itemprop="name">CocoaPods module source</h1>
     
      
-           <p itemprop="description">在运行时，给对象关联一个其他对象，解决分类无法添加变量的缺陷.
-Category只能添加方法，而不能添加成员变量
+           <p itemprop="description">使用CocoaPods来单独管理封装的可复用的控件公司需要将套在App工程中的一些公共代码单独出来，并使用CocoaPods去管理。
 
-动态添加成员变量，只能由object associate完成
-
-主要是两个c函数
-
-
-123456789101. 把一个对象与另外一个对象进行关联objc_setA</p>
+Cocoapods是非常好用的一个iOS依赖管理工具，使用它可以方便的管理和更新项目中所使用到的第三方库，以及将自己的项目中的公共组件交由它去管</p>
         
     
-    <time datetime="2016-09-23T16:13:26.000Z" itemprop="datePublished">2016-09-24</time>
+    <time datetime="2017-07-13T05:12:54.000Z" itemprop="datePublished">2017-07-13</time>
   </a>
 </section>
 
@@ -246,20 +249,15 @@ Category只能添加方法，而不能添加成员变量
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/09/23/Runtime-Part7-Method/" title="Runtime Part7 Method" itemprop="url">
+    <a href="/2017/07/01/Autolayout2/" title="Autolayout2" itemprop="url">
   
-    <h1 itemprop="name">Runtime Part7 Method</h1>
+    <h1 itemprop="name">Autolayout2</h1>
     
      
-           <p itemprop="description">Method: 抽象一个方法的结构体类型
-Method定义为objc_method结构体类型的一个指针类型
-
-1typedef struct objc_method *Method;
-Method本身就是一个指针类型，所以不要使用如下代码
-1Method * method = .</p>
+           <p itemprop="description">Masonry完成autolayout的cellNo1. 定义一个所有cell必须实现的协议，协议方法就是让所有cell类实现一个将传入的实体类对象，设置给cell.contentView.subviews123456789//完成将传入的实体类对象，设置给cell，以便后续计算</p>
         
     
-    <time datetime="2016-09-23T15:48:52.000Z" itemprop="datePublished">2016-09-23</time>
+    <time datetime="2017-07-01T02:59:59.000Z" itemprop="datePublished">2017-07-01</time>
   </a>
 </section>
 
@@ -271,17 +269,20 @@ Method本身就是一个指针类型，所以不要使用如下代码
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/09/23/Runtime-Part5-Class/" title="Runtime Part5 Class" itemprop="url">
+    <a href="/2017/05/16/Callbacks回调方式/" title="Callbacks回调方式" itemprop="url">
   
-    <h1 itemprop="name">Runtime Part5 Class</h1>
+    <h1 itemprop="name">Callbacks回调方式</h1>
     
      
-           <p itemprop="description">通常我们编写一个类并继承自NSObject，然后编写所有的变量、所有的方法、以及实现的所有的协议….Foundation中提供了两个根类NSObject、平时使用最多的根类，提供了很多我们常用的api基本的功能
-
-(BOOL)isEqual:(id)object;@propert</p>
+           <p itemprop="description">前阵子去面试然后问我: 模块之间的回调有哪些方式？我当时还真没回答好，刚好晚上看代码的时候突然灵机一动想到了，还是记录下吧免得下次又忘记了..
+小结下可以完成回调的所有方法:
+Delegate
+Block 
+c 函数指针
+Target-Action模式（eg、UIButton添加</p>
         
     
-    <time datetime="2016-09-23T12:39:52.000Z" itemprop="datePublished">2016-09-23</time>
+    <time datetime="2017-05-16T15:09:05.000Z" itemprop="datePublished">2017-05-16</time>
   </a>
 </section>
 
@@ -293,28 +294,20 @@ Method本身就是一个指针类型，所以不要使用如下代码
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/09/23/Runtime-Part4-Ivar-Property/" title="Runtime Part4 Ivar Property" itemprop="url">
+    <a href="/2017/03/24/iOS逆向工程读书笔记/" title="iOS逆向工程读书笔记" itemprop="url">
   
-    <h1 itemprop="name">Runtime Part4 Ivar Property</h1>
+    <h1 itemprop="name">iOS逆向工程读书笔记</h1>
     
      
-           <p itemprop="description">成员变量 与 属性 是不同的
-成员变量 Ivar
-
-
-仅仅只是一个对象的内部使用的 变量
-
-
-属性 Property
-
-
-首先包括成员变量，并且还包括对成员变量操作的 setter方法与getter方法
-
-
-成员变量的相关操作#Ivar 结构体定义1typedef struct </p>
+           <p itemprop="description">越狱
+越狱是指移除设备厂商为操作系统添加的一些限制性
+越狱是修改iOS操作系统，使得iOS系统的强制性证书签名与验签的机制半永久性失效
+一般越狱工具本身就是一个可以运行在iOS系统的App程序
+这个App程序首先是禁用iOS系统进行证书签名的机制
+然后通过App程序进行下载安装其</p>
         
     
-    <time datetime="2016-09-23T11:21:10.000Z" itemprop="datePublished">2016-09-23</time>
+    <time datetime="2017-03-24T11:16:09.000Z" itemprop="datePublished">2017-03-24</time>
   </a>
 </section>
 
@@ -325,7 +318,7 @@ Method本身就是一个指针类型，所以不要使用如下代码
 
 
   <nav id="page-nav" class="clearfix unexpand">
-    <a class="extend prev" rel="prev" href="/"><span></span>Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/3/">Next<span></span></a>
+    <a class="extend prev" rel="prev" href="/"><span></span>Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/3/">Next<span></span></a>
   </nav>
 
 </div>

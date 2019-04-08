@@ -1,0 +1,483 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>Autolayout2 | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="Masonry完成autolayout的cellNo1. 定义一个所有cell必须实现的协议，协议方法就是让所有cell类实现一个将传入的实体类对象，设置给cell.contentView.subviews123456789//完成将传入的实体类对象，设置给cell，以便后续计算cell高度@protocol ZSYAutoLayoutCellProtocol &amp;lt;NSObject&amp;gt;@r">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Autolayout2">
+<meta property="og:url" content="http://yoursite.com/2017/07/01/Autolayout2/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="Masonry完成autolayout的cellNo1. 定义一个所有cell必须实现的协议，协议方法就是让所有cell类实现一个将传入的实体类对象，设置给cell.contentView.subviews123456789//完成将传入的实体类对象，设置给cell，以便后续计算cell高度@protocol ZSYAutoLayoutCellProtocol &amp;lt;NSObject&amp;gt;@r">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://i13.tietuku.com/dd68dbbda39d6954.png">
+<meta property="og:updated_time" content="2019-04-08T13:39:48.678Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Autolayout2">
+<meta name="twitter:description" content="Masonry完成autolayout的cellNo1. 定义一个所有cell必须实现的协议，协议方法就是让所有cell类实现一个将传入的实体类对象，设置给cell.contentView.subviews123456789//完成将传入的实体类对象，设置给cell，以便后续计算cell高度@protocol ZSYAutoLayoutCellProtocol &amp;lt;NSObject&amp;gt;@r">
+<meta name="twitter:image" content="http://i13.tietuku.com/dd68dbbda39d6954.png">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/07/01/Autolayout2/" title="Autolayout2" itemprop="url">Autolayout2</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2017-07-01T02:59:59.000Z" itemprop="datePublished"> Published 2017-07-01</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Masonry完成autolayout的cell"><span class="toc-number">1.</span> <span class="toc-text">Masonry完成autolayout的cell</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No1-定义一个所有cell必须实现的协议，协议方法就是让所有cell类实现一个将传入的实体类对象，设置给cell-contentView-subviews"><span class="toc-number">2.</span> <span class="toc-text">No1. 定义一个所有cell必须实现的协议，协议方法就是让所有cell类实现一个将传入的实体类对象，设置给cell.contentView.subviews</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No2-抽一个BaseCell基类，封装计算cell高度的一些公共方法"><span class="toc-number">3.</span> <span class="toc-text">No2. 抽一个BaseCell基类，封装计算cell高度的一些公共方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No3-使用Masonry完成一个AutoLayout的cell"><span class="toc-number">4.</span> <span class="toc-text">No3. 使用Masonry完成一个AutoLayout的cell</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#哈哈，简单的思路就是这样，如果写复杂的自适应cell，那么也就是如下几点"><span class="toc-number">5.</span> <span class="toc-text">哈哈，简单的思路就是这样，如果写复杂的自适应cell，那么也就是如下几点:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#举个小例子"><span class="toc-number">6.</span> <span class="toc-text">举个小例子</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="Masonry完成autolayout的cell"><a href="#Masonry完成autolayout的cell" class="headerlink" title="Masonry完成autolayout的cell"></a>Masonry完成autolayout的cell</h3><h3 id="No1-定义一个所有cell必须实现的协议，协议方法就是让所有cell类实现一个将传入的实体类对象，设置给cell-contentView-subviews"><a href="#No1-定义一个所有cell必须实现的协议，协议方法就是让所有cell类实现一个将传入的实体类对象，设置给cell-contentView-subviews" class="headerlink" title="No1. 定义一个所有cell必须实现的协议，协议方法就是让所有cell类实现一个将传入的实体类对象，设置给cell.contentView.subviews"></a>No1. 定义一个所有cell必须实现的协议，协议方法就是让所有cell类实现一个将传入的实体类对象，设置给cell.contentView.subviews</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">//完成将传入的实体类对象，设置给cell，以便后续计算cell高度</span></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">ZSYAutoLayoutCellProtocol</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@required</span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)setupDataItem:(<span class="keyword">id</span>)data;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="No2-抽一个BaseCell基类，封装计算cell高度的一些公共方法"><a href="#No2-抽一个BaseCell基类，封装计算cell高度的一些公共方法" class="headerlink" title="No2. 抽一个BaseCell基类，封装计算cell高度的一些公共方法"></a>No2. 抽一个BaseCell基类，封装计算cell高度的一些公共方法</h3><blockquote>
+<p>BaseCell.h</p>
+</blockquote>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">//回传一个cell对象，让调用者设置实体类对象显示数据之后，返回用于计算高度</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">id</span> (^setupCellBlock)(<span class="keyword">id</span>&lt;ZSYAutoLayoutCellProtocol&gt; cellToSetup);</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">ZSYBaseCell</span> : <span class="title">UITableViewCell</span> &lt;<span class="title">ZSYAutoLayoutCellProtocol</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//是否动态更新cell高度</span></span><br><span class="line">+ (<span class="built_in">BOOL</span>)isDynamic;</span><br><span class="line"></span><br><span class="line"><span class="comment">//默认的cell大小</span></span><br><span class="line">+ (<span class="built_in">CGSize</span>)defaultCellSize;</span><br><span class="line"></span><br><span class="line"><span class="comment">//计算cell高度的方法</span></span><br><span class="line">+ (<span class="built_in">CGSize</span>)sizeForCellWithDefaultSize:(<span class="built_in">CGSize</span>)defaultSize setupCellBlock:(setupCellBlock)block;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>BaseCell.m封装计算<code>cell内部约束</code>得到cell的高度的逻辑代码</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">+ (CGSize)sizeForCellWithDefaultSize:(CGSize)defaultSize setupCellBlock:(setupCellBlock)block &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">__block ZSYBaseCell *cell = nil;</span><br><span class="line"></span><br><span class="line">//1. 首先查询是否已经有当前要计算高度的【cell类型】的一个对象 </span><br><span class="line">[cellArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) &#123;</span><br><span class="line">if ([obj isKindOfClass:[[self class] class]]) &#123;</span><br><span class="line">cell = obj;</span><br><span class="line">*stop = YES;</span><br><span class="line">&#125;</span><br><span class="line">&#125;];</span><br><span class="line"></span><br><span class="line">//2. 如果没有，创建一个【当前cell类型的实例】并保存起来，下次不用再创建，直接使用</span><br><span class="line">if (!cell) &#123;</span><br><span class="line">cell = [[[self class] alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@&quot;XZHAutoLayoutCellIdentifier&quot;];</span><br><span class="line">cell.frame = CGRectMake(0, 0, defaultSize.width, defaultSize.height);</span><br><span class="line">[cellArray addObject:cell];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//3. 获取到设置了属性值的cell对象【会执行一次cell的setupData方法】 --》 这里会造成 [cell setupData]会每次计算高度，都会执行一次</span><br><span class="line">cell = block((id&lt;ZSYAutoLayoutCellProtocol&gt;) cell);</span><br><span class="line"></span><br><span class="line">//4. 通知系统计算更新后的约束</span><br><span class="line">[cell setNeedsLayout];</span><br><span class="line">[cell layoutIfNeeded];</span><br><span class="line"></span><br><span class="line">//5. 使用iOS的api根据cell对象的约束，计算出高度</span><br><span class="line">CGSize size = [cell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];</span><br><span class="line"></span><br><span class="line">//6. 为了底线显示</span><br><span class="line">size.height += 1.0f;</span><br><span class="line"></span><br><span class="line">//7. 返回计算处的高度</span><br><span class="line">return size;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="No3-使用Masonry完成一个AutoLayout的cell"><a href="#No3-使用Masonry完成一个AutoLayout的cell" class="headerlink" title="No3. 使用Masonry完成一个AutoLayout的cell"></a>No3. 使用Masonry完成一个AutoLayout的cell</h3><p>第一步、init时，创建所有的subviews，并设置初始约束</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)initSubviews &#123;</span><br><span class="line"></span><br><span class="line"><span class="keyword">self</span>.userInteractionEnabled = <span class="literal">YES</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">self</span>.backgroundColor = [<span class="built_in">UIColor</span> whiteColor];</span><br><span class="line"><span class="keyword">self</span>.accessoryType = <span class="built_in">UITableViewCellAccessoryNone</span>;</span><br><span class="line"><span class="keyword">self</span>.accessoryView = <span class="literal">nil</span>;</span><br><span class="line"><span class="keyword">self</span>.selectionStyle = <span class="built_in">UITableViewCellSelectionStyleNone</span>;</span><br><span class="line"></span><br><span class="line">_titleLeftImageView = [[<span class="built_in">UIImageView</span> alloc] init];</span><br><span class="line">_titleLeftImageView.image = [<span class="built_in">UIImage</span> imageNamed:<span class="string">@"icon_title"</span>];</span><br><span class="line">_titleLeftImageView.translatesAutoresizingMaskIntoConstraints = <span class="literal">NO</span>;</span><br><span class="line">_titleLeftImageView.contentMode = <span class="built_in">UIViewContentModeScaleAspectFill</span>;</span><br><span class="line"></span><br><span class="line">_titleLabel = [[<span class="built_in">UILabel</span> alloc] init];</span><br><span class="line">_titleLabel.textAlignment = <span class="built_in">NSTextAlignmentLeft</span>;</span><br><span class="line">_titleLabel.numberOfLines = <span class="number">0</span>;</span><br><span class="line">_titleLabel.lineBreakMode = <span class="built_in">NSLineBreakByWordWrapping</span>;</span><br><span class="line">_titleLabel.translatesAutoresizingMaskIntoConstraints = <span class="literal">NO</span>;</span><br><span class="line">_titleLabel.font = [<span class="built_in">UIFont</span> fontWithName:<span class="string">@"HelveticaNeue"</span> size:<span class="number">15</span>];</span><br><span class="line">_titleLabel.textColor = [<span class="built_in">UIColor</span> hex:<span class="string">@"#514647"</span>];</span><br><span class="line"></span><br><span class="line">[<span class="keyword">self</span>.contentView addSubview:_titleLeftImageView];</span><br><span class="line">[<span class="keyword">self</span>.contentView addSubview:_titleLabel];</span><br><span class="line"></span><br><span class="line">@weakify(<span class="keyword">self</span>);</span><br><span class="line">[<span class="keyword">self</span>.contentView mas_makeConstraints:^(MASConstraintMaker *make) &#123;</span><br><span class="line">@strongify(<span class="keyword">self</span>);</span><br><span class="line">make.edges.equalTo(<span class="keyword">self</span>);</span><br><span class="line">make.width.equalTo(<span class="keyword">self</span>);</span><br><span class="line">&#125;];</span><br><span class="line"></span><br><span class="line"><span class="comment">//注意： Label如果高度自动变化多行显示，</span></span><br><span class="line"><span class="comment">//          一定要设置这个属性</span></span><br><span class="line">[<span class="keyword">self</span> preferMaxWidthLabels];</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>第二步、传入实体类对象时，讲数据设置给subviews</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)setupDataItem:(<span class="keyword">id</span>)data &#123;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> ([data isKindOfClass:[WMModelProduct <span class="keyword">class</span>]]) &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//实体类对象</span></span><br><span class="line">_itemData = (WMModelProduct *)data;</span><br><span class="line"></span><br><span class="line"><span class="comment">//设置给subviews</span></span><br><span class="line">_titleLabel.text = _itemData.name;</span><br><span class="line"><span class="comment">//还有其他subviews...</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//让cell更新约束</span></span><br><span class="line">[<span class="keyword">self</span> setNeedsUpdateConstraints];</span><br><span class="line">[<span class="keyword">self</span> updateConstraintsIfNeeded];</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="哈哈，简单的思路就是这样，如果写复杂的自适应cell，那么也就是如下几点"><a href="#哈哈，简单的思路就是这样，如果写复杂的自适应cell，那么也就是如下几点" class="headerlink" title="哈哈，简单的思路就是这样，如果写复杂的自适应cell，那么也就是如下几点:"></a>哈哈，简单的思路就是这样，如果写复杂的自适应cell，那么也就是如下几点:</h3><ul>
+<li>cell内部的约束更复杂</li>
+<li>为计算cell高度可以做一个缓存逻辑，计算一次高度后就以indexPath保存起来</li>
+</ul>
+<hr>
+<h3 id="举个小例子"><a href="#举个小例子" class="headerlink" title="举个小例子"></a>举个小例子</h3><ul>
+<li>自定义一个Cell，并在init函数创建subviews</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">@implementation MyCell</span><br><span class="line"></span><br><span class="line">- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier &#123;</span><br><span class="line">self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];</span><br><span class="line">if (self) &#123;</span><br><span class="line">[self createSubviews];</span><br><span class="line">&#125;</span><br><span class="line">return self;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)createSubviews &#123;</span><br><span class="line">//1. 添加所有subviews到contentView</span><br><span class="line">//2. 设置contentView的最开始状态约束</span><br><span class="line">//3. 陆续设置所有subviews的约束</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//后续写</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<ul>
+<li>createSubviews方法具体代码</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br></pre></td><td class="code"><pre><span class="line">------- 实例化subviews ------- </span><br><span class="line"></span><br><span class="line">_titleLabel = [[UILabel alloc] init];</span><br><span class="line">_titleLabel.numberOfLines = 1;</span><br><span class="line">_titleLabel.text = @&quot;投资理财&quot;;</span><br><span class="line"></span><br><span class="line">_titleLine = [[UIView alloc] init];</span><br><span class="line">_titleLine.backgroundColor = kZSYVCViewBackgroundColor;</span><br><span class="line"></span><br><span class="line">_leftUpLabel = [[UILabel alloc] init];</span><br><span class="line">_leftUpLabel.numberOfLines = 1;</span><br><span class="line"></span><br><span class="line">_leftLowLabel = [[UILabel alloc] init];</span><br><span class="line">_leftLowLabel.numberOfLines = 1;</span><br><span class="line">_leftLowLabel.text = @&quot;预期年化&quot;;</span><br><span class="line"></span><br><span class="line">_rightTitleLabel = [[UILabel alloc] init];</span><br><span class="line">_rightTitleLabel.numberOfLines = 1;</span><br><span class="line"></span><br><span class="line">_rightDaysLabel = [[UILabel alloc] init];</span><br><span class="line">_rightDaysLabel.numberOfLines = 1;</span><br><span class="line"></span><br><span class="line">_rightMoneyLabel = [[UILabel alloc] init];</span><br><span class="line">_rightMoneyLabel.numberOfLines = 1;</span><br><span class="line"></span><br><span class="line">_arrow = [[UIImageView alloc] init];</span><br><span class="line">_arrow.image = [UIImage imageNamed:@&quot;icon箭头&quot;];</span><br><span class="line"></span><br><span class="line">[self.contentView addSubview:_titleLabel];</span><br><span class="line">[self.contentView addSubview:_titleLine];</span><br><span class="line">[self.contentView addSubview:_leftUpLabel];</span><br><span class="line">[self.contentView addSubview:_leftLowLabel];</span><br><span class="line">[self.contentView addSubview:_rightTitleLabel];</span><br><span class="line">[self.contentView addSubview:_rightDaysLabel];</span><br><span class="line">[self.contentView addSubview:_rightMoneyLabel];</span><br><span class="line">[self.contentView addSubview:_arrow];</span><br><span class="line"></span><br><span class="line">------- 开始设置约束 ------- </span><br><span class="line"></span><br><span class="line">@weakify(self);</span><br><span class="line"></span><br><span class="line">//1. 先设置cell.contentView初始状态约束    </span><br><span class="line"></span><br><span class="line">[self.contentView mas_makeConstraints:^(MASConstraintMaker *make) &#123;</span><br><span class="line">@strongify(self);</span><br><span class="line">make.width.equalTo(self);</span><br><span class="line">&#125;];</span><br><span class="line"></span><br><span class="line">//2. 再开始设置其他subviews的约束</span><br><span class="line"></span><br><span class="line">[_titleLabel mas_makeConstraints:^(MASConstraintMaker *make) &#123;</span><br><span class="line">@strongify(self);</span><br><span class="line">make.centerX.mas_equalTo(self.contentView.mas_centerX);</span><br><span class="line">make.top.mas_equalTo(self.contentView.mas_top).offset(18);</span><br><span class="line">&#125;];</span><br><span class="line"></span><br><span class="line">[_titleLine mas_makeConstraints:^(MASConstraintMaker *make) &#123;</span><br><span class="line">@strongify(self);</span><br><span class="line">make.top.mas_equalTo(self.titleLabel.mas_bottom).offset(18);</span><br><span class="line">make.centerX.mas_equalTo(self.contentView.mas_centerX);</span><br><span class="line">make.width.mas_equalTo(self.contentView.mas_width);</span><br><span class="line">make.height.mas_equalTo(1);</span><br><span class="line">&#125;];</span><br><span class="line"></span><br><span class="line">[_leftUpLabel mas_makeConstraints:^(MASConstraintMaker *make) &#123;</span><br><span class="line">@strongify(self);</span><br><span class="line">make.left.mas_equalTo(self.contentView.mas_left).offset(30);</span><br><span class="line">make.top.mas_equalTo(self.titleLabel.mas_bottom).offset(43);</span><br><span class="line">&#125;];</span><br><span class="line"></span><br><span class="line">[_leftLowLabel mas_makeConstraints:^(MASConstraintMaker *make) &#123;</span><br><span class="line">@strongify(self);</span><br><span class="line">make.left.mas_equalTo(self.leftUpLabel.mas_left);</span><br><span class="line">make.width.mas_equalTo(self.leftUpLabel.mas_width);</span><br><span class="line">make.top.mas_equalTo(self.leftUpLabel.mas_bottom).offset(10);</span><br><span class="line">&#125;];</span><br><span class="line"></span><br><span class="line">__block UIView *line = [[UIView alloc] init];</span><br><span class="line">line.backgroundColor = kZSYVCViewBackgroundColor;</span><br><span class="line">[self.contentView addSubview:line];</span><br><span class="line"></span><br><span class="line">[line mas_makeConstraints:^(MASConstraintMaker *make) &#123;</span><br><span class="line">@strongify(self);</span><br><span class="line">make.top.mas_equalTo(self.leftUpLabel.mas_top);</span><br><span class="line">make.bottom.mas_equalTo(self.leftLowLabel.mas_bottom);</span><br><span class="line">make.width.mas_equalTo(0.5);</span><br><span class="line">make.left.mas_equalTo(self.leftUpLabel.mas_right).offset(18);</span><br><span class="line">&#125;];</span><br><span class="line"></span><br><span class="line">[_rightTitleLabel mas_makeConstraints:^(MASConstraintMaker *make) &#123;</span><br><span class="line">@strongify(self);</span><br><span class="line">make.top.mas_equalTo(self.leftUpLabel.mas_top);</span><br><span class="line">make.left.mas_equalTo(line.mas_right).offset(18);</span><br><span class="line">&#125;];</span><br><span class="line"></span><br><span class="line">[_rightDaysLabel mas_makeConstraints:^(MASConstraintMaker *make) &#123;</span><br><span class="line">@strongify(self);</span><br><span class="line">make.top.mas_equalTo(self.rightTitleLabel.mas_bottom).offset(5);</span><br><span class="line">make.left.mas_equalTo(line.mas_right).offset(18);</span><br><span class="line">&#125;];</span><br><span class="line"></span><br><span class="line">[_rightMoneyLabel mas_makeConstraints:^(MASConstraintMaker *make) &#123;</span><br><span class="line">@strongify(self);</span><br><span class="line">make.top.mas_equalTo(self.rightDaysLabel.mas_bottom).offset(23);</span><br><span class="line">make.bottom.mas_equalTo(self.leftLowLabel.mas_bottom);</span><br><span class="line">make.left.mas_equalTo(line.mas_right).offset(18);</span><br><span class="line">&#125;];</span><br><span class="line"></span><br><span class="line">[_arrow mas_makeConstraints:^(MASConstraintMaker *make) &#123;</span><br><span class="line">@strongify(self);</span><br><span class="line">make.right.mas_equalTo(self.contentView.mas_right).offset(-16);</span><br><span class="line">make.centerY.mas_equalTo(line.mas_centerY);</span><br><span class="line">&#125;];</span><br></pre></td></tr></table></figure>
+<ul>
+<li>设置完约束之后，最后修改cell.conetentView的<code>底部约束</code>确定cell的<code>总高度</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">- (void)updateConstraints &#123;</span><br><span class="line"></span><br><span class="line">@weakify(self);</span><br><span class="line">[self.contentView mas_makeConstraints:^(MASConstraintMaker *make) &#123;</span><br><span class="line">@strongify(self);</span><br><span class="line"></span><br><span class="line">//将subvsiews中，布局在最下方的的bottom赋值给cell的bottom，来确定cell的高度</span><br><span class="line">make.bottom.mas_equalTo(self.rightMoneyLabel.mas_bottom).offset(25);</span><br><span class="line">&#125;];</span><br><span class="line"></span><br><span class="line">[super updateConstraints];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>图示效果</li>
+</ul>
+<p><img src="http://i13.tietuku.com/dd68dbbda39d6954.png" alt></p>
+<ul>
+<li>小结代码模板</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">@implementation ZSYHomepageCellForXiaofei</span><br><span class="line"></span><br><span class="line">- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier &#123;</span><br><span class="line">self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];</span><br><span class="line">if (self) &#123;</span><br><span class="line">[self createSubviews];</span><br><span class="line">&#125;</span><br><span class="line">return self;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)createSubviews &#123;</span><br><span class="line">//1. 添加所有subviews到contentView</span><br><span class="line">//...</span><br><span class="line"></span><br><span class="line">//2. 设置contentView的最开始状态约束</span><br><span class="line">[self.contentView mas_makeConstraints:^(MASConstraintMaker *make) &#123;</span><br><span class="line">@strongify(self);</span><br><span class="line">make.width.equalTo(self);</span><br><span class="line">&#125;];</span><br><span class="line"></span><br><span class="line">//3. 陆续设置所有subviews的约束</span><br><span class="line">//...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)updateConstraints &#123;</span><br><span class="line"></span><br><span class="line">@weakify(self);</span><br><span class="line">[self.contentView mas_makeConstraints:^(MASConstraintMaker *make) &#123;</span><br><span class="line">@strongify(self);</span><br><span class="line">make.bottom.mas_equalTo(self.rightMoneyLabel.mas_bottom).offset(25);</span><br><span class="line">&#125;];</span><br><span class="line"></span><br><span class="line">[super updateConstraints];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)setupDataItem:(id)data &#123;</span><br><span class="line">//将实体对象的属性值赋值给cell.contentView.sunbviews的属性</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2017/07/01/Autolayout2/" data-title="Autolayout2 | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2017/07/13/CocoaPods-module-source/" title="CocoaPods module source">
+  <strong>上一篇：</strong><br>
+  <span>
+  CocoaPods module source</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/05/16/Callbacks回调方式/" title="Callbacks回调方式">
+ <strong>下一篇：</strong><br> 
+ <span>Callbacks回调方式
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/07/01/Autolayout2/" data-title="Autolayout2" data-url="http://yoursite.com/2017/07/01/Autolayout2/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Masonry完成autolayout的cell"><span class="toc-number">1.</span> <span class="toc-text">Masonry完成autolayout的cell</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No1-定义一个所有cell必须实现的协议，协议方法就是让所有cell类实现一个将传入的实体类对象，设置给cell-contentView-subviews"><span class="toc-number">2.</span> <span class="toc-text">No1. 定义一个所有cell必须实现的协议，协议方法就是让所有cell类实现一个将传入的实体类对象，设置给cell.contentView.subviews</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No2-抽一个BaseCell基类，封装计算cell高度的一些公共方法"><span class="toc-number">3.</span> <span class="toc-text">No2. 抽一个BaseCell基类，封装计算cell高度的一些公共方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No3-使用Masonry完成一个AutoLayout的cell"><span class="toc-number">4.</span> <span class="toc-text">No3. 使用Masonry完成一个AutoLayout的cell</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#哈哈，简单的思路就是这样，如果写复杂的自适应cell，那么也就是如下几点"><span class="toc-number">5.</span> <span class="toc-text">哈哈，简单的思路就是这样，如果写复杂的自适应cell，那么也就是如下几点:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#举个小例子"><span class="toc-number">6.</span> <span class="toc-text">举个小例子</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

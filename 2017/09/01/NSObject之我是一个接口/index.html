@@ -1,0 +1,497 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>NSObject之我是一个接口 | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="无意中打开了一个帖子，看到一句话说NSObject是一个@protocol.我震惊了之前一直认为是一个具体类，不行我的看看到底是不是. No1. 我打开一个Xcode项目，找到 &amp;lt;objc/NSObject.h&amp;gt;，发现确实是有一个NSObject的protocol，难道我一直集成的父类是一个protocol？协议还可以当具体类使用？NSObject的protocol定义如下: 123#">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NSObject之我是一个接口">
+<meta property="og:url" content="http://yoursite.com/2017/09/01/NSObject之我是一个接口/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="无意中打开了一个帖子，看到一句话说NSObject是一个@protocol.我震惊了之前一直认为是一个具体类，不行我的看看到底是不是. No1. 我打开一个Xcode项目，找到 &amp;lt;objc/NSObject.h&amp;gt;，发现确实是有一个NSObject的protocol，难道我一直集成的父类是一个protocol？协议还可以当具体类使用？NSObject的protocol定义如下: 123#">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-08T14:03:48.672Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="NSObject之我是一个接口">
+<meta name="twitter:description" content="无意中打开了一个帖子，看到一句话说NSObject是一个@protocol.我震惊了之前一直认为是一个具体类，不行我的看看到底是不是. No1. 我打开一个Xcode项目，找到 &amp;lt;objc/NSObject.h&amp;gt;，发现确实是有一个NSObject的protocol，难道我一直集成的父类是一个protocol？协议还可以当具体类使用？NSObject的protocol定义如下: 123#">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/09/01/NSObject之我是一个接口/" title="NSObject之我是一个接口" itemprop="url">NSObject之我是一个接口</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2017-09-01T13:21:23.000Z" itemprop="datePublished"> Published 2017-09-01</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#无意中打开了一个帖子，看到一句话说NSObject是一个-protocol-我震惊了之前一直认为是一个具体类，不行我的看看到底是不是"><span class="toc-number">1.</span> <span class="toc-text">无意中打开了一个帖子，看到一句话说NSObject是一个@protocol.我震惊了之前一直认为是一个具体类，不行我的看看到底是不是.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No1-我打开一个Xcode项目，找到-lt-objc-NSObject-h-gt-，发现确实是有一个NSObject的protocol，难道我一直集成的父类是一个protocol？协议还可以当具体类使用？"><span class="toc-number">2.</span> <span class="toc-text">No1. 我打开一个Xcode项目，找到 &lt;objc/NSObject.h&gt;，发现确实是有一个NSObject的protocol，难道我一直集成的父类是一个protocol？协议还可以当具体类使用？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No2-找到了NSObject-Protocol的实现类，类的名字其实也叫做NSObject"><span class="toc-number">3.</span> <span class="toc-text">No2. 找到了NSObject Protocol的实现类，类的名字其实也叫做NSObject.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No3-从NSObject-Protocol中分析一、oc中发送执行方法的消息只有2中方法"><span class="toc-number">4.</span> <span class="toc-text">No3. 从NSObject Protocol中分析一、oc中发送执行方法的消息只有2中方法:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No3-从NSObject-Protocol中分析二、方法签名"><span class="toc-number">5.</span> <span class="toc-text">No3. 从NSObject Protocol中分析二、方法签名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No4-顺藤摸瓜，认识NSInvocation是什么？"><span class="toc-number">6.</span> <span class="toc-text">No4. 顺藤摸瓜，认识NSInvocation是什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No5-NSObject对象属性isa"><span class="toc-number">7.</span> <span class="toc-text">No5. NSObject对象属性isa.</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="无意中打开了一个帖子，看到一句话说NSObject是一个-protocol-我震惊了之前一直认为是一个具体类，不行我的看看到底是不是"><a href="#无意中打开了一个帖子，看到一句话说NSObject是一个-protocol-我震惊了之前一直认为是一个具体类，不行我的看看到底是不是" class="headerlink" title="无意中打开了一个帖子，看到一句话说NSObject是一个@protocol.我震惊了之前一直认为是一个具体类，不行我的看看到底是不是."></a>无意中打开了一个帖子，看到一句话说NSObject是一个@protocol.我震惊了之前一直认为是一个具体类，不行我的看看到底是不是.</h3><hr>
+<h3 id="No1-我打开一个Xcode项目，找到-lt-objc-NSObject-h-gt-，发现确实是有一个NSObject的protocol，难道我一直集成的父类是一个protocol？协议还可以当具体类使用？"><a href="#No1-我打开一个Xcode项目，找到-lt-objc-NSObject-h-gt-，发现确实是有一个NSObject的protocol，难道我一直集成的父类是一个protocol？协议还可以当具体类使用？" class="headerlink" title="No1. 我打开一个Xcode项目，找到 &lt;objc/NSObject.h&gt;，发现确实是有一个NSObject的protocol，难道我一直集成的父类是一个protocol？协议还可以当具体类使用？"></a>No1. 我打开一个Xcode项目，找到 &lt;objc/NSObject.h&gt;，发现确实是有一个NSObject的protocol，难道我一直集成的父类是一个protocol？协议还可以当具体类使用？</h3><p>NSObject的protocol定义如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;objc/objc.h&gt;</span><br><span class="line">#include &lt;objc/NSObjCRuntime.h&gt;</span><br><span class="line">@class NSString, NSMethodSignature, NSInvocation;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line">@protocol NSObject</span><br><span class="line"></span><br><span class="line">//---------------------------------------------</span><br><span class="line"></span><br><span class="line">//对象描述</span><br><span class="line">@property (readonly, copy) NSString *description;</span><br><span class="line"></span><br><span class="line">//每个对象的hash值</span><br><span class="line">@property (readonly) NSUInteger hash;</span><br><span class="line"></span><br><span class="line">//父类Class</span><br><span class="line">@property (readonly) Class superclass;</span><br><span class="line"></span><br><span class="line">//---------------------------------------------</span><br><span class="line"></span><br><span class="line">//对象的equal方法</span><br><span class="line">- (BOOL)isEqual:(id)object;</span><br><span class="line"></span><br><span class="line">//获取Class</span><br><span class="line">- (Class)class;</span><br><span class="line"></span><br><span class="line">//原来真的可以这么调用 [self self]或self.self</span><br><span class="line">- (instancetype)self;</span><br><span class="line"></span><br><span class="line">//---------------------------------------------</span><br><span class="line"></span><br><span class="line">//向NSRunloop添加NSTimer后，像对象发送消息（简单的理解就是调用函数）.</span><br><span class="line">- (id)performSelector:(SEL)aSelector;</span><br><span class="line">- (id)performSelector:(SEL)aSelector withObject:(id)object;</span><br><span class="line">- (id)performSelector:(SEL)aSelector withObject:(id)object1 withObject:(id)object2;</span><br><span class="line"></span><br><span class="line">//---------------------------------------------</span><br><span class="line"></span><br><span class="line">- (BOOL)isProxy;</span><br><span class="line"></span><br><span class="line">//---------------------------------------------</span><br><span class="line"></span><br><span class="line">- (BOOL)isKindOfClass:(Class)aClass;</span><br><span class="line">- (BOOL)isMemberOfClass:(Class)aClass;</span><br><span class="line">- (BOOL)conformsToProtocol:(Protocol *)aProtocol;</span><br><span class="line"></span><br><span class="line">//---------------------------------------------</span><br><span class="line"></span><br><span class="line">- (BOOL)respondsToSelector:(SEL)aSelector;</span><br><span class="line"></span><br><span class="line">//---------------------------------------------</span><br><span class="line"></span><br><span class="line">- (instancetype)retain OBJC_ARC_UNAVAILABLE;</span><br><span class="line">- (oneway void)release OBJC_ARC_UNAVAILABLE;</span><br><span class="line">- (instancetype)autorelease OBJC_ARC_UNAVAILABLE;</span><br><span class="line">- (NSUInteger)retainCount OBJC_ARC_UNAVAILABLE;</span><br><span class="line"></span><br><span class="line">//---------------------------------------------</span><br><span class="line"></span><br><span class="line">- (struct _NSZone *)zone OBJC_ARC_UNAVAILABLE;</span><br><span class="line"></span><br><span class="line">//---------------------------------------------</span><br><span class="line"></span><br><span class="line">//可选实现的方法</span><br><span class="line"></span><br><span class="line">@optional</span><br><span class="line">@property (readonly, copy) NSString *debugDescription;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<p>继续往下找，这不科学，协议只是一个抽象的声明，没任何的实现代码，怎么能会可以直接使用.</p>
+<hr>
+<h3 id="No2-找到了NSObject-Protocol的实现类，类的名字其实也叫做NSObject"><a href="#No2-找到了NSObject-Protocol的实现类，类的名字其实也叫做NSObject" class="headerlink" title="No2. 找到了NSObject Protocol的实现类，类的名字其实也叫做NSObject."></a>No2. 找到了NSObject Protocol的实现类，类的名字其实也叫做NSObject.</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@interface NSObject &lt;NSObject&gt; &#123;</span><br><span class="line">Class isa  OBJC_ISA_AVAILABILITY;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//...</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<p>因为无法看到实现代码….<br>（后面找到查看代码的方式了，苹果已经开源runtime的相关代码.）</p>
+<hr>
+<h3 id="No3-从NSObject-Protocol中分析一、oc中发送执行方法的消息只有2中方法"><a href="#No3-从NSObject-Protocol中分析一、oc中发送执行方法的消息只有2中方法" class="headerlink" title="No3. 从NSObject Protocol中分析一、oc中发送执行方法的消息只有2中方法:"></a>No3. 从NSObject Protocol中分析一、oc中发送执行方法的消息只有2中方法:</h3><p>第一种估计会OC的都知道.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[对象 方法名] 或 [类 方法名]</span><br></pre></td></tr></table></figure>
+<p>第二种貌似大部分也知道，只有我不知道…</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- (id)performSelector:(SEL)aSelector;</span><br><span class="line">- (id)performSelector:(SEL)aSelector withObject:(id)object;</span><br><span class="line">- (id)performSelector:(SEL)aSelector withObject:(id)object1 withObject:(id)object2;</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="No3-从NSObject-Protocol中分析二、方法签名"><a href="#No3-从NSObject-Protocol中分析二、方法签名" class="headerlink" title="No3. 从NSObject Protocol中分析二、方法签名"></a>No3. 从NSObject Protocol中分析二、方法签名</h3><blockquote>
+<p>用来描述这个方法的所有信息: 参数类型、参数个数、返回值 ..等.</p>
+</blockquote>
+<p>在NSObject Protocol中有如下2个方法定义，用于获取方法的签名.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector;</span><br><span class="line"></span><br><span class="line">+ (NSMethodSignature *)instanceMethodSignatureForSelector:(SEL)aSelector;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>方法的SEL值 VS 方法的签名 ？</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SEL: 只是一个字符串，仅仅能够唯一标示一个方法的IMP.</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Siganature: 包含了方法的参数信息、返回值信息..等等.</span><br></pre></td></tr></table></figure>
+<p>当要执行一个方法时，iOS系统根据方法名字转化成SEL值。然后找到函数的实现指针IMP，继而执行函数。</p>
+<p>而执行函数，就要确定对传入的参数如何处理，以及返回值如何处理？<br>这个时候，方法的签名就起作用了，告诉系统如何解决如上的2个问题.</p>
+<p>搜了下NSMethodSignature，然后与之紧密关联的是一个叫做【NSInvocation】的东西，来看一下是什么？</p>
+<hr>
+<h3 id="No4-顺藤摸瓜，认识NSInvocation是什么？"><a href="#No4-顺藤摸瓜，认识NSInvocation是什么？" class="headerlink" title="No4. 顺藤摸瓜，认识NSInvocation是什么？"></a>No4. 顺藤摸瓜，认识NSInvocation是什么？</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">（纯属个人理解）</span><br><span class="line"></span><br><span class="line">就是让我们自己的代码，也可以【发出一个消息】，用于执行消息相关的函数.</span><br></pre></td></tr></table></figure>
+<p>NSInvocaion我们手动触发一个消息.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">//1.获取一个方法的签名（详细描述信息:参数类型、返回值类型...）</span><br><span class="line">NSMethodSignature *methodSignature = [[self class] instanceMethodSignatureForSelector:@selector(myLog:)];</span><br><span class="line"></span><br><span class="line">//2. 使用NSMethodSignature对象，生成NSInvocation对象.</span><br><span class="line">NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:methodSignature];</span><br><span class="line"></span><br><span class="line">//3. 设置NSInvocation对象【向哪个对象发送消息】.</span><br><span class="line">[invocation setTarget:self];</span><br><span class="line"></span><br><span class="line">//4. 设置NSInvocation对象【发送哪一个消息】.</span><br><span class="line">[invocation setSelector:@selector(myLog:)];</span><br><span class="line"></span><br><span class="line">//5. 设置【函数最终执行需要的参数】（注意: index=0是target参数，index=1是SEL参数，我们自己的参数从index=2开始）</span><br><span class="line"></span><br><span class="line">NSString *argument = @&quot;哈士奇&quot;;</span><br><span class="line">[invocation setArgument:(__bridge void *)(argument) atIndex:2];</span><br><span class="line"></span><br><span class="line">//6. 手动的【发送消息】</span><br><span class="line">[invocation invoke];</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="No5-NSObject对象属性isa"><a href="#No5-NSObject对象属性isa" class="headerlink" title="No5. NSObject对象属性isa."></a>No5. NSObject对象属性isa.</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@interface NSObject &lt;NSObject&gt; &#123;</span><br><span class="line">Class isa  OBJC_ISA_AVAILABILITY;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>NSObejct类对象，存在一个属性叫做isa.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">typedef struct objc_class *Class;</span><br></pre></td></tr></table></figure>
+<p>这一看，还是一个指向 objc_class结构体变量类型的指针变量.</p>
+<blockquote>
+<p>isa指针出现在两个地方: 1)NSObject类对象 2)objc_class结构体 </p>
+</blockquote>
+<p>第一个出现点: NSObject</p>
+<p>如下都是苹果开源的代码.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- (BOOL)isMemberOfClass:(Class)cls &#123;</span><br><span class="line">return [self class] == cls;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意: 这个 对象的 calss方法（还有一个类的class方法）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- (Class)class &#123;</span><br><span class="line">return object_getClass(self);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Class object_getClass(id obj)</span><br><span class="line">&#123;</span><br><span class="line">return _object_getClass(obj);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">static inline Class _object_getClass(id obj)</span><br><span class="line">&#123;</span><br><span class="line">if (obj) &#123;</span><br><span class="line">return obj-&gt;isa;</span><br><span class="line">&#125; else &#123;</span><br><span class="line">return Nil;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在上面的最后一个函数_object_getClass中，直接通过对象的isa属性，就可以获取对应的Class类型.</p>
+<p>第二个出现点: 结构体 objc_class</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">struct objc_class &#123;</span><br><span class="line">Class isa  OBJC_ISA_AVAILABILITY;</span><br><span class="line"></span><br><span class="line">#if !__OBJC2__</span><br><span class="line">Class super_class                                        OBJC2_UNAVAILABLE;</span><br><span class="line">const char *name                                         OBJC2_UNAVAILABLE;</span><br><span class="line">long version                                             OBJC2_UNAVAILABLE;</span><br><span class="line">long info                                                OBJC2_UNAVAILABLE;</span><br><span class="line">long instance_size                                       OBJC2_UNAVAILABLE;</span><br><span class="line">struct objc_ivar_list *ivars                             OBJC2_UNAVAILABLE;</span><br><span class="line">struct objc_method_list **methodLists                    OBJC2_UNAVAILABLE;</span><br><span class="line">struct objc_cache *cache                                 OBJC2_UNAVAILABLE;</span><br><span class="line">struct objc_protocol_list *protocols                     OBJC2_UNAVAILABLE;</span><br><span class="line">#endif</span><br><span class="line"></span><br><span class="line">&#125; OBJC2_UNAVAILABLE;</span><br></pre></td></tr></table></figure>
+<p>从NSObject协议的实现类NSObject类中，可以找到还有一个类的class方法.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ (Class)class;</span><br></pre></td></tr></table></figure>
+<p>然后找到开源的代码函数实现</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">+ (Class)class &#123;</span><br><span class="line">return self;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>代码中使用了self.<br>大多情况下，self表示当前对象（处于对象方法），而这里是类的方法.</p>
+<p>是不是可以这么说===&gt;&gt;&gt; 当前类NSObject也是一个对象.</p>
+<p>那么self表示当前对象就不矛盾了.</p>
+<p>那么NSObject这个类又是谁的对象（实例）了？<br>首先从runtime源码中未找到，完后百度了一下发现也没有啥有价值的帖子能够正确的描述出来.</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2017/09/01/NSObject之我是一个接口/" data-title="NSObject之我是一个接口 | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2017/09/05/CollectionView学习/" title="CollectionView学习">
+  <strong>上一篇：</strong><br>
+  <span>
+  CollectionView学习</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/08/31/NSURLCache分析/" title="NSURLCache分析">
+ <strong>下一篇：</strong><br> 
+ <span>NSURLCache分析
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/09/01/NSObject之我是一个接口/" data-title="NSObject之我是一个接口" data-url="http://yoursite.com/2017/09/01/NSObject之我是一个接口/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#无意中打开了一个帖子，看到一句话说NSObject是一个-protocol-我震惊了之前一直认为是一个具体类，不行我的看看到底是不是"><span class="toc-number">1.</span> <span class="toc-text">无意中打开了一个帖子，看到一句话说NSObject是一个@protocol.我震惊了之前一直认为是一个具体类，不行我的看看到底是不是.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No1-我打开一个Xcode项目，找到-lt-objc-NSObject-h-gt-，发现确实是有一个NSObject的protocol，难道我一直集成的父类是一个protocol？协议还可以当具体类使用？"><span class="toc-number">2.</span> <span class="toc-text">No1. 我打开一个Xcode项目，找到 &lt;objc/NSObject.h&gt;，发现确实是有一个NSObject的protocol，难道我一直集成的父类是一个protocol？协议还可以当具体类使用？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No2-找到了NSObject-Protocol的实现类，类的名字其实也叫做NSObject"><span class="toc-number">3.</span> <span class="toc-text">No2. 找到了NSObject Protocol的实现类，类的名字其实也叫做NSObject.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No3-从NSObject-Protocol中分析一、oc中发送执行方法的消息只有2中方法"><span class="toc-number">4.</span> <span class="toc-text">No3. 从NSObject Protocol中分析一、oc中发送执行方法的消息只有2中方法:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No3-从NSObject-Protocol中分析二、方法签名"><span class="toc-number">5.</span> <span class="toc-text">No3. 从NSObject Protocol中分析二、方法签名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No4-顺藤摸瓜，认识NSInvocation是什么？"><span class="toc-number">6.</span> <span class="toc-text">No4. 顺藤摸瓜，认识NSInvocation是什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No5-NSObject对象属性isa"><span class="toc-number">7.</span> <span class="toc-text">No5. NSObject对象属性isa.</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

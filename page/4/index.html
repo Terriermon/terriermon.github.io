@@ -74,29 +74,18 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/01/18/设计模式-访问者模式/" title="设计模式-访问者模式" itemprop="url">
+    <a href="/2016/12/20/weibo/" title="weibo" itemprop="url">
   
-    <h1 itemprop="name">设计模式-访问者模式</h1>
+    <h1 itemprop="name">weibo</h1>
     
      
-           <p itemprop="description">访问者、将对一个实体类的业务逻辑，封装到一个Visitor中.
-假设有两个实体
-书
+           <p itemprop="description">###自己模仿Sina Weibo做了一个Demo，记录一下。
 
-水果
-
-
-
-各自有各自的业务逻辑
-书本需要计算最终的价格 &amp;gt;&amp;gt;&amp;gt; float返回值类型
-
-水果需要计算最终的价格 &amp;gt;&amp;gt;&amp;gt; float返回值类型
-
-
-可以看到是</p>
+###使用CocoaPods导入第三方的框架
+1234567891011121314151617181920212223242526#自动布局pod &amp;apos;Masonry&amp;apos;				#依赖注入pod </p>
         
     
-    <time datetime="2016-01-18T15:29:02.000Z" itemprop="datePublished">2016-01-18</time>
+    <time datetime="2016-12-20T06:51:04.000Z" itemprop="datePublished">2016-12-20</time>
   </a>
 </section>
 
@@ -108,15 +97,21 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/01/17/设计模式-策略模式/" title="设计模式-策略模式" itemprop="url">
+    <a href="/2016/11/20/UIWindow/" title="UIWindow" itemprop="url">
   
-    <h1 itemprop="name">设计模式-策略模式</h1>
+    <h1 itemprop="name">UIWindow</h1>
     
      
-           <p itemprop="description">策略、将多种条件路径if-elseif中的业务逻辑，封装成一个单独的策略实现类.123456789101112131415if (满足条件1) &amp;#123;执行逻辑1&amp;#125; else if (满足条件2) &amp;#123;执行逻辑2&amp;#125; else if (满足条件3) </p>
+           <p itemprop="description">UIScreen、UIWindow、UIView三者之间的关系
+(1) UIScreen为硬件设备的屏幕抽象，其中一个属性是整个屏幕区域bounds
+
+(2) UIWindow为内容显示提供背景平台，一个App程序必须至少要有一个UIWindow，否则不会显示任何的东西
+
+
+12</p>
         
     
-    <time datetime="2016-01-17T08:21:54.000Z" itemprop="datePublished">2016-01-17</time>
+    <time datetime="2016-11-20T09:21:06.000Z" itemprop="datePublished">2016-11-20</time>
   </a>
 </section>
 
@@ -128,16 +123,20 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/01/16/设计模式-状态模式/" title="设计模式-状态模式" itemprop="url">
+    <a href="/2016/09/26/Runtime-Part13-TypeEncodings/" title="Runtime Part13 TypeEncodings" itemprop="url">
   
-    <h1 itemprop="name">设计模式-状态模式</h1>
+    <h1 itemprop="name">Runtime Part13 TypeEncodings</h1>
     
      
-           <p itemprop="description">状态机、将一个事物的不同的状态执行的业务逻辑，单独封装到一个对应状态实现类中去.
-抽象状态12345678910111213141516171819202122////  State.h//  demos//#import &amp;lt;Foundation/Foundation.h&amp;</p>
+           <p itemprop="description">类型编码: 苹果会对每一种数据类型，统一按照特定的格式进行编码，得到一个格式化字符串，作用是可以加快消息分发
+对所有的开发者使用的数据类型，按照特定的格式进行编码
+
+系统按照特定的格式进行解码，找到最终要执行的方法、是被方法参数，类型、返回值类型…等等
+
+而如果不使用这种特定的格</p>
         
     
-    <time datetime="2016-01-16T08:11:54.000Z" itemprop="datePublished">2016-01-16</time>
+    <time datetime="2016-09-26T07:25:28.000Z" itemprop="datePublished">2016-09-26</time>
   </a>
 </section>
 
@@ -149,20 +148,16 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/01/15/设计模式-观察者模式/" title="设计模式-观察者模式" itemprop="url">
+    <a href="/2016/09/25/Runtime-Part12-Intercept/" title="Runtime Part12 Intercept" itemprop="url">
   
-    <h1 itemprop="name">设计模式-观察者模式</h1>
+    <h1 itemprop="name">Runtime Part12 Intercept</h1>
     
      
-           <p itemprop="description">观察者、某个对象的值改变时，通知所有注册过的对象做出处理，类似响应式.
-假设某个页面获取了钱包的最新钱数量，那么返回到其他页面同样也需要保持这个最新钱数量，要不然就造成钱数量不统一。
-那么在多个页面同步最新网络数据办法:
-每个页面都发一次请求，获取最新数据
-
-一个页面触发请求，获</p>
+           <p itemprop="description">方法拦截的途径方法一、执行一个SEL不存在Method的消息
+然后不让方法继续执行，直接拦截掉 （resolve）转发给其他具有这个Method实例的Target （forward）方法二、使用runtime api，直接替换掉SEL指向的Method实例，让其找到一个假的函数实</p>
         
     
-    <time datetime="2016-01-15T07:42:40.000Z" itemprop="datePublished">2016-01-15</time>
+    <time datetime="2016-09-25T12:49:50.000Z" itemprop="datePublished">2016-09-25</time>
   </a>
 </section>
 
@@ -174,16 +169,16 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/01/14/设计模式-中介者模式/" title="设计模式-中介者模式" itemprop="url">
+    <a href="/2016/09/25/Runtime-Part11-NSInvocation/" title="Runtime Part11 NSInvocation" itemprop="url">
   
-    <h1 itemprop="name">设计模式-中介者模式</h1>
+    <h1 itemprop="name">Runtime Part11 NSInvocation</h1>
     
      
-           <p itemprop="description">中介者、通过中间者解耦 消息发送者与消息接收者 之间的强耦合.
-消息发送者和消息接受者都需要实现的协议1234567891011121314151617181920212223242526////  MediaContact.h//  demos////  Created by </p>
+           <p itemprop="description">NSInvocation学习记录首先看一个简单的示例代码
+1234567891011121314151617181920212223242526//1. 创建要调用方法的SEL标识SEL myMethod = @selector(myLog:parm:parm:);//2. 设置</p>
         
     
-    <time datetime="2016-01-14T07:01:51.000Z" itemprop="datePublished">2016-01-14</time>
+    <time datetime="2016-09-24T16:39:25.000Z" itemprop="datePublished">2016-09-25</time>
   </a>
 </section>
 
@@ -195,33 +190,22 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/01/13/设计模式-命令模式/" title="设计模式-命令模式" itemprop="url">
+    <a href="/2016/09/24/Runtime-Part10-Forward/" title="Runtime Part10 Forward" itemprop="url">
   
-    <h1 itemprop="name">设计模式-命令模式</h1>
+    <h1 itemprop="name">Runtime Part10 Forward</h1>
     
      
-           <p itemprop="description">命令模式、将如下两个部分的工作分割开来
+           <p itemprop="description">完整的消息转发阶段
+foward to a target 
+forward with NSInvocation
 
-一、谁发出的命令
-二、谁来执行命令
 
-也就是说将二者分开:
+当向对象或类发送一个没有对应方法实现的消息SEL时，由系统自动调用消息转发的几个系统函数。注意： 必须是执行一个不存在方法实现的SEL，才会调用如下的几个函数.
 
-命令发出者
-接收到一个命令后的处理者
-
-命令模式的大概过程:
-
-首先对一条命令进行封装，包含:
-指定命令的接收者
-指定命令要执行的处理
-
-命令发送方，发送一个命令
-
-命令接收方</p>
+</p>
         
     
-    <time datetime="2016-01-13T05:12:26.000Z" itemprop="datePublished">2016-01-13</time>
+    <time datetime="2016-09-23T16:26:56.000Z" itemprop="datePublished">2016-09-24</time>
   </a>
 </section>
 
@@ -233,16 +217,19 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/01/12/设计模式-责任链模式/" title="设计模式-责任链模式" itemprop="url">
+    <a href="/2016/09/24/Runtime-Part9-Resolve/" title="Runtime Part9  Resolve" itemprop="url">
   
-    <h1 itemprop="name">设计模式-责任链模式</h1>
+    <h1 itemprop="name">Runtime Part9  Resolve</h1>
     
      
-           <p itemprop="description">责任链、将多个对象组装在一起，按照顺序依次执行处理.
-抽象Request类1234567891011121314151617181920////  AbstractChainRequest.h//  demos//#import &amp;lt;Foundation/Foundation</p>
+           <p itemprop="description">在没有找到发送消息中的SEL对应的Method时，系统会调用指定的系统函数，来处理这种情况.
+可以是实现方法拦截的思路之一.
+
+本文介绍使用 Resolve 动态决议的方式处理 没有找到 SEL对应的方法实现时进行消息转发.
+动态方法决议、可以对类方法与对象方法进行拦截对象方法、</p>
         
     
-    <time datetime="2016-01-12T04:48:25.000Z" itemprop="datePublished">2016-01-12</time>
+    <time datetime="2016-09-23T16:18:44.000Z" itemprop="datePublished">2016-09-24</time>
   </a>
 </section>
 
@@ -254,22 +241,23 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/01/11/开发者证书/" title="开发者证书" itemprop="url">
+    <a href="/2016/09/24/Runtime-Part8-Associate/" title="Runtime Part8 Associate" itemprop="url">
   
-    <h1 itemprop="name">开发者证书</h1>
+    <h1 itemprop="name">Runtime Part8 Associate</h1>
     
      
-           <p itemprop="description">开发者账号的种类
-个人(individual) $99/year
-可以真机调试, 发布 appstore, 每年 最多为 100台设备分发。
+           <p itemprop="description">在运行时，给对象关联一个其他对象，解决分类无法添加变量的缺陷.
+Category只能添加方法，而不能添加成员变量
 
-公司(company) $99/year
+动态添加成员变量，只能由object associate完成
 
-与个人帐号类似, 只有这两种帐号（个人和公司）可以发布 appstore。
-但是比个人账号申</p>
+主要是两个c函数
+
+
+123456789101. 把一个对象与另外一个对象进行关联objc_setA</p>
         
     
-    <time datetime="2016-01-11T13:29:58.000Z" itemprop="datePublished">2016-01-11</time>
+    <time datetime="2016-09-23T16:13:26.000Z" itemprop="datePublished">2016-09-24</time>
   </a>
 </section>
 
@@ -281,17 +269,20 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/01/11/设计模式-模板模式/" title="设计模式-模板模式" itemprop="url">
+    <a href="/2016/09/23/Runtime-Part7-Method/" title="Runtime Part7 Method" itemprop="url">
   
-    <h1 itemprop="name">设计模式-模板模式</h1>
+    <h1 itemprop="name">Runtime Part7 Method</h1>
     
      
-           <p itemprop="description">模板模式、提供一些基础的模板方法、步骤性的逻辑代码框架给其他的子类.之前BaseViewController使用过这个模式.
+           <p itemprop="description">Method: 抽象一个方法的结构体类型
+Method定义为objc_method结构体类型的一个指针类型
 
-抽象模板接口12345678910111213141516171819202122232425262728////  Template.h//  dem</p>
+1typedef struct objc_method *Method;
+Method本身就是一个指针类型，所以不要使用如下代码
+1Method * method = .</p>
         
     
-    <time datetime="2016-01-11T04:32:29.000Z" itemprop="datePublished">2016-01-11</time>
+    <time datetime="2016-09-23T15:48:52.000Z" itemprop="datePublished">2016-09-23</time>
   </a>
 </section>
 
@@ -303,25 +294,18 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/01/10/设计模式-代理模式/" title="设计模式-代理模式" itemprop="url">
+    <a href="/2016/09/23/Runtime-Part6-MetaClass/" title="Runtime Part6 MetaClass" itemprop="url">
   
-    <h1 itemprop="name">设计模式-代理模式</h1>
+    <h1 itemprop="name">Runtime Part6 MetaClass</h1>
     
      
-           <p itemprop="description">代理模式、可谓是在iOS用的最多、最经典的模式具体应用场景
+           <p itemprop="description">Meta Class 元类年前在看YYModel源码，刚好碰到关于MetaClass相关东西，之前也一直模模糊糊。过年在家休息没事就学习学习，新的码农一年又开始了…
 
-NSProxy应用拦截目标对象方法
-UITableView中UI效果展示与数据源获取的逻辑分离
-
-小结代理的应用场景
-需要拦截目标方法执行、面向切面编程
-代理对象
-继承类
-swizzle方法实现
-消息转发（动态代理对象</p>
+Objective-c 中的 每一个类 如: Person类 其实包含两部分一、普通类（类本身）
+如、Perso</p>
         
     
-    <time datetime="2016-01-10T03:14:16.000Z" itemprop="datePublished">2016-01-10</time>
+    <time datetime="2016-09-23T15:46:40.000Z" itemprop="datePublished">2016-09-23</time>
   </a>
 </section>
 
@@ -332,7 +316,7 @@ swizzle方法实现
 
 
   <nav id="page-nav" class="clearfix unexpand">
-    <a class="extend prev" rel="prev" href="/page/3/"><span></span>Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/5/">Next<span></span></a>
+    <a class="extend prev" rel="prev" href="/page/3/"><span></span>Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/5/">Next<span></span></a>
   </nav>
 
 </div>

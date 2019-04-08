@@ -1,0 +1,500 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>urlscheme | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="以前使用过一些分享的SDK时，发现一个神奇的效果。点击分享后，会跳转到其他的App然后完成分享，又跳回到自己的App。一直在想这个过程是如何完成的….后来无意中在github看到了opensource开源代码后，于是clone下来，仔细看了一遍，终于知道整个过程是如何实现了。 No1. Scheme Url是什么？有什么用？ scheme我理解的是，就是一个打开某一个App的标示符.   iOS7">
+<meta property="og:type" content="article">
+<meta property="og:title" content="urlscheme">
+<meta property="og:url" content="http://yoursite.com/2017/08/11/urlscheme/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="以前使用过一些分享的SDK时，发现一个神奇的效果。点击分享后，会跳转到其他的App然后完成分享，又跳回到自己的App。一直在想这个过程是如何完成的….后来无意中在github看到了opensource开源代码后，于是clone下来，仔细看了一遍，终于知道整个过程是如何实现了。 No1. Scheme Url是什么？有什么用？ scheme我理解的是，就是一个打开某一个App的标示符.   iOS7">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://i3.tietuku.com/33a33e3473404212.png">
+<meta property="og:image" content="http://m1.yea.im/2Hr.png">
+<meta property="og:updated_time" content="2019-04-08T13:51:39.123Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="urlscheme">
+<meta name="twitter:description" content="以前使用过一些分享的SDK时，发现一个神奇的效果。点击分享后，会跳转到其他的App然后完成分享，又跳回到自己的App。一直在想这个过程是如何完成的….后来无意中在github看到了opensource开源代码后，于是clone下来，仔细看了一遍，终于知道整个过程是如何实现了。 No1. Scheme Url是什么？有什么用？ scheme我理解的是，就是一个打开某一个App的标示符.   iOS7">
+<meta name="twitter:image" content="http://i3.tietuku.com/33a33e3473404212.png">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/08/11/urlscheme/" title="urlscheme" itemprop="url">urlscheme</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2017-08-11T06:19:51.000Z" itemprop="datePublished"> Published 2017-08-11</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#以前使用过一些分享的SDK时，发现一个神奇的效果。点击分享后，会跳转到其他的App然后完成分享，又跳回到自己的App。一直在想这个过程是如何完成的…"><span class="toc-number">1.</span> <span class="toc-text">以前使用过一些分享的SDK时，发现一个神奇的效果。点击分享后，会跳转到其他的App然后完成分享，又跳回到自己的App。一直在想这个过程是如何完成的….</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#后来无意中在github看到了opensource开源代码后，于是clone下来，仔细看了一遍，终于知道整个过程是如何实现了。"><span class="toc-number">2.</span> <span class="toc-text">后来无意中在github看到了opensource开源代码后，于是clone下来，仔细看了一遍，终于知道整个过程是如何实现了。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No1-Scheme-Url是什么？有什么用？"><span class="toc-number">3.</span> <span class="toc-text">No1. Scheme Url是什么？有什么用？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No2-简单的使用Scheme设置来掉起对应App"><span class="toc-number">4.</span> <span class="toc-text">No2. 简单的使用Scheme设置来掉起对应App</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#OK，尝试在不使用官方提供的SDK情况下，完成数据分享，那么需要做得步骤："><span class="toc-number">5.</span> <span class="toc-text">OK，尝试在不使用官方提供的SDK情况下，完成数据分享，那么需要做得步骤：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#No1-获取到对应的scheme，可以使用swiizle监听得到"><span class="toc-number">5.1.</span> <span class="toc-text">No1. 获取到对应的scheme，可以使用swiizle监听得到</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#No2-我自己写了一个组装参数成为一个scheme-url的方法"><span class="toc-number">5.2.</span> <span class="toc-text">No2. 我自己写了一个组装参数成为一个scheme url的方法:</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#No3-完成处理之后，对应App会回调我们的App"><span class="toc-number">5.3.</span> <span class="toc-text">No3. 完成处理之后，对应App会回调我们的App</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#总结使用scheme完成App之间的跳转，以及数据传输"><span class="toc-number">6.</span> <span class="toc-text">总结使用scheme完成App之间的跳转，以及数据传输.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#所以可以知道这些App应用厂商提供的SDK要完成事情"><span class="toc-number">7.</span> <span class="toc-text">所以可以知道这些App应用厂商提供的SDK要完成事情</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="以前使用过一些分享的SDK时，发现一个神奇的效果。点击分享后，会跳转到其他的App然后完成分享，又跳回到自己的App。一直在想这个过程是如何完成的…"><a href="#以前使用过一些分享的SDK时，发现一个神奇的效果。点击分享后，会跳转到其他的App然后完成分享，又跳回到自己的App。一直在想这个过程是如何完成的…" class="headerlink" title="以前使用过一些分享的SDK时，发现一个神奇的效果。点击分享后，会跳转到其他的App然后完成分享，又跳回到自己的App。一直在想这个过程是如何完成的…."></a>以前使用过一些分享的SDK时，发现一个神奇的效果。点击分享后，会跳转到其他的App然后完成分享，又跳回到自己的App。一直在想这个过程是如何完成的….</h3><h3 id="后来无意中在github看到了opensource开源代码后，于是clone下来，仔细看了一遍，终于知道整个过程是如何实现了。"><a href="#后来无意中在github看到了opensource开源代码后，于是clone下来，仔细看了一遍，终于知道整个过程是如何实现了。" class="headerlink" title="后来无意中在github看到了opensource开源代码后，于是clone下来，仔细看了一遍，终于知道整个过程是如何实现了。"></a>后来无意中在github看到了opensource开源代码后，于是clone下来，仔细看了一遍，终于知道整个过程是如何实现了。</h3><hr>
+<h3 id="No1-Scheme-Url是什么？有什么用？"><a href="#No1-Scheme-Url是什么？有什么用？" class="headerlink" title="No1. Scheme Url是什么？有什么用？"></a>No1. Scheme Url是什么？有什么用？</h3><blockquote>
+<p>scheme我理解的是，就是一个打开某一个App的标示符.</p>
+</blockquote>
+<blockquote>
+<p>iOS7以前，App之间的跳转只能通过xcode给工程设置唯一的scheme来完.</p>
+</blockquote>
+<p><strong>注：可以给App设置多个scheme，让其他App可以使用不同的标示打开我们的App</strong></p>
+<h3 id="No2-简单的使用Scheme设置来掉起对应App"><a href="#No2-简单的使用Scheme设置来掉起对应App" class="headerlink" title="No2. 简单的使用Scheme设置来掉起对应App"></a>No2. 简单的使用Scheme设置来掉起对应App</h3><ul>
+<li>xcode配置scheme</li>
+</ul>
+<p><img src="http://i3.tietuku.com/33a33e3473404212.png" alt="Xcode设置"></p>
+<ul>
+<li><p>分析腾讯分享SDK为我们做得事情：</p>
+</li>
+<li><p>我们的App构造完分享的数据</p>
+</li>
+<li>scheme后面，还可以带各种不同的url，标示不同的业务操作</li>
+<li>openURL: 腾讯QQ指定的scheme，跳转到QQ App处理业务</li>
+<li>QQ处理完之后，使用 tx+Appid 作为回调我们App的scheme【需要按照SDK文档设置回调scheme】</li>
+<li>回调起我们的App</li>
+</ul>
+<ul>
+<li>当一个App被掉起的时候，走AppDelegate里面的一个函数</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">//url: 当前传入的scheme url</span></span><br><span class="line"><span class="comment">//sourceApplication: 掉起我们App的程序进程</span></span><br><span class="line">- (<span class="built_in">BOOL</span>)application:(<span class="built_in">UIApplication</span> *)application openURL:(<span class="built_in">NSURL</span> *)url sourceApplication:(<span class="built_in">NSString</span> *)sourceApplication annotation:(<span class="keyword">id</span>)annotation</span><br><span class="line">&#123;  </span><br><span class="line"><span class="comment">//此处写我们App，是否能够处理这个scheme url的代码</span></span><br><span class="line"><span class="comment">//1. 能够处理： return YES;</span></span><br><span class="line"><span class="comment">//2. 不能处理： return NO;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="OK，尝试在不使用官方提供的SDK情况下，完成数据分享，那么需要做得步骤："><a href="#OK，尝试在不使用官方提供的SDK情况下，完成数据分享，那么需要做得步骤：" class="headerlink" title="OK，尝试在不使用官方提供的SDK情况下，完成数据分享，那么需要做得步骤："></a>OK，尝试在不使用官方提供的SDK情况下，完成数据分享，那么需要做得步骤：</h3><ul>
+<li>找到对应APP完成对应操作的 <strong>scheme</strong>  【很重要，否则没任何反应】</li>
+<li>监听到scheme 后面带的一些url参数 –&gt; 完整的url</li>
+<li>App进程之间可以通过 UIPastBoard存取公用数据 【所有App进程都可以存取的map】</li>
+<li>openURL打开App程序</li>
+<li>handleOpenURL处理回调</li>
+</ul>
+<h4 id="No1-获取到对应的scheme，可以使用swiizle监听得到"><a href="#No1-获取到对应的scheme，可以使用swiizle监听得到" class="headerlink" title="No1. 获取到对应的scheme，可以使用swiizle监听得到"></a>No1. 获取到对应的scheme，可以使用swiizle监听得到</h4><h4 id="No2-我自己写了一个组装参数成为一个scheme-url的方法"><a href="#No2-我自己写了一个组装参数成为一个scheme-url的方法" class="headerlink" title="No2. 我自己写了一个组装参数成为一个scheme url的方法:"></a>No2. 我自己写了一个组装参数成为一个scheme url的方法:</h4><blockquote>
+<p>注意：不同的App，需要的参数组装肯定是不同的，需要各自实现</p>
+</blockquote>
+<p>以拼接完成QQ分享的参数拼接为例子：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">//根据传入枚举，分别构造分享的参数url</span></span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSString</span>*)_generateShareUrl:(XZHMessage *)msg ForType:(XZHTencentPlatform)type &#123;</span><br><span class="line"></span><br><span class="line"><span class="built_in">NSString</span> *url = [[<span class="built_in">NSString</span> alloc] initWithString:ShareSchema];</span><br><span class="line"></span><br><span class="line"><span class="built_in">NSString</span> *boundleName = [XZHShareManager base64Encode:[XZHShareManager <span class="built_in">CFBundleDisplayName</span>]];</span><br><span class="line"><span class="built_in">NSString</span> *callback_name = [[<span class="keyword">self</span> optionDict] objectForKey:<span class="string">@"callback_name"</span>];</span><br><span class="line"></span><br><span class="line"><span class="built_in">NSMutableDictionary</span> *params = [@&#123;</span><br><span class="line"><span class="string">@"thirdAppDisplayName"</span> : boundleName,</span><br><span class="line"><span class="string">@"version"</span> : <span class="string">@"1"</span>,</span><br><span class="line"><span class="string">@"cflag"</span> : [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"%ld"</span>, type],</span><br><span class="line"><span class="string">@"callback_type"</span> : <span class="string">@"scheme"</span>,</span><br><span class="line"><span class="string">@"generalpastboard"</span> : <span class="string">@"1"</span>,</span><br><span class="line"><span class="string">@"callback_name"</span> : callback_name,</span><br><span class="line"><span class="string">@"src_type"</span> : <span class="string">@"app"</span>,</span><br><span class="line"><span class="string">@"shareType"</span> : <span class="string">@"0"</span>,</span><br><span class="line">&#125; mutableCopy];</span><br><span class="line"></span><br><span class="line"><span class="comment">//分享消息是媒体类型</span></span><br><span class="line"><span class="keyword">if</span> (msg.link &amp;&amp; !msg.messageType) &#123;</span><br><span class="line">msg.messageType = XZHMessageNews;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">NSDictionary</span> *subParams = <span class="literal">nil</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//分享消息是文本</span></span><br><span class="line"><span class="keyword">if</span> ([<span class="keyword">self</span> computeMessageType:msg] == XZHMessageText) &#123;</span><br><span class="line"></span><br><span class="line"><span class="built_in">NSString</span> *fileData = [XZHShareManager base64AndUrlEncode:msg.title];</span><br><span class="line">subParams = @&#123;</span><br><span class="line"><span class="string">@"file_type"</span> : <span class="string">@"text"</span>,</span><br><span class="line"><span class="string">@"file_data"</span> : fileData</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> ([<span class="keyword">self</span> computeMessageType:msg] == XZHMessageImage) &#123;</span><br><span class="line"><span class="comment">//分享消息是图像</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">NSDictionary</span> *data=@&#123;</span><br><span class="line"><span class="string">@"file_data"</span>:msg.imageData,</span><br><span class="line"><span class="string">@"previewimagedata"</span>:msg.thumbImageData?:msg.imageData</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//将图像保存到剪贴板</span></span><br><span class="line">[[XZHShareManager manager] clipBoardSave:data</span><br><span class="line">ForKey:SaveObjectForQQPlatformKey</span><br><span class="line">Encoding:XZHClipBoardNSKeyedArchiver];</span><br><span class="line"></span><br><span class="line"><span class="built_in">NSString</span> *title = [XZHShareManager base64AndUrlEncode:msg.title];</span><br><span class="line"><span class="built_in">NSString</span> *desc = [XZHShareManager base64AndUrlEncode:msg.desc];</span><br><span class="line">subParams = @&#123;</span><br><span class="line"><span class="string">@"file_type"</span> : <span class="string">@"img"</span>,</span><br><span class="line"><span class="string">@"title"</span> : title,</span><br><span class="line"><span class="string">@"objectlocation"</span> : <span class="string">@"pasteboard"</span>,</span><br><span class="line"><span class="string">@"description"</span> : desc,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#125;<span class="keyword">else</span> <span class="keyword">if</span> ([<span class="keyword">self</span> computeMessageType:msg] == XZHMessageNews) &#123;</span><br><span class="line"><span class="comment">//分享消息是新闻</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">NSDictionary</span> *data=@&#123;<span class="string">@"previewimagedata"</span>:msg.imageData&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">//将图像保存到剪贴板</span></span><br><span class="line">[[XZHShareManager manager] clipBoardSave:data</span><br><span class="line">ForKey:SaveObjectForQQPlatformKey</span><br><span class="line">Encoding:XZHClipBoardNSKeyedArchiver];</span><br><span class="line"></span><br><span class="line"><span class="built_in">NSString</span> *title = [XZHShareManager base64AndUrlEncode:msg.title];</span><br><span class="line"><span class="built_in">NSString</span> *url = [XZHShareManager base64AndUrlEncode:msg.link];</span><br><span class="line"><span class="built_in">NSString</span> *desc = [XZHShareManager base64AndUrlEncode:msg.desc];</span><br><span class="line"></span><br><span class="line"><span class="built_in">NSString</span> *msgType=<span class="string">@"news"</span>;</span><br><span class="line"><span class="keyword">if</span> (msg.messageType == XZHMessageNews) &#123;</span><br><span class="line">msgType = <span class="string">@"news"</span>;</span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (msg.messageType == XZHMessageAudio) &#123;</span><br><span class="line">msgType = <span class="string">@"audio"</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">subParams = @&#123;</span><br><span class="line"><span class="string">@"file_type"</span> : msgType,</span><br><span class="line"><span class="string">@"title"</span> : title,</span><br><span class="line"><span class="string">@"url"</span> : url,</span><br><span class="line"><span class="string">@"description"</span> : desc,</span><br><span class="line"><span class="string">@"objectlocation"</span> : <span class="string">@"pasteboard"</span>,</span><br><span class="line">&#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">[params addEntriesFromDictionary:subParams];</span><br><span class="line"></span><br><span class="line"><span class="comment">//拼接完成最终要打开的scheme url</span></span><br><span class="line">url = [XZHShareManager urlStringWithOriginUrlString:url appendParameters:params];</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> url;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">然后就是 [[<span class="built_in">UIApplication</span> sharedApplication] openURL:我们构造出来的scheme url] 即可，完成与sdk一样的功能.</span><br></pre></td></tr></table></figure>
+<h4 id="No3-完成处理之后，对应App会回调我们的App"><a href="#No3-完成处理之后，对应App会回调我们的App" class="headerlink" title="No3. 完成处理之后，对应App会回调我们的App"></a>No3. 完成处理之后，对应App会回调我们的App</h4><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">//这里可以封装一个所有分享平台统一处理的入口</span></span><br><span class="line">- (<span class="built_in">BOOL</span>)application:(<span class="built_in">UIApplication</span> *)application</span><br><span class="line">handleOpenURL:(<span class="built_in">NSURL</span> *)url &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//其他应用掉起当前应用时，传回的参数，如果传入的url能够处理</span></span><br><span class="line"><span class="keyword">if</span> ([[XZHShareManager manager] handleOpenURL:url]) &#123;</span><br><span class="line"><span class="keyword">return</span> <span class="literal">YES</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//不能处理的App调起</span></span><br><span class="line"><span class="keyword">return</span> <span class="literal">YES</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//这里轮训所有其他分享平台，看哪一个平台能够处理传回的scheme url</span></span><br><span class="line">- (<span class="built_in">BOOL</span>)handleOpenURL:(<span class="built_in">NSURL</span> *)url &#123;</span><br><span class="line"><span class="keyword">self</span>.returnURL = url;</span><br><span class="line"></span><br><span class="line"><span class="comment">//轮询所有分享平台，看哪个能处理</span></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">id</span>&lt;XZHShareInterface&gt; impl <span class="keyword">in</span> <span class="keyword">self</span>.platforms) &#123;</span><br><span class="line"><span class="keyword">if</span> ([impl handleOpenURL]) &#123;</span><br><span class="line"><span class="keyword">return</span> <span class="literal">YES</span>;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> <span class="literal">NO</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//假设QQ分享的处理</span></span><br><span class="line">- (<span class="built_in">BOOL</span>)handleOpenURL &#123;</span><br><span class="line">XZHShareManager *manager = [XZHShareManager manager];</span><br><span class="line"></span><br><span class="line"><span class="comment">//保存的是handleOpenUrl方法传入的scheme url</span></span><br><span class="line"><span class="built_in">NSURL</span> *returnURL = manager.returnURL;</span><br><span class="line"></span><br><span class="line"><span class="comment">//判断scheme是否是当前平台能够处理，然后执行对应回调Block</span></span><br><span class="line"><span class="keyword">if</span> ([returnURL.scheme hasPrefix:ShareCallbackSchemePrix]) &#123;</span><br><span class="line"><span class="built_in">NSDictionary</span> *dict = [XZHShareManager parseUrl:[XZHShareManager manager].returnURL];</span><br><span class="line"><span class="keyword">if</span> ([dict hasKey:<span class="string">@"error_description"</span>]) &#123;</span><br><span class="line">[dict setValue:[XZHShareManager base64Decode:dict[<span class="string">@"error_description"</span>]] forKey:<span class="string">@"error_description"</span>];</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> ([dict hasKey:<span class="string">@"error"</span>]) &#123;</span><br><span class="line"><span class="built_in">NSInteger</span> code = [dict[<span class="string">@"error"</span>] integerValue];</span><br><span class="line"><span class="keyword">if</span> (code != <span class="number">0</span>) &#123;</span><br><span class="line"><span class="built_in">NSError</span> *error = [<span class="built_in">NSError</span> errorWithDomain:<span class="string">@"response_from_qq"</span> code:code userInfo:dict];</span><br><span class="line"><span class="keyword">if</span> (manager.onShareFail) &#123;</span><br><span class="line">manager.onShareFail(manager.shareMessage, error);</span><br><span class="line">&#125;</span><br><span class="line">&#125;<span class="keyword">else</span> &#123;</span><br><span class="line"><span class="keyword">if</span> (manager.onShareSuccess) &#123;</span><br><span class="line">manager.onShareSuccess(manager.shareMessage);</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">[manager clearCompletions];</span><br><span class="line"><span class="keyword">return</span> <span class="literal">YES</span>;</span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> ([returnURL.scheme hasPrefix:OauthCallbackSchemePrix]) &#123;</span><br><span class="line"></span><br><span class="line">[manager clearCompletions];</span><br><span class="line"><span class="keyword">return</span> <span class="literal">YES</span>;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"></span><br><span class="line">[manager clearCompletions];</span><br><span class="line"><span class="keyword">return</span> <span class="literal">NO</span>;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="总结使用scheme完成App之间的跳转，以及数据传输"><a href="#总结使用scheme完成App之间的跳转，以及数据传输" class="headerlink" title="总结使用scheme完成App之间的跳转，以及数据传输."></a>总结使用scheme完成App之间的跳转，以及数据传输.</h3><p><img src="http://m1.yea.im/2Hr.png" alt></p>
+<hr>
+<h3 id="所以可以知道这些App应用厂商提供的SDK要完成事情"><a href="#所以可以知道这些App应用厂商提供的SDK要完成事情" class="headerlink" title="所以可以知道这些App应用厂商提供的SDK要完成事情"></a>所以可以知道这些App应用厂商提供的SDK要完成事情</h3><ul>
+<li>1) 定义好让其他App打开他们自己App的<code>url scheme</code></li>
+<li><p>并且是每一种不同的业务操作，定义不同的<code>url scheme</code>或者<code>url path</code></p>
+</li>
+<li><p>2) 规定用户必须按照厂商的规则，在用户的工程中配置好自己的<code>url scheme</code></p>
+</li>
+<li>格式为 <code>SDK厂商公司名英文缩写://用户要调用的业务对应的路径Path</code></li>
+<li><p>只有这样，当厂商的App打开后，并处理完操作之后，才能正确回到用户的App（同样使用url scheme 打开用户App，加上结果值作为参数）</p>
+</li>
+<li><p>3) 让用户使用SDK厂商公开的Api，构造对应要处理的业务的数据项</p>
+</li>
+<li>第一是构造要处理业务所需要的一些参数拼接</li>
+<li>第二是最终打开厂商App</li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2017/08/11/urlscheme/" data-title="urlscheme | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2017/08/12/Autolayout3/" title="Autolayout3">
+  <strong>上一篇：</strong><br>
+  <span>
+  Autolayout3</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/08/09/BaseViewController设计、统一管理Push/" title="BaseViewController设计、统一管理Push">
+ <strong>下一篇：</strong><br> 
+ <span>BaseViewController设计、统一管理Push
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/08/11/urlscheme/" data-title="urlscheme" data-url="http://yoursite.com/2017/08/11/urlscheme/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#以前使用过一些分享的SDK时，发现一个神奇的效果。点击分享后，会跳转到其他的App然后完成分享，又跳回到自己的App。一直在想这个过程是如何完成的…"><span class="toc-number">1.</span> <span class="toc-text">以前使用过一些分享的SDK时，发现一个神奇的效果。点击分享后，会跳转到其他的App然后完成分享，又跳回到自己的App。一直在想这个过程是如何完成的….</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#后来无意中在github看到了opensource开源代码后，于是clone下来，仔细看了一遍，终于知道整个过程是如何实现了。"><span class="toc-number">2.</span> <span class="toc-text">后来无意中在github看到了opensource开源代码后，于是clone下来，仔细看了一遍，终于知道整个过程是如何实现了。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No1-Scheme-Url是什么？有什么用？"><span class="toc-number">3.</span> <span class="toc-text">No1. Scheme Url是什么？有什么用？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No2-简单的使用Scheme设置来掉起对应App"><span class="toc-number">4.</span> <span class="toc-text">No2. 简单的使用Scheme设置来掉起对应App</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#OK，尝试在不使用官方提供的SDK情况下，完成数据分享，那么需要做得步骤："><span class="toc-number">5.</span> <span class="toc-text">OK，尝试在不使用官方提供的SDK情况下，完成数据分享，那么需要做得步骤：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#No1-获取到对应的scheme，可以使用swiizle监听得到"><span class="toc-number">5.1.</span> <span class="toc-text">No1. 获取到对应的scheme，可以使用swiizle监听得到</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#No2-我自己写了一个组装参数成为一个scheme-url的方法"><span class="toc-number">5.2.</span> <span class="toc-text">No2. 我自己写了一个组装参数成为一个scheme url的方法:</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#No3-完成处理之后，对应App会回调我们的App"><span class="toc-number">5.3.</span> <span class="toc-text">No3. 完成处理之后，对应App会回调我们的App</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#总结使用scheme完成App之间的跳转，以及数据传输"><span class="toc-number">6.</span> <span class="toc-text">总结使用scheme完成App之间的跳转，以及数据传输.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#所以可以知道这些App应用厂商提供的SDK要完成事情"><span class="toc-number">7.</span> <span class="toc-text">所以可以知道这些App应用厂商提供的SDK要完成事情</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

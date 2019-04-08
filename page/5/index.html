@@ -74,20 +74,17 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/01/09/设计模式-享元模式/" title="设计模式-享元模式" itemprop="url">
+    <a href="/2016/09/23/Runtime-Part5-Class/" title="Runtime Part5 Class" itemprop="url">
   
-    <h1 itemprop="name">设计模式-享元模式</h1>
+    <h1 itemprop="name">Runtime Part5 Class</h1>
     
      
-           <p itemprop="description">享元模式、我理解就类似缓存优化，先取缓存，没有就创建新的，再存入缓存.
-简单 享元
-复合 享元
+           <p itemprop="description">通常我们编写一个类并继承自NSObject，然后编写所有的变量、所有的方法、以及实现的所有的协议….Foundation中提供了两个根类NSObject、平时使用最多的根类，提供了很多我们常用的api基本的功能
 
-
-抽象享元接口定义1234567891011/***  抽象享元接口*/@protocol Flyweight &amp;lt;NSObject&amp;gt;/***  功能函数定义*/- (vo</p>
+(BOOL)isEqual:(id)object;@propert</p>
         
     
-    <time datetime="2016-01-09T02:28:07.000Z" itemprop="datePublished">2016-01-09</time>
+    <time datetime="2016-09-23T12:39:52.000Z" itemprop="datePublished">2016-09-23</time>
   </a>
 </section>
 
@@ -99,21 +96,28 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/01/08/设计模式-外观模式/" title="设计模式-外观模式" itemprop="url">
+    <a href="/2016/09/23/Runtime-Part4-Ivar-Property/" title="Runtime Part4 Ivar Property" itemprop="url">
   
-    <h1 itemprop="name">设计模式-外观模式</h1>
+    <h1 itemprop="name">Runtime Part4 Ivar Property</h1>
     
      
-           <p itemprop="description">外观模式、为内部子系统的复杂逻辑，提供一个简单的入口.
-为 复杂的子系统 向外提供一个简单的接口
-给每一层的子系统提供一个统一的入口
+           <p itemprop="description">成员变量 与 属性 是不同的
+成员变量 Ivar
 
 
-模拟照相、灯光、传感器三种硬件互相配合完成一个复杂的功能.
-照相机123456789101112#import &amp;lt;Foundation/</p>
+仅仅只是一个对象的内部使用的 变量
+
+
+属性 Property
+
+
+首先包括成员变量，并且还包括对成员变量操作的 setter方法与getter方法
+
+
+成员变量的相关操作#Ivar 结构体定义1typedef struct </p>
         
     
-    <time datetime="2016-01-07T16:09:03.000Z" itemprop="datePublished">2016-01-08</time>
+    <time datetime="2016-09-23T11:21:10.000Z" itemprop="datePublished">2016-09-23</time>
   </a>
 </section>
 
@@ -125,20 +129,19 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/01/07/设计模式-装饰器模式/" title="设计模式-装饰器模式" itemprop="url">
+    <a href="/2016/09/22/Runtime-Part3-IMP/" title="Runtime Part3 IMP" itemprop="url">
   
-    <h1 itemprop="name">设计模式-装饰器模式</h1>
+    <h1 itemprop="name">Runtime Part3 IMP</h1>
     
      
-           <p itemprop="description">装饰模式、在不修改原始类代码的情况下，动态的给对象添加一些额外的功能
-适配器模式，针对类方法和对象方法都可以进行扩展
-装饰器模式，只针对对象方法进行扩展，又有点类似代理模式
+           <p itemprop="description">什么是IMP？
+IMP 就是一个指向任意一个 c函数的 函数指针
 
-
-如下举个简单的例子，假设Manager项目管理者本身只有管理项目的职责，但是需要扩展写代码的职责，但是</p>
+IMP的原型
+12345#if !OBJC_OLD_DISPATCH_PROTOTYPEStypedef void (*IMP)(void /* id, SEL, ... */ ); #elsetypedef i</p>
         
     
-    <time datetime="2016-01-07T15:01:46.000Z" itemprop="datePublished">2016-01-07</time>
+    <time datetime="2016-09-22T10:56:12.000Z" itemprop="datePublished">2016-09-22</time>
   </a>
 </section>
 
@@ -150,17 +153,22 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/01/06/设计模式-桥接模式/" title="设计模式-桥接模式" itemprop="url">
+    <a href="/2016/09/22/Runtime-Part2-SEL/" title="Runtime Part2 SEL" itemprop="url">
   
-    <h1 itemprop="name">设计模式-桥接模式</h1>
+    <h1 itemprop="name">Runtime Part2 SEL</h1>
     
      
-           <p itemprop="description">桥接模式、组合不同抽象类型的具体实现类的对象，个人觉得和组合模式和策略模式差不多，就是使用抽象类型来解耦具体类的关联.
-模拟 PC组合CPU ，使用 桥接模式 实现.
-CPU类型的抽象1234567891011#import &amp;lt;Foundation/Foundation.h</p>
+           <p itemprop="description">什么是消息选择器？
+(1) 消息选择器是一种文本字符串，用于消息传递的过程
+
+(2) 消息选择器是一种分为多段的文本字符串，每个段以冒号结尾且后面可以跟方法执行参数
+
+(3) 运行时系统根据消息选择器，找到对应的方法实现完成方法调用
+
+(4) 消息选择器主要是标识区别某个对象/某</p>
         
     
-    <time datetime="2016-01-06T13:20:22.000Z" itemprop="datePublished">2016-01-06</time>
+    <time datetime="2016-09-22T10:04:03.000Z" itemprop="datePublished">2016-09-22</time>
   </a>
 </section>
 
@@ -172,22 +180,26 @@ CPU类型的抽象1234567891011#import &amp;lt;Foundation/Foundation.h</p>
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/01/05/设计模式-适配器/" title="设计模式-适配器" itemprop="url">
+    <a href="/2016/09/21/Runtime-Part1-认识/" title="Runtime Part1 认识" itemprop="url">
   
-    <h1 itemprop="name">设计模式-适配器</h1>
+    <h1 itemprop="name">Runtime Part1 认识</h1>
     
      
-           <p itemprop="description">适配器、将 一个类的接口 转换成客户希望的 另外一个接口，使得原本由于接口不兼容而不能一起工作的那些类可以一起工作。
-适配器模式有3种
-面向 接口 的适配器模式 
-面向 类 的适配器模式
-面向 对象 的适配器模式
+           <p itemprop="description">运行时系统组成部分: 编译器 和 运行时动态链接库
+编译器、做的事情
 
 
-先看下 面向接口 适配器# 语言能力抽象接口123456789</p>
+(1) 在程序编译期间负责完成一些Objetive-C代码编译生成c代码
+(2) 而这些被编译的c代码不仅仅只是普通的c代码，而是使用了运行时系统库中api的代码
+
+
+运行时链接库、组成结构
+
+
+(1) 类</p>
         
     
-    <time datetime="2016-01-05T11:58:02.000Z" itemprop="datePublished">2016-01-05</time>
+    <time datetime="2016-09-20T18:31:21.000Z" itemprop="datePublished">2016-09-21</time>
   </a>
 </section>
 
@@ -199,24 +211,23 @@ CPU类型的抽象1234567891011#import &amp;lt;Foundation/Foundation.h</p>
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/01/04/设计模式-原型模式/" title="设计模式-原型模式" itemprop="url">
+    <a href="/2016/08/05/iOS-common-crash-problem/" title="iOS common crash problem" itemprop="url">
   
-    <h1 itemprop="name">设计模式-原型模式</h1>
+    <h1 itemprop="name">iOS common crash problem</h1>
     
      
-           <p itemprop="description">原型模式、通过对一个对象进行复制后，得到一个相同类型的对象，而不需要关心: 被复制的对象类型或实现的接口原型模式分为两种:
+           <p itemprop="description">常见问题整理
+Array的一些崩溃
+(1) 数组对象是id类型，并不清楚到底是可变还是不可变
 
-简单形式的复制
-登记形式的复制
+12id array = [NSArray new];[array addObject:@&#34;111&#34;];
 
+(2) 添加一个nil到数组对象
 
-简单形式
-对象复制的功能抽象
-
-12345678910#import &amp;lt;Foundation/Foundatio</p>
+12id array = [NSMuta</p>
         
     
-    <time datetime="2016-01-04T11:26:22.000Z" itemprop="datePublished">2016-01-04</time>
+    <time datetime="2016-08-05T03:47:42.000Z" itemprop="datePublished">2016-08-05</time>
   </a>
 </section>
 
@@ -228,20 +239,26 @@ CPU类型的抽象1234567891011#import &amp;lt;Foundation/Foundation.h</p>
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/01/03/设计模式-建造者模式/" title="设计模式-建造者模式" itemprop="url">
+    <a href="/2016/08/01/APNS远程推送/" title="APNS远程推送" itemprop="url">
   
-    <h1 itemprop="name">设计模式-建造者模式</h1>
+    <h1 itemprop="name">APNS远程推送</h1>
     
      
-           <p itemprop="description">建造者、向外屏蔽内部复杂的流程步骤
-存在很多固定的步骤话操作
-且不希望外界知道内部这么多的步骤
+           <p itemprop="description">###推送通知简介
 
+此通知不是NSNotificationCenter发出的通知NSNotification，而是推送通知。
 
-对要构造的房子这类事物的抽象1234567891011121314#import &amp;lt;Foundation/Foundation.h&amp;gt;/***  房子具备的行为*/@pr</p>
+推送通知主要用途
+
+App 与 APNS苹果服务器 之间的交互
+确切的说让不在前台运行的App被动触发做一些事情
+
+推送通知的分类
+
+1) 远程推送通</p>
         
     
-    <time datetime="2016-01-03T10:49:55.000Z" itemprop="datePublished">2016-01-03</time>
+    <time datetime="2016-08-01T14:58:52.000Z" itemprop="datePublished">2016-08-01</time>
   </a>
 </section>
 
@@ -253,28 +270,25 @@ CPU类型的抽象1234567891011#import &amp;lt;Foundation/Foundation.h</p>
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/01/02/设计模式-抽象工厂模式/" title="设计模式-抽象工厂模式" itemprop="url">
+    <a href="/2016/07/31/APNS推送证书配置/" title="APNS推送证书配置" itemprop="url">
   
-    <h1 itemprop="name">设计模式-抽象工厂模式</h1>
+    <h1 itemprop="name">APNS推送证书配置</h1>
     
      
-           <p itemprop="description">抽象工厂、简单工厂的升级版，解决简单工厂只针对一个抽象接口
-同时有多个 抽象接口
-每个抽象接口，有多种实现情况
+           <p itemprop="description">好久以前弄过APNS推送证书的配置，忘记了…今天又要搞，弄了好久才搞定，做个笔记.
+主要关键:
 
+Xcode工程的Bundle Id
+Apple开发中中心配置的App Id
+推送证书对应的App Id
 
-抽象工厂模式结构 &amp;gt;&amp;gt;&amp;gt; 延伸至类簇模式
-两种抽象产品标准
-ProductA
-ProductB
+这三个Id必须一致.
 
-抽象工厂
-
-生产ProductA类型的具体产品
-</p>
+下面给出操作步骤截图:
+No1. 进入Applde开</p>
         
     
-    <time datetime="2016-01-02T09:49:47.000Z" itemprop="datePublished">2016-01-02</time>
+    <time datetime="2016-07-31T14:13:18.000Z" itemprop="datePublished">2016-07-31</time>
   </a>
 </section>
 
@@ -286,22 +300,17 @@ ProductB
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/01/01/设计模式-工厂模式/" title="设计模式-工厂模式" itemprop="url">
+    <a href="/2016/06/03/UITableViewCell的一些优化/" title="UITableViewCell的一些优化" itemprop="url">
   
-    <h1 itemprop="name">设计模式-工厂模式</h1>
+    <h1 itemprop="name">UITableViewCell的一些优化</h1>
     
      
-           <p itemprop="description">工厂模式（简单工厂）、获取一个抽象接口所有实现类的实例
-一个抽象接口
-多个实现类
-工厂提供所有实现类的对象
-
-重点是只有 一个抽象接口
-
-抽象接口（标准）的定义1234567891011#import &amp;lt;Foundation/Foundation.h&amp;gt;@protoco</p>
+           <p itemprop="description">编写一个自定义UITableViewCell的基本步骤新建一个UITableViewCell子类
+重写initWithStyle:方法
+创建所有的UI Subviews实例将所有的subviews实例添加到UITableViewCell.contentView对一些subview</p>
         
     
-    <time datetime="2016-01-01T09:42:28.000Z" itemprop="datePublished">2016-01-01</time>
+    <time datetime="2016-06-03T12:28:07.000Z" itemprop="datePublished">2016-06-03</time>
   </a>
 </section>
 
@@ -313,19 +322,19 @@ ProductB
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2015/12/30/reachability源码学习/" title="Reachability源码学习" itemprop="url">
+    <a href="/2016/03/01/UIControl/" title="UIControl" itemprop="url">
   
-    <h1 itemprop="name">Reachability源码学习</h1>
+    <h1 itemprop="name">UIControl</h1>
     
      
-           <p itemprop="description">实时监测手机的联网状态，并作出对应的回调处理，源码学习子AFNetworkReachabilityManager.
+           <p itemprop="description">UIControl是继承自UIView，所以其实UIControl也是一个UI控件
 
-首先定义网络状态的所有可能的状态的枚举
+UIControl就是一个最简单的UIView子类，只具备接收事件的功能，其他显示的子控件什么的都没有
 
-12345678910111213typedef NS_ENUM(NSInteger, AFNetworkReachab</p>
+UIControl适用于自定义一些接收事件、内部非常规的subviews的自定义UI控件</p>
         
     
-    <time datetime="2015-12-30T04:08:22.000Z" itemprop="datePublished">2015-12-30</time>
+    <time datetime="2016-02-29T16:59:13.000Z" itemprop="datePublished">2016-03-01</time>
   </a>
 </section>
 
@@ -336,7 +345,7 @@ ProductB
 
 
   <nav id="page-nav" class="clearfix unexpand">
-    <a class="extend prev" rel="prev" href="/page/4/"><span></span>Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/6/">Next<span></span></a>
+    <a class="extend prev" rel="prev" href="/page/4/"><span></span>Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/6/">Next<span></span></a>
   </nav>
 
 </div>

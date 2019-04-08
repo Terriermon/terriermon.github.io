@@ -1,0 +1,480 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>自定义快速枚举 | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="在写缓存先关代码时，发现了一个从来没注意到的东西NSFastEnumeration，来记录下学习笔记. 如果一个集合要使用for-in形式进行快速遍历，那么就要求这个集合需要实现某一些规定的方法 – NSFastEnumeration协议.12345forin demo代码:for (Person *person in personArray) &amp;#123;//....&amp;#125; 好像我们对NS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="自定义快速枚举">
+<meta property="og:url" content="http://yoursite.com/2017/08/25/自定义快速枚举/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="在写缓存先关代码时，发现了一个从来没注意到的东西NSFastEnumeration，来记录下学习笔记. 如果一个集合要使用for-in形式进行快速遍历，那么就要求这个集合需要实现某一些规定的方法 – NSFastEnumeration协议.12345forin demo代码:for (Person *person in personArray) &amp;#123;//....&amp;#125; 好像我们对NS">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-08T14:00:48.401Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="自定义快速枚举">
+<meta name="twitter:description" content="在写缓存先关代码时，发现了一个从来没注意到的东西NSFastEnumeration，来记录下学习笔记. 如果一个集合要使用for-in形式进行快速遍历，那么就要求这个集合需要实现某一些规定的方法 – NSFastEnumeration协议.12345forin demo代码:for (Person *person in personArray) &amp;#123;//....&amp;#125; 好像我们对NS">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/08/25/自定义快速枚举/" title="自定义快速枚举" itemprop="url">自定义快速枚举</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2017-08-25T15:54:49.000Z" itemprop="datePublished"> Published 2017-08-25</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#在写缓存先关代码时，发现了一个从来没注意到的东西NSFastEnumeration，来记录下学习笔记"><span class="toc-number">1.</span> <span class="toc-text">在写缓存先关代码时，发现了一个从来没注意到的东西NSFastEnumeration，来记录下学习笔记.</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#如果一个集合要使用for-in形式进行快速遍历，那么就要求这个集合需要实现某一些规定的方法-–-NSFastEnumeration协议"><span class="toc-number">1.1.</span> <span class="toc-text">如果一个集合要使用for-in形式进行快速遍历，那么就要求这个集合需要实现某一些规定的方法 – NSFastEnumeration协议.</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#有时间学习一下自定义枚举遍历"><span class="toc-number">2.</span> <span class="toc-text">有时间学习一下自定义枚举遍历.</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="在写缓存先关代码时，发现了一个从来没注意到的东西NSFastEnumeration，来记录下学习笔记"><a href="#在写缓存先关代码时，发现了一个从来没注意到的东西NSFastEnumeration，来记录下学习笔记" class="headerlink" title="在写缓存先关代码时，发现了一个从来没注意到的东西NSFastEnumeration，来记录下学习笔记."></a>在写缓存先关代码时，发现了一个从来没注意到的东西<code>NSFastEnumeration</code>，来记录下学习笔记.</h3><hr>
+<h4 id="如果一个集合要使用for-in形式进行快速遍历，那么就要求这个集合需要实现某一些规定的方法-–-NSFastEnumeration协议"><a href="#如果一个集合要使用for-in形式进行快速遍历，那么就要求这个集合需要实现某一些规定的方法-–-NSFastEnumeration协议" class="headerlink" title="如果一个集合要使用for-in形式进行快速遍历，那么就要求这个集合需要实现某一些规定的方法 – NSFastEnumeration协议."></a>如果一个<code>集合</code>要使用<code>for-in</code>形式进行快速遍历，那么就要求这个<code>集合</code>需要实现某一些规定的方法 – <code>NSFastEnumeration协议</code>.</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">forin demo代码:</span><br><span class="line"></span><br><span class="line">for (Person *person in personArray) &#123;</span><br><span class="line">//....</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>好像我们对<code>NSArray</code>、<code>NSDictionary</code>等等，经常使用过<code>for-in</code>的快速遍历方法，那么也就是说<code>NSArray</code>、<code>NSDictionary</code>已经是实现了<code>NSFastEnumeration协议</code>.</p>
+<p>可以去看一下<code>NSArray</code>、<code>NSDictionary</code>头文件定义.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@interface NSArray : NSObject &lt;NSCopying, NSMutableCopying, NSSecureCoding, NSFastEnumeration&gt;</span><br><span class="line"></span><br><span class="line">//...略</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">@interface NSDictionary : NSObject &lt;NSCopying, NSMutableCopying, NSSecureCoding, NSFastEnumeration&gt;</span><br><span class="line"></span><br><span class="line">//...略</span><br><span class="line">```    </span><br><span class="line"></span><br><span class="line">如上可以看出，其实已经实现了`NSFastEnumeration协议了`，所以我们才能对他们使用`for-in`方式进行快速遍历。</span><br><span class="line"></span><br><span class="line">***</span><br><span class="line"></span><br><span class="line">### 看一下与快速枚举遍历相关协议声明</span><br></pre></td></tr></table></figure>
+<p>@protocol NSFastEnumeration</p>
+<ul>
+<li>(NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state objects:(id __unsafe_unretained [])buffer count:(NSUInteger)len;</li>
+</ul>
+<p>@end</p>
+<p>@interface NSEnumerator : NSObject <nsfastenumeration></nsfastenumeration></p>
+<ul>
+<li>(id)nextObject;</li>
+</ul>
+<p>@end</p>
+<p>@interface NSEnumerator (NSExtendedEnumerator)</p>
+<p>@property (readonly, copy) NSArray *allObjects;</p>
+<p>@end<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">如上看出:</span><br><span class="line"></span><br><span class="line">1. 有一个协议叫做`NSFastEnumeration`.</span><br><span class="line">2. 有一些协议实现类是`NSEnumerator`.</span><br><span class="line"></span><br><span class="line">所以说，`NSEnumerator`是实现了`NSFastEnumeration`定义的相关功能函数接口，因此具备了快速遍历的功能。</span><br><span class="line"></span><br><span class="line">***</span><br><span class="line"></span><br><span class="line">### 使用快速枚举遍历有何好处？</span><br><span class="line"></span><br><span class="line">1. 比使用`for (int i = 0; i &lt; count; i++) &#123; ... &#125;`效率高</span><br><span class="line"></span><br><span class="line">2. 使用`for-in`语法简单清晰</span><br><span class="line"></span><br><span class="line">3. 快速遍历使用了`修改监视器`，如果检测到在遍历过程中对`被遍历的集合的长度`进行修改，那么会由系统抛出异常，让系统程序进行崩溃.</span><br><span class="line"></span><br><span class="line">4. 由于在枚举的过程中是不能对`集合长度`进行修改的，因此多个枚举是可以同时并发进行的</span><br><span class="line"></span><br><span class="line">注意，`for-in`遍历时，不能对`集合的长度`进行修改，以一个例子说明.</span><br></pre></td></tr></table></figure></p>
+<p>// 创建一个Person实例的集合.</p>
+<p>NSMutableArray <em>personArray = [NSMutableArray array];<br>for (int i = 0; i &lt; 10; i++) {<br>Person </em>p = [[Person alloc] initWithName:@”zhangsan” Age:i];<br>[personArray addObject:p];<br>}<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
+<p>// 使用for-in快速遍历集合.</p>
+<p>for (Person *person in personArray) {<br>NSLog(@”age = %ld\n”, person.age);<br>}</p>
+<p>输出结果:<br>2015-10-02 00:24:25.246 AFNDemo[3684:55169] age = 0<br>2015-10-02 00:24:25.247 AFNDemo[3684:55169] age = 1<br>2015-10-02 00:24:25.247 AFNDemo[3684:55169] age = 2<br>2015-10-02 00:24:25.248 AFNDemo[3684:55169] age = 3<br>2015-10-02 00:24:25.248 AFNDemo[3684:55169] age = 4<br>2015-10-02 00:24:25.248 AFNDemo[3684:55169] age = 5<br>2015-10-02 00:24:25.248 AFNDemo[3684:55169] age = 6<br>2015-10-02 00:24:25.248 AFNDemo[3684:55169] age = 7<br>2015-10-02 00:24:25.248 AFNDemo[3684:55169] age = 8<br>2015-10-02 00:24:25.248 AFNDemo[3684:55169] age = 9<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
+<p>// 对被遍历集合中的某一个元素进行属性修改</p>
+<p>for (Person *person in personArray) {<br>person.age = 17;<br>}<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">上一步执行后，发现程序并没有崩溃，那么也就是说`使用for-in快速遍历集合时，可以对元素进行属性值修改`。</span><br></pre></td></tr></table></figure></p>
+<p>// 使用for-in快速遍历集合.</p>
+<p>for (Person *person in personArray) {<br>NSLog(@”age = %ld\n”, person.age);<br>}</p>
+<p>输出结果:<br>2015-10-02 00:24:25.248 AFNDemo[3684:55169] age = 17<br>2015-10-02 00:24:25.249 AFNDemo[3684:55169] age = 17<br>2015-10-02 00:24:25.249 AFNDemo[3684:55169] age = 17<br>2015-10-02 00:24:25.249 AFNDemo[3684:55169] age = 17<br>2015-10-02 00:24:25.249 AFNDemo[3684:55169] age = 17<br>2015-10-02 00:24:25.249 AFNDemo[3684:55169] age = 17<br>2015-10-02 00:24:25.249 AFNDemo[3684:55169] age = 17<br>2015-10-02 00:24:25.249 AFNDemo[3684:55169] age = 17<br>2015-10-02 00:24:25.249 AFNDemo[3684:55169] age = 17<br>2015-10-02 00:24:25.249 AFNDemo[3684:55169] age = 17<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
+<p>// 对集合的长度进行修改</p>
+<p>for (Person *person in personArray) {<br>[personArray removeObject:person];<br>}<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">如上代码就会崩溃。</span><br><span class="line"></span><br><span class="line">&gt; 小结:</span><br><span class="line"></span><br><span class="line">使用`forin`快速遍历集合时，`不能修改集合的长度`，可以对元素的属性进行修改.</span><br><span class="line"></span><br><span class="line">***</span><br><span class="line"></span><br><span class="line">### 先看一下`NSFastEnumeration`协议，就定义了一个实现函数.</span><br></pre></td></tr></table></figure></p>
+<p>@protocol NSFastEnumeration</p>
+<ul>
+<li>(NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state objects:(id __unsafe_unretained [])buffer count:(NSUInteger)len;</li>
+</ul>
+<p>@end<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">1. 实现了`NSFastEnumeration`协议的任何集合类的实例，才能够使用`for-in`进行快速遍历.</span><br><span class="line"></span><br><span class="line">2. 协议方法中的三个参数</span><br><span class="line">* state: 编译器给我们分配好的一个NSFastEnumerationState结构体变量地址。</span><br><span class="line">* buffer: 一个指针变量，指向消息接受者所分配的栈空间。</span><br><span class="line">* len: 单次枚举最大能放多少元素。</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">***</span><br><span class="line"></span><br><span class="line">### 再看下有一个结构体`NSFastEnumerationState`</span><br></pre></td></tr></table></figure></p>
+<p>typedef struct {<br>unsigned long state;                    // 表示当前状态，初始为0<br>id __unsafe_unretained <em>itemsPtr;        // 指向当前所要枚举的集合首地址<br>unsigned long </em>mutationsPtr;            // 用于检测，所要枚举的对象是否发生了改变<br>unsigned long extra[5];                    // 这里可以由实现者随意存放必要的额外数据<br>} NSFastEnumerationState;<br><code>`</code></p>
+<p>对于这个结构体类型的实例，必须要设置<code>itemsPtr</code>与<code>mutationsPtr</code>这两个属性的值，并且<code>不能为空</code>。除非，此次枚举遍历直接返回0 。    </p>
+<hr>
+<h3 id="有时间学习一下自定义枚举遍历"><a href="#有时间学习一下自定义枚举遍历" class="headerlink" title="有时间学习一下自定义枚举遍历."></a>有时间学习一下自定义枚举遍历.</h3><p>等有时间看吧，该睡觉了…</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2017/08/25/自定义快速枚举/" data-title="自定义快速枚举 | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2017/08/31/NSURLCache分析/" title="NSURLCache分析">
+  <strong>上一篇：</strong><br>
+  <span>
+  NSURLCache分析</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/08/23/Kache、KObject/" title="Kache、KObject">
+ <strong>下一篇：</strong><br> 
+ <span>Kache、KObject
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/08/25/自定义快速枚举/" data-title="自定义快速枚举" data-url="http://yoursite.com/2017/08/25/自定义快速枚举/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#在写缓存先关代码时，发现了一个从来没注意到的东西NSFastEnumeration，来记录下学习笔记"><span class="toc-number">1.</span> <span class="toc-text">在写缓存先关代码时，发现了一个从来没注意到的东西NSFastEnumeration，来记录下学习笔记.</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#如果一个集合要使用for-in形式进行快速遍历，那么就要求这个集合需要实现某一些规定的方法-–-NSFastEnumeration协议"><span class="toc-number">1.1.</span> <span class="toc-text">如果一个集合要使用for-in形式进行快速遍历，那么就要求这个集合需要实现某一些规定的方法 – NSFastEnumeration协议.</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#有时间学习一下自定义枚举遍历"><span class="toc-number">2.</span> <span class="toc-text">有时间学习一下自定义枚举遍历.</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

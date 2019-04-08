@@ -1,0 +1,632 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>Callbacks回调方式 | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="前阵子去面试然后问我: 模块之间的回调有哪些方式？我当时还真没回答好，刚好晚上看代码的时候突然灵机一动想到了，还是记录下吧免得下次又忘记了.. 小结下可以完成回调的所有方法: Delegate Block  c 函数指针 Target-Action模式（eg、UIButton添加回调处理） NSNotificationCenter  KVO属性值改变监测   当时我的脑子里只有Delegate/B">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Callbacks回调方式">
+<meta property="og:url" content="http://yoursite.com/2017/05/16/Callbacks回调方式/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="前阵子去面试然后问我: 模块之间的回调有哪些方式？我当时还真没回答好，刚好晚上看代码的时候突然灵机一动想到了，还是记录下吧免得下次又忘记了.. 小结下可以完成回调的所有方法: Delegate Block  c 函数指针 Target-Action模式（eg、UIButton添加回调处理） NSNotificationCenter  KVO属性值改变监测   当时我的脑子里只有Delegate/B">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-08T13:36:42.543Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Callbacks回调方式">
+<meta name="twitter:description" content="前阵子去面试然后问我: 模块之间的回调有哪些方式？我当时还真没回答好，刚好晚上看代码的时候突然灵机一动想到了，还是记录下吧免得下次又忘记了.. 小结下可以完成回调的所有方法: Delegate Block  c 函数指针 Target-Action模式（eg、UIButton添加回调处理） NSNotificationCenter  KVO属性值改变监测   当时我的脑子里只有Delegate/B">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/05/16/Callbacks回调方式/" title="Callbacks回调方式" itemprop="url">Callbacks回调方式</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2017-05-16T15:09:05.000Z" itemprop="datePublished"> Published 2017-05-16</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#前阵子去面试然后问我-模块之间的回调有哪些方式？我当时还真没回答好，刚好晚上看代码的时候突然灵机一动想到了，还是记录下吧免得下次又忘记了"><span class="toc-number">1.</span> <span class="toc-text">前阵子去面试然后问我: 模块之间的回调有哪些方式？我当时还真没回答好，刚好晚上看代码的时候突然灵机一动想到了，还是记录下吧免得下次又忘记了..</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#小结下可以完成回调的所有方法"><span class="toc-number">2.</span> <span class="toc-text">小结下可以完成回调的所有方法:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#从最原始的c函数指针完成回调记录起吧"><span class="toc-number">3.</span> <span class="toc-text">从最原始的c函数指针完成回调记录起吧</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Target-Action（目标-动作）完成回调"><span class="toc-number">4.</span> <span class="toc-text">Target-Action（目标-动作）完成回调</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#下面写一个使用Target-Action完成回调的简单例子"><span class="toc-number">4.1.</span> <span class="toc-text">下面写一个使用Target-Action完成回调的简单例子</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用KVO完成回调"><span class="toc-number">5.</span> <span class="toc-text">使用KVO完成回调</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="前阵子去面试然后问我-模块之间的回调有哪些方式？我当时还真没回答好，刚好晚上看代码的时候突然灵机一动想到了，还是记录下吧免得下次又忘记了"><a href="#前阵子去面试然后问我-模块之间的回调有哪些方式？我当时还真没回答好，刚好晚上看代码的时候突然灵机一动想到了，还是记录下吧免得下次又忘记了" class="headerlink" title="前阵子去面试然后问我: 模块之间的回调有哪些方式？我当时还真没回答好，刚好晚上看代码的时候突然灵机一动想到了，还是记录下吧免得下次又忘记了.."></a>前阵子去面试然后问我: <code>模块之间的回调有哪些方式？</code>我当时还真没回答好，刚好晚上看代码的时候突然灵机一动想到了，还是记录下吧免得下次又忘记了..</h3><hr>
+<h3 id="小结下可以完成回调的所有方法"><a href="#小结下可以完成回调的所有方法" class="headerlink" title="小结下可以完成回调的所有方法:"></a>小结下可以完成回调的所有方法:</h3><ul>
+<li>Delegate</li>
+<li>Block </li>
+<li>c 函数指针</li>
+<li>Target-Action模式（eg、UIButton添加回调处理）</li>
+<li>NSNotificationCenter </li>
+<li>KVO属性值改变监测 </li>
+</ul>
+<p>当时我的脑子里只有Delegate/Block这两种方法…至于其他的，有的是紧张忘记了，有的则是很陌生…感叹自己多菜逼啊！好好学习学习把…</p>
+<p>关于Delegate/Block我就不说了，会iOS的都知道，只是注意几个问题:</p>
+<ul>
+<li><p>对于Block就有一个<code>传递一个新的拷贝对象 or 传递对象的指针</code>的概念.</p>
+</li>
+<li><p>对于NSNotificationCenter，不会strong强引用通知观察者.</p>
+</li>
+</ul>
+<hr>
+<h3 id="从最原始的c函数指针完成回调记录起吧"><a href="#从最原始的c函数指针完成回调记录起吧" class="headerlink" title="从最原始的c函数指针完成回调记录起吧"></a>从最原始的c函数指针完成回调记录起吧</h3><ul>
+<li>ViewController.m</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">"ViewController.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Callback1.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">void</span> callback1(<span class="built_in">NSString</span> *arg1, <span class="built_in">NSString</span> *arg2) &#123;</span><br><span class="line"><span class="comment">// 操作回传入方法的参数值</span></span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"arg1 = %@, arg2 = %@"</span>, arg1, arg2);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="built_in">NSString</span>* callback2(<span class="built_in">NSString</span> *arg1, <span class="built_in">NSString</span> *arg2) &#123;</span><br><span class="line"><span class="comment">//1. 操作回传入方法的参数值</span></span><br><span class="line"><span class="comment">//2. return返回一个返回值</span></span><br><span class="line"><span class="keyword">return</span> [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"arg1 = %@ , arg2 = %@"</span>, arg1, arg2];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="built_in">NSInteger</span> callback3(<span class="keyword">id</span>&lt;CallbackInterface&gt; ret) &#123;</span><br><span class="line"></span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"name = %@"</span>, [ret name]);</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"address = %@"</span>, [ret address]);</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"postCode = %@"</span>, [ret postCode]);</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> <span class="number">201</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ViewController</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)touchesBegan:(<span class="built_in">NSSet</span>&lt;<span class="built_in">UITouch</span> *&gt; *)touches withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 无返回值 函数指针回调</span></span><br><span class="line">GET_DATA1(<span class="string">@"www.baidu.com"</span>, callback1);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 有返回值 函数指针回调1</span></span><br><span class="line">GET_DATA2(<span class="string">@"www.baidu.com"</span>, callback2);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 有返回值 函数指针回调2</span></span><br><span class="line">GET_DATA3(<span class="string">@"www.baidu.com"</span>, callback3);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>Callback.h与Callback.m</li>
+</ul>
+<p>Callback.h</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  回调Context的抽象接口</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">CallbackInterface</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSString</span> *)name;</span><br><span class="line">- (<span class="built_in">NSString</span> *)address;</span><br><span class="line">- (<span class="built_in">NSString</span> *)postCode;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 不需要返回值的 回调方法</span></span><br><span class="line"><span class="keyword">void</span> GET_DATA1(<span class="built_in">NSString</span> *url, <span class="keyword">void</span> (*callback)(<span class="built_in">NSString</span> *arg1, <span class="built_in">NSString</span> *arg2));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 需要返回值的 回调方法</span></span><br><span class="line"><span class="keyword">void</span> GET_DATA2(<span class="built_in">NSString</span> *url, <span class="built_in">NSString</span>* (*callback)(<span class="built_in">NSString</span> *arg1, <span class="built_in">NSString</span> *arg2));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 需要返回值的 + 使用Context类打包回传值 回调方法</span></span><br><span class="line"><span class="keyword">void</span> GET_DATA3(<span class="built_in">NSString</span> *url, <span class="built_in">NSInteger</span> (*callback)(<span class="keyword">id</span>&lt;CallbackInterface&gt; ret));</span><br></pre></td></tr></table></figure>
+<p>Callback.m</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">"Callback1.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  回调Context的抽象接口实现类</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">CallbackContext</span> : <span class="title">NSObject</span> &lt;<span class="title">CallbackInterface</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">copy</span>) <span class="built_in">NSString</span> *aName;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">copy</span>) <span class="built_in">NSString</span> *aAddress;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">copy</span>) <span class="built_in">NSString</span> *aPostCode;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">CallbackContext</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSString</span> *)name &#123;</span><br><span class="line"><span class="keyword">return</span> _aName;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSString</span> *)address &#123;</span><br><span class="line"><span class="keyword">return</span> _aAddress;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSString</span> *)postCode &#123;</span><br><span class="line"><span class="keyword">return</span> _aPostCode;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> GET_DATA1(<span class="built_in">NSString</span> *url, <span class="keyword">void</span> (*callback)(<span class="built_in">NSString</span> *arg1, <span class="built_in">NSString</span> *arg2)) &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"接收到的参数URL = %@"</span>, url);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 执行接收到的函数指针完成回调</span></span><br><span class="line"><span class="keyword">if</span> (callback) &#123;</span><br><span class="line">callback(<span class="string">@"回传参数1"</span>, <span class="string">@"回传参数2"</span>);</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> GET_DATA2(<span class="built_in">NSString</span> *url, <span class="built_in">NSString</span>* (*callback)(<span class="built_in">NSString</span> *arg1, <span class="built_in">NSString</span> *arg2)) &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"接收到的参数URL = %@"</span>, url);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 执行接收到的函数指针完成回调</span></span><br><span class="line"><span class="keyword">if</span> (callback) &#123;</span><br><span class="line"><span class="built_in">NSString</span> *ret = callback(<span class="string">@"回传参数1"</span>, <span class="string">@"回传参数2"</span>);</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"接收到调用者返回值 = %@"</span>, ret);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> GET_DATA3(<span class="built_in">NSString</span> *url, <span class="built_in">NSInteger</span> (*callback)(<span class="keyword">id</span>&lt;CallbackInterface&gt; ret)) &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"接收到的参数URL = %@"</span>, url);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 组装回传参数Context对象</span></span><br><span class="line">CallbackContext *ctx = [CallbackContext new];</span><br><span class="line">ctx.aName = <span class="string">@"XZH"</span>;</span><br><span class="line">ctx.aAddress = <span class="string">@"HuNan"</span>;</span><br><span class="line">ctx.aPostCode = <span class="string">@"415700"</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 执行接收到的函数指针完成回调</span></span><br><span class="line"><span class="keyword">if</span> (callback) &#123;</span><br><span class="line"><span class="built_in">NSInteger</span> code = callback(ctx);</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"接收到的code = %ld"</span>, code);</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>多余就不解释了，一切尽在代码中…</p>
+<hr>
+<h3 id="Target-Action（目标-动作）完成回调"><a href="#Target-Action（目标-动作）完成回调" class="headerlink" title="Target-Action（目标-动作）完成回调"></a>Target-Action（目标-动作）完成回调</h3><ul>
+<li>不得不提经常使用的UIButton:UIControl，由UIControl提供了Target-Action完成回调的api.</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)viewDidLoad &#123;</span><br><span class="line">[<span class="keyword">super</span> viewDidLoad];</span><br><span class="line"></span><br><span class="line"><span class="built_in">UIButton</span> *button = ....;</span><br><span class="line">[button addTarget:<span class="keyword">self</span> action:<span class="keyword">@selector</span>(test) forControlEvents:<span class="built_in">UIControlEventTouchUpInside</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)test &#123;</span><br><span class="line"><span class="comment">//按钮点击回调</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>前面的一篇关于按钮防止连续点击多次的文章已经记录，最后是由UIControl的<code>- (void)sendAction:(SEL)action to:(nullable id)target forEvent:(nullable UIEvent *)event;</code>方法完成方法调用的消息发送:</p>
+<ul>
+<li><p>而发送的消息包含:</p>
+</li>
+<li><p>1、Target &gt;&gt;&gt; 消息处理者</p>
+</li>
+<li>2、SEL &gt;&gt;&gt; 具体处理的函数实现对应的标识符</li>
+<li>3、传入方法的参数</li>
+</ul>
+<p>所以，Target-Action模式，最终是通过发送消息来完成回调处理，但是消息最终还是使用c的函数指针来完成的，所以任何形式的回调最后归根结底都是通过c函数指针完成。</p>
+<h4 id="下面写一个使用Target-Action完成回调的简单例子"><a href="#下面写一个使用Target-Action完成回调的简单例子" class="headerlink" title="下面写一个使用Target-Action完成回调的简单例子"></a>下面写一个使用Target-Action完成回调的简单例子</h4><ul>
+<li>ViewController.m</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">"ViewController.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Callback2.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ViewController</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)touchesBegan:(<span class="built_in">NSSet</span>&lt;<span class="built_in">UITouch</span> *&gt; *)touches withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line"><span class="comment">//    [self callback_demo_1];</span></span><br><span class="line">[<span class="keyword">self</span> callback_demo_2];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)callback_demo_2 &#123;</span><br><span class="line">Callback2 *callback = [Callback2 new];</span><br><span class="line"></span><br><span class="line"><span class="comment">//回调格式1</span></span><br><span class="line">[callback addTarget:<span class="keyword">self</span> action:<span class="keyword">@selector</span>(callback2_1)];</span><br><span class="line"></span><br><span class="line"><span class="comment">//回调格式2</span></span><br><span class="line"><span class="comment">//    [callback addTarget:self action:@selector(callback2_1WithRet1:)];</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//回调格式3</span></span><br><span class="line"><span class="comment">//    [callback addTarget:self action:@selector(callback2_1WithRet1:Ret2:)];</span></span><br><span class="line"></span><br><span class="line">[callback doWork];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)callback2_1 &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"callback2_1 执行回调"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSInteger</span>)callback2_1WithRet1:(<span class="built_in">NSString</span> *)ret1 &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"callback2_1WithRet1: 执行回调"</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSInteger</span>)callback2_1WithRet1:(<span class="built_in">NSString</span> *)ret1 Ret2:(<span class="built_in">NSInteger</span>)ret2 &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"callback2_1WithRet1:Ret2: 执行回调"</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>Callback2</li>
+</ul>
+<p>Callback2.h</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Callback2</span> : <span class="title">NSObject</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)addTarget:(<span class="keyword">id</span>)target action:(SEL)sel;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)doWork;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>Callback2.m</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">"Callback2.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;objc/message.h&gt;</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;objc/runtime.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Callback2</span> ()</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">weak</span>) <span class="keyword">id</span> target;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">assign</span>) SEL sel;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">Callback2</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)addTarget:(<span class="keyword">id</span>)target action:(SEL)sel &#123;</span><br><span class="line">_target = target;</span><br><span class="line">_sel = sel;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)doWork &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"Callback2 执行完毕"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//<span class="doctag">TODO:</span> 需要通过解析Method TypeEncodings来分情况，针对函数的参数定义调用objc_msgSend()</span></span><br><span class="line">Method m = class_getInstanceMethod([_target <span class="keyword">class</span>], _sel);</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *typeEncodins = method_getTypeEncoding(m);</span><br><span class="line"></span><br><span class="line"><span class="comment">/////////////////////////////如下消息方法需要通过解析Method TypeEncodings来分情况/////////////////////////////</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//eg1、不需要回传参数值、不需要返回值</span></span><br><span class="line">((<span class="keyword">void</span> (*)(<span class="keyword">id</span>, SEL))(<span class="keyword">void</span> *) objc_msgSend)(_target, _sel);</span><br><span class="line"></span><br><span class="line"><span class="comment">//eg2、回传一个NSString参数值，需要返回值</span></span><br><span class="line"><span class="built_in">NSInteger</span> ret1 = ((<span class="built_in">NSInteger</span> (*)(<span class="keyword">id</span>, SEL, <span class="built_in">NSString</span>*))(<span class="keyword">void</span> *) objc_msgSend)(_target, _sel, <span class="string">@"haha"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//eg3、回传两个值，需要返回值</span></span><br><span class="line"><span class="built_in">NSInteger</span> ret2 = ((<span class="built_in">NSInteger</span> (*)(<span class="keyword">id</span>, SEL, <span class="built_in">NSString</span>*, <span class="built_in">BOOL</span>))(<span class="keyword">void</span> *) objc_msgSend)(_target, _sel, <span class="string">@"haha"</span>, <span class="literal">YES</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>对于objc_method实例的type encoding解析来发送不同参数格式的SEL消息，有时间再看看怎么弄…</p>
+<p>补充下上面的问题，具体来说是获取objc_method实例的argument type字符串，然后根据其编码字符串来确定每一个参数的类型.</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> id <span class="title">callSelector</span><span class="params">(NSString *className, NSString *selectorName, JSValue *arguments, JSValue *instance, BOOL isSuper)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>可以根据JSPatch中的如上方法的套路去模仿，主要即使根据type encodings字符来找到对应的数据类型.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">最终编码</th>
+<th style="text-align:center">开发时使用的对应数据类型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">c</td>
+<td style="text-align:center">char</td>
+</tr>
+<tr>
+<td style="text-align:center">i</td>
+<td style="text-align:center">int</td>
+</tr>
+<tr>
+<td style="text-align:center">s</td>
+<td style="text-align:center">short</td>
+</tr>
+<tr>
+<td style="text-align:center">l</td>
+<td style="text-align:center">long (注意: long is treated as a 32-bit quantity on 64-bit programs)</td>
+</tr>
+<tr>
+<td style="text-align:center">q</td>
+<td style="text-align:center">long long</td>
+</tr>
+<tr>
+<td style="text-align:center">C</td>
+<td style="text-align:center">unsigned char</td>
+</tr>
+<tr>
+<td style="text-align:center">I</td>
+<td style="text-align:center">unsigned int</td>
+</tr>
+<tr>
+<td style="text-align:center">S</td>
+<td style="text-align:center">unsigned short</td>
+</tr>
+<tr>
+<td style="text-align:center">L</td>
+<td style="text-align:center">unsigned long</td>
+</tr>
+<tr>
+<td style="text-align:center">Q</td>
+<td style="text-align:center">unsigned long long</td>
+</tr>
+<tr>
+<td style="text-align:center">f</td>
+<td style="text-align:center">float</td>
+</tr>
+<tr>
+<td style="text-align:center">d</td>
+<td style="text-align:center">double</td>
+</tr>
+<tr>
+<td style="text-align:center">B</td>
+<td style="text-align:center">C++ bool or a C99 _Bool</td>
+</tr>
+<tr>
+<td style="text-align:center">v （小写）</td>
+<td style="text-align:center">void</td>
+</tr>
+<tr>
+<td style="text-align:center">*</td>
+<td style="text-align:center">character string (char *)</td>
+</tr>
+<tr>
+<td style="text-align:center">@</td>
+<td style="text-align:center">自定义类型的对象，NSObject *</td>
+</tr>
+<tr>
+<td style="text-align:center">#</td>
+<td style="text-align:center">class object (Class)</td>
+</tr>
+<tr>
+<td style="text-align:center">:</td>
+<td style="text-align:center">A method selector (SEL)</td>
+</tr>
+<tr>
+<td style="text-align:center">[array type]</td>
+<td style="text-align:center">array数组</td>
+</tr>
+<tr>
+<td style="text-align:center">{name=type…}</td>
+<td style="text-align:center">structure 结构体</td>
+</tr>
+<tr>
+<td style="text-align:center">(name=type…)</td>
+<td style="text-align:center">union 共用体</td>
+</tr>
+<tr>
+<td style="text-align:center">bnum</td>
+<td style="text-align:center">A bit field of num bits</td>
+</tr>
+<tr>
+<td style="text-align:center">^type</td>
+<td style="text-align:center">A <code>pointer</code> to type</td>
+</tr>
+<tr>
+<td style="text-align:center">?</td>
+<td style="text-align:center">An unknown type (among other things, this code is used for <code>function pointers 函数指针</code>)</td>
+</tr>
+<tr>
+<td style="text-align:center">^f</td>
+<td style="text-align:center">float *</td>
+</tr>
+<tr>
+<td style="text-align:center">^v</td>
+<td style="text-align:center">void *</td>
+</tr>
+<tr>
+<td style="text-align:center">^@</td>
+<td style="text-align:center">NSError **</td>
+</tr>
+<tr>
+<td style="text-align:center">[5i]</td>
+<td style="text-align:center">int[]</td>
+</tr>
+<tr>
+<td style="text-align:center">[3f]</td>
+<td style="text-align:center">float[]</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="使用KVO完成回调"><a href="#使用KVO完成回调" class="headerlink" title="使用KVO完成回调"></a>使用KVO完成回调</h3><blockquote>
+<p>核心就是 添加KVO属性观测</p>
+</blockquote>
+<p>比如前面一篇文章记录NSProgress回传进度值，就是通过KVO属性值改变之后，然后在<code>- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary&lt;NSString *,id&gt; *)change context:(void *)context{ ... }</code>实现中不断的调用传入的block完成回调.</p>
+<p>例子就不写了，可以参看前面的关于NSProgress的文章.</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2017/05/16/Callbacks回调方式/" data-title="Callbacks回调方式 | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2017/07/01/Autolayout2/" title="Autolayout2">
+  <strong>上一篇：</strong><br>
+  <span>
+  Autolayout2</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/03/24/iOS逆向工程读书笔记/" title="iOS逆向工程读书笔记">
+ <strong>下一篇：</strong><br> 
+ <span>iOS逆向工程读书笔记
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/05/16/Callbacks回调方式/" data-title="Callbacks回调方式" data-url="http://yoursite.com/2017/05/16/Callbacks回调方式/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#前阵子去面试然后问我-模块之间的回调有哪些方式？我当时还真没回答好，刚好晚上看代码的时候突然灵机一动想到了，还是记录下吧免得下次又忘记了"><span class="toc-number">1.</span> <span class="toc-text">前阵子去面试然后问我: 模块之间的回调有哪些方式？我当时还真没回答好，刚好晚上看代码的时候突然灵机一动想到了，还是记录下吧免得下次又忘记了..</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#小结下可以完成回调的所有方法"><span class="toc-number">2.</span> <span class="toc-text">小结下可以完成回调的所有方法:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#从最原始的c函数指针完成回调记录起吧"><span class="toc-number">3.</span> <span class="toc-text">从最原始的c函数指针完成回调记录起吧</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Target-Action（目标-动作）完成回调"><span class="toc-number">4.</span> <span class="toc-text">Target-Action（目标-动作）完成回调</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#下面写一个使用Target-Action完成回调的简单例子"><span class="toc-number">4.1.</span> <span class="toc-text">下面写一个使用Target-Action完成回调的简单例子</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用KVO完成回调"><span class="toc-number">5.</span> <span class="toc-text">使用KVO完成回调</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

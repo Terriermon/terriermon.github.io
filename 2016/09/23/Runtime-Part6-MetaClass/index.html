@@ -1,0 +1,608 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>Runtime Part6 MetaClass | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="Meta Class 元类年前在看YYModel源码，刚好碰到关于MetaClass相关东西，之前也一直模模糊糊。过年在家休息没事就学习学习，新的码农一年又开始了…  Objective-c 中的 每一个类 如: Person类 其实包含两部分一、普通类（类本身） 如、Person类本身(我们创建的类)  二、元类（系统创建） Meta Person类，由系统默认创建 只不过这个创建Meta Pe">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Runtime Part6 MetaClass">
+<meta property="og:url" content="http://yoursite.com/2016/09/23/Runtime-Part6-MetaClass/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="Meta Class 元类年前在看YYModel源码，刚好碰到关于MetaClass相关东西，之前也一直模模糊糊。过年在家休息没事就学习学习，新的码农一年又开始了…  Objective-c 中的 每一个类 如: Person类 其实包含两部分一、普通类（类本身） 如、Person类本身(我们创建的类)  二、元类（系统创建） Meta Person类，由系统默认创建 只不过这个创建Meta Pe">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://i3.piimg.com/f0be13b08322042d.png">
+<meta property="og:image" content="http://i2.piimg.com/02e5f1ad0ed1a2e4.png">
+<meta property="og:updated_time" content="2019-04-08T14:14:30.972Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Runtime Part6 MetaClass">
+<meta name="twitter:description" content="Meta Class 元类年前在看YYModel源码，刚好碰到关于MetaClass相关东西，之前也一直模模糊糊。过年在家休息没事就学习学习，新的码农一年又开始了…  Objective-c 中的 每一个类 如: Person类 其实包含两部分一、普通类（类本身） 如、Person类本身(我们创建的类)  二、元类（系统创建） Meta Person类，由系统默认创建 只不过这个创建Meta Pe">
+<meta name="twitter:image" content="http://i3.piimg.com/f0be13b08322042d.png">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/09/23/Runtime-Part6-MetaClass/" title="Runtime Part6 MetaClass" itemprop="url">Runtime Part6 MetaClass</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2016-09-23T15:46:40.000Z" itemprop="datePublished"> Published 2016-09-23</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Meta-Class-元类"><span class="toc-number">1.</span> <span class="toc-text">Meta Class 元类</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Objective-c-中的-每一个类-如-Person类-其实包含两部分"><span class="toc-number">1.1.</span> <span class="toc-text">Objective-c 中的 每一个类 如: Person类 其实包含两部分</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#一、普通类（类本身）"><span class="toc-number">1.1.1.</span> <span class="toc-text">一、普通类（类本身）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#二、元类（系统创建）"><span class="toc-number">1.1.2.</span> <span class="toc-text">二、元类（系统创建）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#先不管神马的，看看关于meta-class的系统方法"><span class="toc-number">1.2.</span> <span class="toc-text">先不管神马的，看看关于meta class的系统方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#类-与-Meta类"><span class="toc-number">2.</span> <span class="toc-text">类 与 Meta类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#运行时动态创建一个NSObejct子类，并-添加方法Method、添加变量Ivar、获取Ivar以及值"><span class="toc-number">3.</span> <span class="toc-text">运行时动态创建一个NSObejct子类，并 添加方法Method、添加变量Ivar、获取Ivar以及值.</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#再记录一个例子，使用imp-implementationWithBlock-替代上面例子需要一个辅助的static-c函数来完成运行时创建Class"><span class="toc-number">3.1.</span> <span class="toc-text">再记录一个例子，使用imp_implementationWithBlock()替代上面例子需要一个辅助的static c函数来完成运行时创建Class.</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Meta-Class-元类-1"><span class="toc-number">4.</span> <span class="toc-text">Meta Class 元类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Objective-c中的-对象-与-类"><span class="toc-number">5.</span> <span class="toc-text">Objective-c中的 对象 与 类</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#类"><span class="toc-number">5.1.</span> <span class="toc-text">类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#对象"><span class="toc-number">5.2.</span> <span class="toc-text">对象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#对象、类、元类三者之间的关系图"><span class="toc-number">5.3.</span> <span class="toc-text">对象、类、元类三者之间的关系图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#所有的-类-NSObject子类-都是-objc-class结构体-的实例"><span class="toc-number">5.4.</span> <span class="toc-text">所有的 类 NSObject子类 都是 objc_class结构体 的实例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NSObject-isKindOfClass-查找对象是否是某一个类的对象的源码"><span class="toc-number">5.5.</span> <span class="toc-text">-[NSObject isKindOfClass:] 查找对象是否是某一个类的对象的源码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NSObject-isMemberOfClass-源码"><span class="toc-number">5.6.</span> <span class="toc-text">-[NSObject isMemberOfClass:] 源码</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<h2 id="Meta-Class-元类"><a href="#Meta-Class-元类" class="headerlink" title="Meta Class 元类"></a>Meta Class 元类</h2><p>年前在看<code>YYModel</code>源码，刚好碰到关于MetaClass相关东西，之前也一直模模糊糊。过年在家休息没事就学习学习，新的码农一年又开始了…</p>
+<hr>
+<h3 id="Objective-c-中的-每一个类-如-Person类-其实包含两部分"><a href="#Objective-c-中的-每一个类-如-Person类-其实包含两部分" class="headerlink" title="Objective-c 中的 每一个类 如: Person类 其实包含两部分"></a>Objective-c 中的 每一个类 <code>如: Person类</code> 其实包含两部分</h3><h4 id="一、普通类（类本身）"><a href="#一、普通类（类本身）" class="headerlink" title="一、普通类（类本身）"></a>一、普通类（类本身）</h4><ul>
+<li>如、Person类本身(我们创建的类)</li>
+</ul>
+<h4 id="二、元类（系统创建）"><a href="#二、元类（系统创建）" class="headerlink" title="二、元类（系统创建）"></a>二、元类（系统创建）</h4><ul>
+<li>Meta Person类，由系统默认创建</li>
+<li>只不过这个创建Meta Person类的过程，我们不知道而已</li>
+</ul>
+<hr>
+<h3 id="先不管神马的，看看关于meta-class的系统方法"><a href="#先不管神马的，看看关于meta-class的系统方法" class="headerlink" title="先不管神马的，看看关于meta class的系统方法"></a>先不管神马的，看看关于meta class的系统方法</h3><ul>
+<li>判断一个objc_class实例是否是Meta类的Class</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">BOOL <span class="title">class_isMetaClass</span><span class="params">(Class cls)</span></span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>获取一个NSObject类对应的Meta类的Class</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Class <span class="title">objc_getMetaClass</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *name)</span></span></span><br></pre></td></tr></table></figure>
+<p>我就只找到这两个相关的方法.</p>
+<hr>
+<h2 id="类-与-Meta类"><a href="#类-与-Meta类" class="headerlink" title="类 与 Meta类"></a>类 与 Meta类</h2><ul>
+<li>类，存放<code>对象</code>的相关数据</li>
+<li>实例成员变量</li>
+<li><p>实例方法</p>
+</li>
+<li><p>Meta类，存放<code>类</code>的先关数据</p>
+</li>
+<li>类的成员变量（static 类成员变量）</li>
+<li><p>类方法（+开头的方法）</p>
+</li>
+<li><p>区分 对象方法 与 类方法 调用过程</p>
+</li>
+<li><p>向一个<code>对象</code>发送消息</p>
+</li>
+<li><p>通过<code>对象的 isa指针</code>找到 对象所属类对应的的 objc_class结构体实例</p>
+</li>
+<li><p>然后开始查找<code>objc_class实例</code>的 <code>method_list</code> 查找 Method</p>
+</li>
+<li><p>向一个<code>类</code>发送消息</p>
+</li>
+<li><p>通过<code>类Class的 isa指针</code>找到 Meta类对应的 objc_class结构体实例</p>
+</li>
+<li>然后从<code>objc_class实例</code>的 <code>method_list</code> 查找 Method</li>
+</ul>
+<hr>
+<h2 id="运行时动态创建一个NSObejct子类，并-添加方法Method、添加变量Ivar、获取Ivar以及值"><a href="#运行时动态创建一个NSObejct子类，并-添加方法Method、添加变量Ivar、获取Ivar以及值" class="headerlink" title="运行时动态创建一个NSObejct子类，并 添加方法Method、添加变量Ivar、获取Ivar以及值."></a>运行时动态创建一个NSObejct子类，并 添加方法Method、添加变量Ivar、获取Ivar以及值.</h2><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  ViewController.m</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by xiongzenghui on 14/1/14.</span></span><br><span class="line"><span class="comment">//  Copyright © 2014年 xiongzenghui. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"ViewController.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> ReportFunction(<span class="keyword">id</span> <span class="keyword">self</span>, SEL _cmd)</span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">//1. 对象</span></span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"This object is %p."</span>, <span class="keyword">self</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 对象所属的类</span></span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"Class is %@"</span>, [<span class="keyword">self</span> <span class="keyword">class</span>]);</span><br><span class="line"></span><br><span class="line"><span class="comment">//3. 所属类的父类</span></span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"super is %@."</span>,[<span class="keyword">self</span> superclass]);</span><br><span class="line"></span><br><span class="line"><span class="comment">//4. 每一个类都有两部分</span></span><br><span class="line"><span class="comment">//类的第一部分、类本身</span></span><br><span class="line"><span class="comment">//类的第二部分、元类</span></span><br><span class="line">Class currentClass = [<span class="keyword">self</span> <span class="keyword">class</span>];</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; <span class="number">10</span>; i++)<span class="comment">//i的次数随便改都可以</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"Following the isa pointer times = %d, ClassValue = %@, ClassAddress = %p"</span>, i, currentClass, currentClass);</span><br><span class="line"></span><br><span class="line"><span class="comment">//通过Class的 isa指针 找到 MetaClass</span></span><br><span class="line">currentClass = object_getClass(currentClass);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//5. NSObject类本身</span></span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"NSObject's class is %p"</span>, [<span class="built_in">NSObject</span> <span class="keyword">class</span>]);</span><br><span class="line"></span><br><span class="line"><span class="comment">//6. NSObject类的元类</span></span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"NSObject's meta class is %p"</span>, object_getClass([<span class="built_in">NSObject</span> <span class="keyword">class</span>]));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">ViewController</span> ()</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ViewController</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)viewDidLoad &#123;</span><br><span class="line">[<span class="keyword">super</span> viewDidLoad];</span><br><span class="line"></span><br><span class="line"><span class="comment">//运行时创建类     </span></span><br><span class="line">[<span class="keyword">self</span> createClass];   </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)createClass</span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">//1. 创建一个Class</span></span><br><span class="line">Class MyClass = objc_allocateClassPair([<span class="built_in">NSObject</span> <span class="keyword">class</span>],</span><br><span class="line"><span class="string">"myclass"</span>,</span><br><span class="line"><span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 添加一个NSString的变量，第四个参数是对其方式，第五个参数是参数类型</span></span><br><span class="line"><span class="keyword">if</span> (class_addIvar(MyClass, <span class="string">"itest"</span>, <span class="keyword">sizeof</span>(<span class="built_in">NSString</span> *), <span class="number">0</span>, <span class="string">"@"</span>)) &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"add ivar success"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//3. 添加一个函数</span></span><br><span class="line">class_addMethod(MyClass,</span><br><span class="line"><span class="keyword">@selector</span>(report),</span><br><span class="line">(IMP)ReportFunction,</span><br><span class="line"><span class="string">"v@:"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//4. 注册这个类到runtime系统中就可以使用他了</span></span><br><span class="line">objc_registerClassPair(MyClass);</span><br><span class="line"></span><br><span class="line"><span class="comment">//5. 测试创建的类</span></span><br><span class="line">[<span class="keyword">self</span> test:MyClass];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)report &#123;</span><br><span class="line"><span class="comment">//什么都不做，只是为了OC对象能够调用到c函数</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)test:(Class)<span class="keyword">class</span> &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//1.</span></span><br><span class="line"><span class="keyword">id</span> obj = [[<span class="keyword">class</span> alloc] init];</span><br><span class="line"></span><br><span class="line"><span class="comment">//2.</span></span><br><span class="line">[obj report];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>最终控制台输出如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">2016-02-13 22:49:52.725 XZHRequest[1862:23623] add ivar success</span><br><span class="line">2016-02-13 22:49:52.726 XZHRequest[1862:23623] This object is 0x7fed59c8aea0.</span><br><span class="line">2016-02-13 22:49:52.726 XZHRequest[1862:23623] Class is myclass</span><br><span class="line">2016-02-13 22:49:52.726 XZHRequest[1862:23623] super is NSObject.</span><br><span class="line">2016-02-13 22:49:52.726 XZHRequest[1862:23623] Following the isa pointer times = 1, ClassValue = myclass, ClassAddress = 0x7fed59c84fa0</span><br><span class="line">2016-02-13 22:49:52.726 XZHRequest[1862:23623] Following the isa pointer times = 2, ClassValue = myclass, ClassAddress = 0x7fed59c87560</span><br><span class="line">2016-02-13 22:49:52.726 XZHRequest[1862:23623] Following the isa pointer times = 3, ClassValue = NSObject, ClassAddress = 0x10cc15198</span><br><span class="line">2016-02-13 22:49:52.726 XZHRequest[1862:23623] Following the isa pointer times = 4, ClassValue = NSObject, ClassAddress = 0x10cc15198</span><br><span class="line">2016-02-13 22:49:52.727 XZHRequest[1862:23623] Following the isa pointer times = 5, ClassValue = NSObject, ClassAddress = 0x10cc15198</span><br><span class="line">2016-02-13 22:49:52.727 XZHRequest[1862:23623] Following the isa pointer times = 6, ClassValue = NSObject, ClassAddress = 0x10cc15198</span><br><span class="line">2016-02-13 22:49:52.727 XZHRequest[1862:23623] Following the isa pointer times = 7, ClassValue = NSObject, ClassAddress = 0x10cc15198</span><br><span class="line">2016-02-13 22:49:52.727 XZHRequest[1862:23623] Following the isa pointer times = 8, ClassValue = NSObject, ClassAddress = 0x10cc15198</span><br><span class="line">2016-02-13 22:49:52.782 XZHRequest[1862:23623] Following the isa pointer times = 9, ClassValue = NSObject, ClassAddress = 0x10cc15198</span><br><span class="line">2016-02-13 22:49:52.782 XZHRequest[1862:23623] NSObject&apos;s class is 0x10cc15170</span><br><span class="line">2016-02-13 22:49:52.783 XZHRequest[1862:23623] NSObject&apos;s meta class is 0x10cc15198</span><br></pre></td></tr></table></figure>
+<ul>
+<li>方法<code>object_getClass(id obj)</code>会根据 <code>Class的私有成员变量isa指针</code> 找到一个类，有两种情况:</li>
+<li>对象的isa &gt;&gt;&gt; 所属类</li>
+<li>类的isa &gt;&gt;&gt; Meta 类</li>
+<li>Meta类的isa &gt;&gt;&gt; Meta NSObject</li>
+<li><p>Meta NSObject的isa &gt;&gt;&gt; 永远指向自己，形成环路</p>
+</li>
+<li><p>times = 2时、根据<code>myclass-&gt;isa</code>指针，找到其对应的 <code>Meta myclass</code></p>
+</li>
+<li><p>times = 3时、根据 <code>Meta myclass-&gt;isa</code> 指针，找到了 <code>Meta NSObject</code></p>
+</li>
+<li><p>times = 4，5，6，7，8…、根据 <code>元类NSObject</code> 的 isa指针，最后<code>都是指向自己</code></p>
+</li>
+</ul>
+<hr>
+<h3 id="再记录一个例子，使用imp-implementationWithBlock-替代上面例子需要一个辅助的static-c函数来完成运行时创建Class"><a href="#再记录一个例子，使用imp-implementationWithBlock-替代上面例子需要一个辅助的static-c函数来完成运行时创建Class" class="headerlink" title="再记录一个例子，使用imp_implementationWithBlock()替代上面例子需要一个辅助的static c函数来完成运行时创建Class."></a>再记录一个例子，使用<code>imp_implementationWithBlock()</code>替代上面例子需要一个辅助的static c函数来完成运行时创建Class.</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//////////////////////////////////////////////////////</span></span><br><span class="line"><span class="comment">///创建一个类</span></span><br><span class="line"><span class="comment">//////////////////////////////////////////////////////</span></span><br><span class="line">Class People = objc_allocateClassPair([<span class="built_in">NSObject</span> <span class="keyword">class</span>], <span class="string">"People"</span>, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//////////////////////////////////////////////////////</span></span><br><span class="line"><span class="comment">///添加两个变量</span></span><br><span class="line"><span class="comment">//////////////////////////////////////////////////////</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (class_addIvar(People, <span class="string">"name"</span>, <span class="keyword">sizeof</span>(<span class="built_in">NSString</span> *), <span class="number">0</span>, <span class="keyword">@encode</span>(<span class="built_in">NSString</span> *))) &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"add ivar name success"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (class_addIvar(People, <span class="string">"age"</span>, <span class="keyword">sizeof</span>(<span class="keyword">int</span>), <span class="number">0</span>, <span class="keyword">@encode</span>(<span class="keyword">int</span>))) &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"add ivar age success"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//////////////////////////////////////////////////////</span></span><br><span class="line"><span class="comment">///创建方法的SEL</span></span><br><span class="line"><span class="comment">//////////////////////////////////////////////////////</span></span><br><span class="line">SEL selector = sel_registerName(<span class="string">"talk:"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//////////////////////////////////////////////////////</span></span><br><span class="line"><span class="comment">///创建方法的IMP指针，并指向Block给出的代码</span></span><br><span class="line"><span class="comment">//////////////////////////////////////////////////////</span></span><br><span class="line">IMP impl = imp_implementationWithBlock(^(<span class="keyword">id</span> <span class="keyword">self</span>, <span class="built_in">NSString</span> *arg1)&#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//age变量值</span></span><br><span class="line"><span class="comment">//通过KVC</span></span><br><span class="line"><span class="comment">//int age = (int)[[self valueForKey:@"age"] integerValue];</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//通过Ivar</span></span><br><span class="line">Ivar ageIvar = class_getInstanceVariable([<span class="keyword">self</span> <span class="keyword">class</span>], <span class="string">"age"</span>);</span><br><span class="line"><span class="keyword">int</span> age  = (<span class="keyword">int</span>)[object_getIvar(<span class="keyword">self</span>, ageIvar) integerValue];</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//name变量值</span></span><br><span class="line"><span class="comment">//通过KVC</span></span><br><span class="line"><span class="comment">//NSString *name = [self valueForKey:@"name"];</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//通过Ivar</span></span><br><span class="line">Ivar nameIvar = class_getInstanceVariable([<span class="keyword">self</span> <span class="keyword">class</span>], <span class="string">"name"</span>);</span><br><span class="line"><span class="built_in">NSString</span> *name = object_getIvar(<span class="keyword">self</span>, nameIvar);</span><br><span class="line"></span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"age = %d, name = %@, msgSay = %@"</span>, age, name, arg1);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//////////////////////////////////////////////////////</span></span><br><span class="line"><span class="comment">///添加一个方法, 将SEL与IMP组装成一个Method结构体实例，添加到Class中的 method_list数组</span></span><br><span class="line"><span class="comment">//////////////////////////////////////////////////////</span></span><br><span class="line">class_addMethod(People, selector, impl, <span class="string">"v@:@"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//////////////////////////////////////////////////////</span></span><br><span class="line"><span class="comment">///注册这个类到系统</span></span><br><span class="line"><span class="comment">//////////////////////////////////////////////////////</span></span><br><span class="line">objc_registerClassPair(People);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//////////////////////////////////////////////////////</span></span><br><span class="line"><span class="comment">///生成一个实例</span></span><br><span class="line"><span class="comment">//////////////////////////////////////////////////////</span></span><br><span class="line"><span class="keyword">id</span> instanceP = [[People alloc] init];</span><br><span class="line"></span><br><span class="line"><span class="comment">//////////////////////////////////////////////////////</span></span><br><span class="line"><span class="comment">///给Ivar赋值</span></span><br><span class="line"><span class="comment">//////////////////////////////////////////////////////</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//通过KVC赋值</span></span><br><span class="line">[instanceP setValue:<span class="string">@"变量字符串值"</span> forKey:<span class="string">@"name"</span>];</span><br><span class="line"><span class="comment">//[instanceP setValue:@19 forKey:@"age"];</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//通知Ivar赋值</span></span><br><span class="line">Ivar ageIvar = class_getInstanceVariable(People, <span class="string">"age"</span>);</span><br><span class="line">object_setIvar(instanceP, ageIvar, @<span class="number">19</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//////////////////////////////////////////////////////</span></span><br><span class="line"><span class="comment">///发送消息</span></span><br><span class="line"><span class="comment">//////////////////////////////////////////////////////</span></span><br><span class="line">((<span class="keyword">void</span> (*)(<span class="keyword">id</span>, SEL, <span class="built_in">NSString</span> *))(<span class="keyword">void</span> *) objc_msgSend)(instanceP, selector, <span class="string">@"参数值"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//////////////////////////////////////////////////////</span></span><br><span class="line"><span class="comment">///释放对象、销毁类</span></span><br><span class="line"><span class="comment">//////////////////////////////////////////////////////</span></span><br><span class="line">instanceP = <span class="literal">nil</span>;</span><br><span class="line">objc_disposeClassPair(People);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>方法的编码格式: </li>
+<li><code>v@:</code> &gt;&gt;&gt; 返回值void，参数1:self,参数2:SEL &gt;&gt;&gt; <code>- (void)funcName;</code></li>
+<li><p><code>v@:@</code> &gt;&gt;&gt; 返回值void，参数1:self,参数2:SEL, 参数3:NSString<em> &gt;&gt;&gt;  `- (void)funcName:(NSSring </em>)name;`</p>
+</li>
+<li><p>对应的Objective-C方法的SEL也应该是 &gt;&gt;&gt; <code>talk:</code>带一个参数</p>
+</li>
+<li><p>imp_implementationWithBlock()接收一个添加方法被调用时的回调Block</p>
+</li>
+<li>其格式为: <code>method_return_type ^(id self, method_args …)</code></li>
+</ul>
+<hr>
+<h2 id="Meta-Class-元类-1"><a href="#Meta-Class-元类-1" class="headerlink" title="Meta Class 元类"></a>Meta Class 元类</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Class objc_allocateClassPair(Class superclass, </span><br><span class="line">const char *name, </span><br><span class="line">size_t extraBytes)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>函数名 <code>objc_allocateClassPair..</code> 中的 <code>ClassPair</code>意思是说<code>一对Class</code>.</p>
+</li>
+<li><p>但是该函数只返回了<code>一个Class</code></p>
+</li>
+<li><p>没有被返回的<code>另一个Class</code>就是 <code>MetaClass 元类</code>，由系统创建.</p>
+</li>
+<li><p>Meta Class与普通类Class 都是结构体 <code>objc_class</code>实例</p>
+</li>
+</ul>
+<hr>
+<h2 id="Objective-c中的-对象-与-类"><a href="#Objective-c中的-对象-与-类" class="headerlink" title="Objective-c中的 对象 与 类"></a>Objective-c中的 对象 与 类</h2><h3 id="类"><a href="#类" class="headerlink" title="类"></a>类</h3><p>经常写获取一个对象的类型Class的代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Class cls = [Person class];</span><br></pre></td></tr></table></figure>
+<p>就用到了<code>Class</code>这个数据结构，其定义为如下，可以得到Class是 结构体objc_class实例的 <code>指针类型</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">typedef struct objc_class *Class;</span><br></pre></td></tr></table></figure>
+<p>那么能够成为一个类（Class）的数据结构为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">struct objc_class &#123;</span><br><span class="line"></span><br><span class="line">/* </span><br><span class="line">又指向一个结构体objc_class实例 </span><br><span class="line">类的isa指针，指向类的 元类 MetaClass</span><br><span class="line">*/</span><br><span class="line">Class isa  OBJC_ISA_AVAILABILITY;</span><br><span class="line"></span><br><span class="line">#if !__OBJC2__</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">指向其父类(普通类)</span><br><span class="line">*/</span><br><span class="line">Class super_class                                        OBJC2_UNAVAILABLE;</span><br><span class="line"></span><br><span class="line">const char *name                                         OBJC2_UNAVAILABLE;</span><br><span class="line">long version                                             OBJC2_UNAVAILABLE;</span><br><span class="line">long info                                                OBJC2_UNAVAILABLE;</span><br><span class="line">long instance_size                                       OBJC2_UNAVAILABLE;</span><br><span class="line">struct objc_ivar_list *ivars                             OBJC2_UNAVAILABLE;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">方法列表</span><br><span class="line">*/</span><br><span class="line">struct objc_method_list **methodLists                    OBJC2_UNAVAILABLE;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">方法缓存</span><br><span class="line">*/</span><br><span class="line"></span><br><span class="line">struct objc_cache *cache                                 OBJC2_UNAVAILABLE;</span><br><span class="line"></span><br><span class="line">struct objc_protocol_list *protocols                     OBJC2_UNAVAILABLE;</span><br><span class="line">#endif</span><br><span class="line"></span><br><span class="line">&#125; OBJC2_UNAVAILABLE;</span><br><span class="line">/* Use `Class` instead of `struct objc_class *` */</span><br></pre></td></tr></table></figure>
+<p>而Class数据结构中最重要的一个数据项是 <code>Class isa;</code> 这样的isa指针.</p>
+<h3 id="对象"><a href="#对象" class="headerlink" title="对象"></a>对象</h3><p>能够成为一个对象（Object）的数据结构如下，可以看到对象数据结构中最重要的就是<code>Class isa;</code>指针项</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">struct objc_object &#123;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">对象的isa指针，指向其 所属类本身（不是元类）    </span><br><span class="line">*/</span><br><span class="line">Class isa  OBJC_ISA_AVAILABILITY;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>Class是<code>struct objc_class</code>的指针类型，那么<code>struct objc_object</code>也有其对于的指针类型</p>
+<p>###调用类方法与对象方法</p>
+<ul>
+<li><p>给<code>对象</code>发送消息时，消息是在<code>对象所属类</code>的方法列表method_list或cache中查询Method</p>
+</li>
+<li><p>给<code>类</code>发消息时，消息是在<code>这个类的元类 meta class</code>的方法列表或缓存中查询Method</p>
+</li>
+</ul>
+<p>####所以也就是说<code>对象方法</code>与<code>类方法</code>存放地点的不同</p>
+<ul>
+<li>对象方法、存放在 <code>类本身</code></li>
+<li>类方法、存放在 <code>类的元类MetaClass</code></li>
+</ul>
+<p><strong>所以，元类是必不可少的，它存储了<code>类的所有类方法</code></strong></p>
+<hr>
+<h3 id="对象、类、元类三者之间的关系图"><a href="#对象、类、元类三者之间的关系图" class="headerlink" title="对象、类、元类三者之间的关系图"></a>对象、类、元类三者之间的关系图</h3><p><img src="http://i3.piimg.com/f0be13b08322042d.png" alt></p>
+<p><img src="http://i2.piimg.com/02e5f1ad0ed1a2e4.png" alt></p>
+<ul>
+<li><p>对象的 isa指针 指向 所属类</p>
+</li>
+<li><p>每一个类，都有一个 <code>isa指针</code> 指向一个 <code>唯一的 MetaClass</code></p>
+</li>
+<li><p>每一个Meta Class，拥有的 <code>isa指针</code> 都指向 <code>顶层 NSObject Meta Class</code></p>
+</li>
+<li><p>最上层的Meta Class（Meta NSObject）的isa指针指向自己，形成一个 <code>回路</code></p>
+</li>
+<li><p>类本身的 super_class 指向其父类，如果该类为根类则值为 NULL</p>
+</li>
+<li><p>每一个 MetaClass 的 <code>super_class指针</code> 都指向其 <code>原本Class的superClass对应的 MetaClass</code></p>
+</li>
+<li>特列: 但是最上层的 Meta Class 的 <code>super_class 指针</code>，指向的却是 <code>NSObject 原本 Class</code></li>
+</ul>
+<hr>
+<h3 id="所有的-类-NSObject子类-都是-objc-class结构体-的实例"><a href="#所有的-类-NSObject子类-都是-objc-class结构体-的实例" class="headerlink" title="所有的 类 NSObject子类 都是 objc_class结构体 的实例"></a>所有的 <code>类 NSObject子类</code> 都是 <code>objc_class结构体</code> 的实例</h3><p>NSObject类获取Class的源码如下:</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">+ (Class)<span class="keyword">class</span> &#123;</span><br><span class="line"><span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Class是 <code>objc_class结构体</code>实例的指针变量类型</li>
+<li>那么<code>+[NSObject class]</code>返回就是一个 <code>objc_class结构体实例</code></li>
+<li>而 <code>self</code> 一般是 <code>一个指向对象地址的指针</code></li>
+<li>而此时的 self 所代表的就是 <code>NSObject类本身</code></li>
+</ul>
+<p>####那么可以猜测: <strong>NSObject 是 objc_class的实例</strong></p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//名字</span></span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"%@"</span>, [Person <span class="keyword">class</span>]);</span><br><span class="line"></span><br><span class="line"><span class="comment">//多次输出其地址</span></span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"%p"</span>, [Person <span class="keyword">class</span>]);</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"%p"</span>, [Person <span class="keyword">class</span>]);</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"%p"</span>, [Person <span class="keyword">class</span>]);</span><br></pre></td></tr></table></figure>
+<p>输出结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">2016-02-13 22:44:41.509 XZHRequest[1571:18970] Person</span><br><span class="line">2016-02-13 22:44:41.510 XZHRequest[1571:18970] 0x10c1853e0</span><br><span class="line">2016-02-13 22:44:41.510 XZHRequest[1571:18970] 0x10c1853e0</span><br><span class="line">2016-02-13 22:44:41.510 XZHRequest[1571:18970] 0x10c1853e0</span><br></pre></td></tr></table></figure>
+<p>可以得到</p>
+<ul>
+<li>每一个NSObject类在运行阶段，是按照一个<code>单例</code>保存</li>
+</ul>
+<hr>
+<h3 id="NSObject-isKindOfClass-查找对象是否是某一个类的对象的源码"><a href="#NSObject-isKindOfClass-查找对象是否是某一个类的对象的源码" class="headerlink" title="-[NSObject isKindOfClass:] 查找对象是否是某一个类的对象的源码"></a><code>-[NSObject isKindOfClass:]</code> 查找对象是否是某一个类的对象的源码</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">BOOL</span>)isKindOfClass:(Class)aClass</span><br><span class="line">&#123;</span><br><span class="line">Class cls;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (`cls = isa`; cls; cls = `cls-&gt;super_class`) </span><br><span class="line"><span class="keyword">if</span> (`cls == (Class)aClass`)</span><br><span class="line"><span class="keyword">return</span> <span class="literal">YES</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> <span class="literal">NO</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>首先是 <code>cls = isa</code>，保存 <code>当前对象的isa指针</code></p>
+</li>
+<li><p>然后每一次使用<code>类的 super_class指针</code>找到其 父类Class</p>
+</li>
+<li><p>最终循环停止条件是 <code>NSObject类本身的 superClass = nil</code></p>
+</li>
+<li><p>每一次遍历时直接比较<code>Class对象是否相等</code></p>
+</li>
+</ul>
+<hr>
+<h3 id="NSObject-isMemberOfClass-源码"><a href="#NSObject-isMemberOfClass-源码" class="headerlink" title="-[NSObject isMemberOfClass:] 源码"></a><code>-[NSObject isMemberOfClass:]</code> 源码</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">BOOL</span>)isMemberOfClass:(Class)aClass</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">return</span> isa == (Class)aClass;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>获得<code>当前对象的isa指针指向的类</code></li>
+<li>然后直接一次性比较<code>Class对象是否相等</code></li>
+</ul>
+<hr>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2016/09/23/Runtime-Part6-MetaClass/" data-title="Runtime Part6 MetaClass | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2016/09/23/Runtime-Part7-Method/" title="Runtime Part7 Method">
+  <strong>上一篇：</strong><br>
+  <span>
+  Runtime Part7 Method</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/09/23/Runtime-Part5-Class/" title="Runtime Part5 Class">
+ <strong>下一篇：</strong><br> 
+ <span>Runtime Part5 Class
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2016/09/23/Runtime-Part6-MetaClass/" data-title="Runtime Part6 MetaClass" data-url="http://yoursite.com/2016/09/23/Runtime-Part6-MetaClass/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Meta-Class-元类"><span class="toc-number">1.</span> <span class="toc-text">Meta Class 元类</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Objective-c-中的-每一个类-如-Person类-其实包含两部分"><span class="toc-number">1.1.</span> <span class="toc-text">Objective-c 中的 每一个类 如: Person类 其实包含两部分</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#一、普通类（类本身）"><span class="toc-number">1.1.1.</span> <span class="toc-text">一、普通类（类本身）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#二、元类（系统创建）"><span class="toc-number">1.1.2.</span> <span class="toc-text">二、元类（系统创建）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#先不管神马的，看看关于meta-class的系统方法"><span class="toc-number">1.2.</span> <span class="toc-text">先不管神马的，看看关于meta class的系统方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#类-与-Meta类"><span class="toc-number">2.</span> <span class="toc-text">类 与 Meta类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#运行时动态创建一个NSObejct子类，并-添加方法Method、添加变量Ivar、获取Ivar以及值"><span class="toc-number">3.</span> <span class="toc-text">运行时动态创建一个NSObejct子类，并 添加方法Method、添加变量Ivar、获取Ivar以及值.</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#再记录一个例子，使用imp-implementationWithBlock-替代上面例子需要一个辅助的static-c函数来完成运行时创建Class"><span class="toc-number">3.1.</span> <span class="toc-text">再记录一个例子，使用imp_implementationWithBlock()替代上面例子需要一个辅助的static c函数来完成运行时创建Class.</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Meta-Class-元类-1"><span class="toc-number">4.</span> <span class="toc-text">Meta Class 元类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Objective-c中的-对象-与-类"><span class="toc-number">5.</span> <span class="toc-text">Objective-c中的 对象 与 类</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#类"><span class="toc-number">5.1.</span> <span class="toc-text">类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#对象"><span class="toc-number">5.2.</span> <span class="toc-text">对象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#对象、类、元类三者之间的关系图"><span class="toc-number">5.3.</span> <span class="toc-text">对象、类、元类三者之间的关系图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#所有的-类-NSObject子类-都是-objc-class结构体-的实例"><span class="toc-number">5.4.</span> <span class="toc-text">所有的 类 NSObject子类 都是 objc_class结构体 的实例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NSObject-isKindOfClass-查找对象是否是某一个类的对象的源码"><span class="toc-number">5.5.</span> <span class="toc-text">-[NSObject isKindOfClass:] 查找对象是否是某一个类的对象的源码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NSObject-isMemberOfClass-源码"><span class="toc-number">5.6.</span> <span class="toc-text">-[NSObject isMemberOfClass:] 源码</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

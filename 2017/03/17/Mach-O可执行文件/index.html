@@ -1,0 +1,621 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>Mach-O可执行文件 | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="Mac OS X/iOS平台上可执行文件格式是: Mach-O 学习资料来源于: http://www.cocoachina.com/mac/20150122/10988.html   每一种操作系统平台上都有对应的可执行文件格式 Windows上exe是可直接执行的文件扩展名 Linux（以及很多版本的Unix）系统上ELF是可直接执行的文件格式 Mac OS X/iOS上，主要的可执行文件格式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mach-O可执行文件">
+<meta property="og:url" content="http://yoursite.com/2017/03/17/Mach-O可执行文件/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="Mac OS X/iOS平台上可执行文件格式是: Mach-O 学习资料来源于: http://www.cocoachina.com/mac/20150122/10988.html   每一种操作系统平台上都有对应的可执行文件格式 Windows上exe是可直接执行的文件扩展名 Linux（以及很多版本的Unix）系统上ELF是可直接执行的文件格式 Mac OS X/iOS上，主要的可执行文件格式">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://i12.tietuku.cn/516dbef594655b2c.png">
+<meta property="og:image" content="http://i4.tietuku.cn/083c117c1a29d266.png">
+<meta property="og:image" content="http://i4.tietuku.cn/3197d7ca2c7c32e3.png">
+<meta property="og:image" content="http://i4.tietuku.cn/55bc026f8ae11201.png">
+<meta property="og:image" content="http://i4.tietuku.cn/4ca21f75c37b03c0.png">
+<meta property="og:image" content="http://i4.tietuku.cn/46c4de6a3f478bff.png">
+<meta property="og:image" content="http://i12.tietuku.cn/f9adff6361b36c8b.png">
+<meta property="og:image" content="http://i12.tietuku.cn/afe2e2ba2fd931e6.png">
+<meta property="og:updated_time" content="2019-04-08T13:33:18.869Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Mach-O可执行文件">
+<meta name="twitter:description" content="Mac OS X/iOS平台上可执行文件格式是: Mach-O 学习资料来源于: http://www.cocoachina.com/mac/20150122/10988.html   每一种操作系统平台上都有对应的可执行文件格式 Windows上exe是可直接执行的文件扩展名 Linux（以及很多版本的Unix）系统上ELF是可直接执行的文件格式 Mac OS X/iOS上，主要的可执行文件格式">
+<meta name="twitter:image" content="http://i12.tietuku.cn/516dbef594655b2c.png">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/03/17/Mach-O可执行文件/" title="Mach-O可执行文件" itemprop="url">Mach-O可执行文件</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2017-03-17T04:53:37.000Z" itemprop="datePublished"> Published 2017-03-17</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Mac-OS-X-iOS平台上可执行文件格式是-Mach-O"><span class="toc-number">1.</span> <span class="toc-text">Mac OS X/iOS平台上可执行文件格式是: Mach-O</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#每一种操作系统平台上都有对应的可执行文件格式"><span class="toc-number">2.</span> <span class="toc-text">每一种操作系统平台上都有对应的可执行文件格式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Mach与Mach-O的区别"><span class="toc-number">3.</span> <span class="toc-text">Mach与Mach-O的区别:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#下载一个App并找到对应的ipa文件"><span class="toc-number">4.</span> <span class="toc-text">下载一个App并找到对应的ipa文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#解压缩ipa包"><span class="toc-number">5.</span> <span class="toc-text">解压缩ipa包</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#可以看解压之后的目录结构"><span class="toc-number">6.</span> <span class="toc-text">可以看解压之后的目录结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#查看Ape-app包内容"><span class="toc-number">7.</span> <span class="toc-text">查看Ape.app包内容</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#文件打开这个可执行的Ape文件，看里面的具体内容"><span class="toc-number">8.</span> <span class="toc-text">文件打开这个可执行的Ape文件，看里面的具体内容</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#大致了解了一个ipa包的目录结构，最重要的是-app文件中的Mach-O格式的可执行文件Ape"><span class="toc-number">8.1.</span> <span class="toc-text">大致了解了一个ipa包的目录结构，最重要的是.app文件中的Mach-O格式的可执行文件Ape</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#接下来具体看下Mach-O格式的文件的文件结构"><span class="toc-number">9.</span> <span class="toc-text">接下来具体看下Mach-O格式的文件的文件结构</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Mach-o包含三个基本区域"><span class="toc-number">9.1.</span> <span class="toc-text">Mach-o包含三个基本区域:</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#使用otool工具来查看Mach-O格式文件（上面的Ape文件）的头部（header-structure）"><span class="toc-number">9.2.</span> <span class="toc-text">使用otool工具来查看Mach-O格式文件（上面的Ape文件）的头部（header structure）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#使用otool工具来查看Mach-O格式文件（上面的Ape文件）的加载命令（load-command）"><span class="toc-number">9.3.</span> <span class="toc-text">使用otool工具来查看Mach-O格式文件（上面的Ape文件）的加载命令（load command）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#对如上Section的c结构体定义"><span class="toc-number">9.4.</span> <span class="toc-text">对如上Section的c结构体定义:</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#常用的Segment、以及其所属的Section情况"><span class="toc-number">9.5.</span> <span class="toc-text">常用的Segment、以及其所属的Section情况</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#TEXT-segment下的-常用section用途图示"><span class="toc-number">9.6.</span> <span class="toc-text">__TEXT segment下的 常用section用途图示</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#DATA-segment下的-常用section用途图示"><span class="toc-number">9.7.</span> <span class="toc-text">__DATA segment下的 常用section用途图示</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#通过otool-–s查看某segment的某个section"><span class="toc-number">9.8.</span> <span class="toc-text">通过otool –s查看某segment的某个section</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#通过otool-–t直接查看代码段（-TEXT）的-反汇编代码"><span class="toc-number">9.9.</span> <span class="toc-text">通过otool –t直接查看代码段（__TEXT）的 反汇编代码</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#小结"><span class="toc-number">10.</span> <span class="toc-text">小结:</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="Mac-OS-X-iOS平台上可执行文件格式是-Mach-O"><a href="#Mac-OS-X-iOS平台上可执行文件格式是-Mach-O" class="headerlink" title="Mac OS X/iOS平台上可执行文件格式是: Mach-O"></a>Mac OS X/iOS平台上可执行文件格式是: Mach-O</h3><blockquote>
+<p>学习资料来源于: <a href="http://www.cocoachina.com/mac/20150122/10988.html" target="_blank" rel="noopener">http://www.cocoachina.com/mac/20150122/10988.html</a></p>
+</blockquote>
+<hr>
+<h3 id="每一种操作系统平台上都有对应的可执行文件格式"><a href="#每一种操作系统平台上都有对应的可执行文件格式" class="headerlink" title="每一种操作系统平台上都有对应的可执行文件格式"></a>每一种操作系统平台上都有对应的可执行文件格式</h3><ul>
+<li>Windows上<code>exe</code>是可直接执行的文件扩展名</li>
+<li>Linux（以及很多版本的Unix）系统上<code>ELF</code>是可直接执行的文件格式</li>
+<li>Mac OS X/iOS上，主要的可执行文件格式是<code>Mach-O</code>格式</li>
+</ul>
+<p>了解Mach-O的格式，对于调试、自动化测试、安全都有意义</p>
+<hr>
+<h3 id="Mach与Mach-O的区别"><a href="#Mach与Mach-O的区别" class="headerlink" title="Mach与Mach-O的区别:"></a>Mach与Mach-O的区别:</h3><ul>
+<li>Mach: 是Mac OS X/iOS 操作系统内核</li>
+<li>Mach-O: 是在如上操作系统内核上可以直接运行的文件格式</li>
+</ul>
+<hr>
+<h3 id="下载一个App并找到对应的ipa文件"><a href="#下载一个App并找到对应的ipa文件" class="headerlink" title="下载一个App并找到对应的ipa文件"></a>下载一个App并找到对应的<code>ipa</code>文件</h3><ul>
+<li>ipa文件实际上这只是一个变相的zip压缩包</li>
+<li>可以把一个ipa文件直接通过unzip命令解压</li>
+</ul>
+<hr>
+<h3 id="解压缩ipa包"><a href="#解压缩ipa包" class="headerlink" title="解压缩ipa包"></a>解压缩ipa包</h3><p><img src="http://i12.tietuku.cn/516dbef594655b2c.png" alt></p>
+<hr>
+<h3 id="可以看解压之后的目录结构"><a href="#可以看解压之后的目录结构" class="headerlink" title="可以看解压之后的目录结构"></a>可以看解压之后的目录结构</h3><p><img src="http://i4.tietuku.cn/083c117c1a29d266.png" alt></p>
+<ul>
+<li>iTunesArtwork文件</li>
+<li>iTunesMetadata.plist文件</li>
+<li>META-INF目录</li>
+<li>com.apple.FixedZipMetadata.bin文件</li>
+<li>com.apple.ZipMetadata.plist文件</li>
+<li>Payload目录</li>
+<li>Ape.app文件（实际上又是一个目录，或者说是一个完整的App Bundle）</li>
+</ul>
+<hr>
+<h3 id="查看Ape-app包内容"><a href="#查看Ape-app包内容" class="headerlink" title="查看Ape.app包内容"></a>查看Ape.app包内容</h3><p><img src="http://i4.tietuku.cn/3197d7ca2c7c32e3.png" alt></p>
+<p><img src="http://i4.tietuku.cn/55bc026f8ae11201.png" alt></p>
+<ul>
+<li><p>里面有App所需要的很多东西</p>
+</li>
+<li><p>签名</p>
+</li>
+<li>图片资源、数据资源文件</li>
+<li><p>xib文件</p>
+</li>
+<li><p>这里主要看上面那个黑色的执行文件</p>
+</li>
+</ul>
+<p><img src="http://i4.tietuku.cn/4ca21f75c37b03c0.png" alt></p>
+<ul>
+<li><p>从右侧的文件属性可以看到，该文件的属性描述: <code>Unix executable - 15.8M</code></p>
+</li>
+<li><p>可执行文件</p>
+</li>
+<li>大小是15.8M</li>
+<li><p>其余的大小全是图片资源占用</p>
+</li>
+<li><p>使用<code>file</code>命令来看一下这个可执行文件Ape</p>
+</li>
+</ul>
+<p><img src="http://i4.tietuku.cn/46c4de6a3f478bff.png" alt></p>
+<p>由此看来，这是一个支持armv7和arm64两种处理器架构的通用程序包，里面包含的两部分都是Mach-O格式.</p>
+<hr>
+<h3 id="文件打开这个可执行的Ape文件，看里面的具体内容"><a href="#文件打开这个可执行的Ape文件，看里面的具体内容" class="headerlink" title="文件打开这个可执行的Ape文件，看里面的具体内容"></a>文件打开这个可执行的Ape文件，看里面的具体内容</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">cafe babe 0000 0002 0000 000c 0000 0009</span><br><span class="line">0000 4000 006d 5130 0000 000e 0100 000c</span><br><span class="line">0000 0000 006d c000 0083 2ab0 0000 000e</span><br><span class="line">0000 0000 0000 0000 0000 0000 0000 0000</span><br><span class="line">0000 0000 0000 0000 0000 0000 0000 0000</span><br><span class="line">0000 0000 0000 0000 0000 0000 0000 0000</span><br><span class="line">0000 0000 0000 0000 0000 0000 0000 0000</span><br><span class="line">0000 0000 0000 0000 0000 0000 0000 0000</span><br><span class="line">0000 0000 0000 0000 0000 0000 0000 0000</span><br><span class="line"></span><br><span class="line">.....还有好长，我打开的这个Ape文件，大概有9.8万行这样的数字</span><br></pre></td></tr></table></figure>
+<ul>
+<li>可以看到文件中的内容最开始部分，是以 <code>cafe babe</code>开头的</li>
+</ul>
+<blockquote>
+<p>对于一个 二进制文件 来讲，每个类型都可以在文件最初几个字节来标识出来，即“魔数”。不同类型的 二进制文件，都有自己独特的”魔数”。</p>
+</blockquote>
+<ul>
+<li><p>OS X上，可执行文件的标识有这样几个魔数（不同的魔数代表不同的可执行文件类型）</p>
+</li>
+<li><p>cafebabe</p>
+</li>
+<li>feedface</li>
+<li>feadfacf</li>
+<li><p>以 <code>#!</code> 开头的脚本</p>
+</li>
+<li><p>cafebabe可执行格式:</p>
+</li>
+<li><p>跨处理器架构的通用格式</p>
+</li>
+<li><p>feedface和feedfacf可执行格式:</p>
+</li>
+<li><p>分别只能针对<code>某一种处理器架构</code>下的Mach-O格式</p>
+</li>
+<li><p>脚本</p>
+</li>
+<li><code>#!/bin/bash</code>开头的shell脚本</li>
+</ul>
+<h4 id="大致了解了一个ipa包的目录结构，最重要的是-app文件中的Mach-O格式的可执行文件Ape"><a href="#大致了解了一个ipa包的目录结构，最重要的是-app文件中的Mach-O格式的可执行文件Ape" class="headerlink" title="大致了解了一个ipa包的目录结构，最重要的是.app文件中的Mach-O格式的可执行文件Ape"></a>大致了解了一个ipa包的目录结构，最重要的是.app文件中的Mach-O格式的可执行文件Ape</h4><hr>
+<h3 id="接下来具体看下Mach-O格式的文件的文件结构"><a href="#接下来具体看下Mach-O格式的文件的文件结构" class="headerlink" title="接下来具体看下Mach-O格式的文件的文件结构"></a>接下来具体看下Mach-O格式的文件的文件结构</h3><p><img src="http://i12.tietuku.cn/f9adff6361b36c8b.png" alt></p>
+<h4 id="Mach-o包含三个基本区域"><a href="#Mach-o包含三个基本区域" class="headerlink" title="Mach-o包含三个基本区域:"></a>Mach-o包含三个基本区域:</h4><ul>
+<li><p>头部（header structure）</p>
+</li>
+<li><p>加载命令（load command）</p>
+</li>
+<li><p>创建后续的所有Segment段</p>
+</li>
+<li><p>最终的数据（Data）</p>
+</li>
+<li>创建所有的Section区</li>
+<li>并将Section区指定到上面创建出来的Segment段</li>
+<li>也就是一个Segment段包含多个Section区</li>
+</ul>
+<h4 id="使用otool工具来查看Mach-O格式文件（上面的Ape文件）的头部（header-structure）"><a href="#使用otool工具来查看Mach-O格式文件（上面的Ape文件）的头部（header-structure）" class="headerlink" title="使用otool工具来查看Mach-O格式文件（上面的Ape文件）的头部（header structure）"></a>使用otool工具来查看Mach-O格式文件（上面的Ape文件）的头部（header structure）</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">otool -h  Ape</span><br></pre></td></tr></table></figure>
+<p>输出信息如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">xiongzenghuideMacBook-Pro:Ape.app xiongzenghui$ otool -h  Ape</span><br><span class="line">Ape (architecture armv7):</span><br><span class="line">Mach header</span><br><span class="line">magic cputype cpusubtype  caps    filetype ncmds sizeofcmds      flags</span><br><span class="line">0xfeedface      12          9  0x00           2    52       5496 0x00218085</span><br><span class="line">Ape (architecture arm64):</span><br><span class="line">Mach header</span><br><span class="line">magic cputype cpusubtype  caps    filetype ncmds sizeofcmds      flags</span><br><span class="line">0xfeedfacf 16777228          0  0x00           2    52       6136 0x00218085</span><br></pre></td></tr></table></figure>
+<p>其文件格式:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Mach-O格式文件名字 (architecture 支持的cpu架构)</span><br><span class="line">Mach header</span><br><span class="line">magic（魔数） cputype  cpusubtype  caps  filetype  ncmds  sizeofcmds  flags</span><br></pre></td></tr></table></figure>
+<p>上面主要的几个字段:</p>
+<ul>
+<li>filetype，这个可以有很多类型，静态库（.a）、单个目标文件（.o）都可以通过这个类型标识来区分</li>
+<li>filetype = 2，代表<code>可执行</code>的文件</li>
+<li>ncmds和sizeofcmds，这个cmd就是加载命令，ncmds就是加载命令的个数，而sizeofcmds就是所占的大小</li>
+</ul>
+<p>如上输出的Mach-O文件的头部信息，对应的c结构体类型定义:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">* The 32-bit mach header appears at the very beginning of the object file for</span></span><br><span class="line"><span class="comment">* 32-bit architectures.</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">mach_header</span> &#123;</span></span><br><span class="line"><span class="keyword">uint32_t</span>    magic;        <span class="comment">/* mach magic number identifier */</span></span><br><span class="line"><span class="keyword">cpu_type_t</span>    cputype;    <span class="comment">/* cpu specifier */</span></span><br><span class="line"><span class="keyword">cpu_subtype_t</span>    cpusubtype;    <span class="comment">/* machine specifier */</span></span><br><span class="line"><span class="keyword">uint32_t</span>    filetype;    <span class="comment">/* type of file */</span></span><br><span class="line"><span class="keyword">uint32_t</span>    ncmds;        <span class="comment">/* number of load commands */</span></span><br><span class="line"><span class="keyword">uint32_t</span>    sizeofcmds;    <span class="comment">/* the size of all the load commands */</span></span><br><span class="line"><span class="keyword">uint32_t</span>    flags;        <span class="comment">/* flags */</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Constant for the magic field of the mach_header (32-bit architectures) */</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span>    MH_MAGIC    0xfeedface    <span class="comment">/* the mach magic number */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MH_CIGAM    0xcefaedfe    <span class="comment">/* NXSwapInt(MH_MAGIC) */</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">* The 64-bit mach header appears at the very beginning of object files for</span></span><br><span class="line"><span class="comment">* 64-bit architectures.</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">mach_header_64</span> &#123;</span></span><br><span class="line"><span class="keyword">uint32_t</span>    magic;        <span class="comment">/* mach magic number identifier */</span></span><br><span class="line"><span class="keyword">cpu_type_t</span>    cputype;    <span class="comment">/* cpu specifier */</span></span><br><span class="line"><span class="keyword">cpu_subtype_t</span>    cpusubtype;    <span class="comment">/* machine specifier */</span></span><br><span class="line"><span class="keyword">uint32_t</span>    filetype;    <span class="comment">/* type of file */</span></span><br><span class="line"><span class="keyword">uint32_t</span>    ncmds;        <span class="comment">/* number of load commands */</span></span><br><span class="line"><span class="keyword">uint32_t</span>    sizeofcmds;    <span class="comment">/* the size of all the load commands */</span></span><br><span class="line"><span class="keyword">uint32_t</span>    flags;        <span class="comment">/* flags */</span></span><br><span class="line"><span class="keyword">uint32_t</span>    reserved;    <span class="comment">/* reserved */</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Constant for the magic field of the mach_header_64 (64-bit architectures) */</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MH_MAGIC_64 0xfeedfacf <span class="comment">/* the 64-bit mach magic number */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MH_CIGAM_64 0xcffaedfe <span class="comment">/* NXSwapInt(MH_MAGIC_64) */</span></span></span><br></pre></td></tr></table></figure>
+<h4 id="使用otool工具来查看Mach-O格式文件（上面的Ape文件）的加载命令（load-command）"><a href="#使用otool工具来查看Mach-O格式文件（上面的Ape文件）的加载命令（load-command）" class="headerlink" title="使用otool工具来查看Mach-O格式文件（上面的Ape文件）的加载命令（load command）"></a>使用otool工具来查看Mach-O格式文件（上面的Ape文件）的加载命令（load command）</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">otool -lv  Ape</span><br></pre></td></tr></table></figure>
+<p>输出信息如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">Load command 22</span><br><span class="line">cmd LC_LOAD_DYLIB</span><br><span class="line">cmdsize 84</span><br><span class="line">name /System/Library/Frameworks/Accelerate.framework/Accelerate (offset 24)</span><br><span class="line">time stamp 2 Thu Jan  1 08:00:02 1970</span><br><span class="line">current version 4.0.0</span><br><span class="line">compatibility version 1.0.0</span><br><span class="line">Load command 23</span><br><span class="line">cmd LC_LOAD_DYLIB</span><br><span class="line">cmdsize 80</span><br><span class="line">name /System/Library/Frameworks/Security.framework/Security (offset 24)</span><br><span class="line">time stamp 2 Thu Jan  1 08:00:02 1970</span><br><span class="line">current version 0.0.0</span><br><span class="line">compatibility version 1.0.0</span><br><span class="line"></span><br><span class="line">....</span><br><span class="line"></span><br><span class="line">Section</span><br><span class="line">sectname __objc_data</span><br><span class="line">segname __DATA</span><br><span class="line">addr 0x00000001007c40f0</span><br><span class="line">size 0x000000000001eaa0</span><br><span class="line">offset 8143088</span><br><span class="line">align 2^3 (8)</span><br><span class="line">reloff 0</span><br><span class="line">nreloc 0</span><br><span class="line">type S_REGULAR</span><br><span class="line">attributes (none)</span><br><span class="line">reserved1 0</span><br><span class="line">reserved2 0</span><br><span class="line"></span><br><span class="line">....</span><br></pre></td></tr></table></figure>
+<p>1.cmd 是load command的类型,本文中值＝1就是LC_SEGMENT，,LC_SEGMENT的含义是(将文件中的段映射到进程地址空间)</p>
+<p>2.cmdsize 代表load command的大小(0×58个字节)。</p>
+<p>3.segname 16字节的段名字，当前是__PAGEZERO。</p>
+<p>4.vmaddr 段的虚拟内存起始地址</p>
+<p>5.vmsize 段的虚拟内存大小</p>
+<p>6.fileoff 段在文件中的偏移量</p>
+<p>7.filesize 段在文件中的大小</p>
+<p>8.maxprot 段页面所需要的最高内存保护（4=r,2=w,1=x）</p>
+<p>9.initprot 段页面初始的内存保护</p>
+<p>10.nsects 段中包含section的数量</p>
+<p>11.flags 其他杂项标志位</p>
+<h4 id="对如上Section的c结构体定义"><a href="#对如上Section的c结构体定义" class="headerlink" title="对如上Section的c结构体定义:"></a>对如上Section的c结构体定义:</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">section</span> &#123;</span> <span class="comment">/* for 32-bit architectures */</span></span><br><span class="line"><span class="keyword">char</span>        sectname[<span class="number">16</span>];    <span class="comment">/* name of this section */</span></span><br><span class="line"><span class="keyword">char</span>        segname[<span class="number">16</span>];    <span class="comment">/* segment this section goes in */</span></span><br><span class="line"><span class="keyword">uint32_t</span>    addr;        <span class="comment">/* memory address of this section */</span></span><br><span class="line"><span class="keyword">uint32_t</span>    size;        <span class="comment">/* size in bytes of this section */</span></span><br><span class="line"><span class="keyword">uint32_t</span>    offset;        <span class="comment">/* file offset of this section */</span></span><br><span class="line"><span class="keyword">uint32_t</span>    align;        <span class="comment">/* section alignment (power of 2) */</span></span><br><span class="line"><span class="keyword">uint32_t</span>    reloff;        <span class="comment">/* file offset of relocation entries */</span></span><br><span class="line"><span class="keyword">uint32_t</span>    nreloc;        <span class="comment">/* number of relocation entries */</span></span><br><span class="line"><span class="keyword">uint32_t</span>    flags;        <span class="comment">/* flags (section type and attributes)*/</span></span><br><span class="line"><span class="keyword">uint32_t</span>    reserved1;    <span class="comment">/* reserved (for offset or index) */</span></span><br><span class="line"><span class="keyword">uint32_t</span>    reserved2;    <span class="comment">/* reserved (for count or sizeof) */</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">section_64</span> &#123;</span> <span class="comment">/* for 64-bit architectures */</span></span><br><span class="line"><span class="keyword">char</span>        sectname[<span class="number">16</span>];    <span class="comment">/* name of this section */</span></span><br><span class="line"><span class="keyword">char</span>        segname[<span class="number">16</span>];    <span class="comment">/* segment this section goes in */</span></span><br><span class="line"><span class="keyword">uint64_t</span>    addr;        <span class="comment">/* memory address of this section */</span></span><br><span class="line"><span class="keyword">uint64_t</span>    size;        <span class="comment">/* size in bytes of this section */</span></span><br><span class="line"><span class="keyword">uint32_t</span>    offset;        <span class="comment">/* file offset of this section */</span></span><br><span class="line"><span class="keyword">uint32_t</span>    align;        <span class="comment">/* section alignment (power of 2) */</span></span><br><span class="line"><span class="keyword">uint32_t</span>    reloff;        <span class="comment">/* file offset of relocation entries */</span></span><br><span class="line"><span class="keyword">uint32_t</span>    nreloc;        <span class="comment">/* number of relocation entries */</span></span><br><span class="line"><span class="keyword">uint32_t</span>    flags;        <span class="comment">/* flags (section type and attributes)*/</span></span><br><span class="line"><span class="keyword">uint32_t</span>    reserved1;    <span class="comment">/* reserved (for offset or index) */</span></span><br><span class="line"><span class="keyword">uint32_t</span>    reserved2;    <span class="comment">/* reserved (for count or sizeof) */</span></span><br><span class="line"><span class="keyword">uint32_t</span>    reserved3;    <span class="comment">/* reserved */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>1.sectname，section的名字<br>2.segname，该section所属的segment名字</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Section</span><br><span class="line">sectname __text</span><br><span class="line">segname __TEXT</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<h4 id="常用的Segment、以及其所属的Section情况"><a href="#常用的Segment、以及其所属的Section情况" class="headerlink" title="常用的Segment、以及其所属的Section情况"></a>常用的Segment、以及其所属的Section情况</h4><ul>
+<li>__TEXT</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">__text, __cstring, __picsymbol_stub, __symbol_stub, __const, __litera14, __litera18</span><br></pre></td></tr></table></figure>
+<ul>
+<li>__DATA</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">__data, __la_symbol_ptr, __nl_symbol_ptr, __dyld, __const, __mod_init_func, __mod_term_func, __bss, __commom</span><br></pre></td></tr></table></figure>
+<ul>
+<li>__IMPORT</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">__jump_table, __pointers</span><br></pre></td></tr></table></figure>
+<ul>
+<li>__RESTRICT</li>
+<li>__LINKEDIT</li>
+</ul>
+<blockquote>
+<p><code>__TEXT</code>段中的<code>__text</code>是实际上的代码部分；<code>__DATA</code>段的<code>__data</code>是实际的初始数据.</p>
+</blockquote>
+<p><strong>TEXT段中的 </strong>text格式例子</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Section</span><br><span class="line">sectname __text</span><br><span class="line">segname __TEXT//TEXT则是主体代码段</span><br><span class="line">addr 0x0000000100006030</span><br><span class="line">size 0x000000000054b4f0</span><br><span class="line">offset 24624</span><br><span class="line">align 2^2 (4)</span><br><span class="line">reloff 0</span><br><span class="line">nreloc 0</span><br><span class="line">type S_REGULAR</span><br><span class="line">attributes PURE_INSTRUCTIONS SOME_INSTRUCTIONS</span><br><span class="line">reserved1 0</span><br><span class="line">reserved2 0</span><br></pre></td></tr></table></figure>
+<p>Load command时创建初始化 __TEXT Segment（代码段）的例子</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Load command 1</span><br><span class="line">cmd LC_SEGMENT_64</span><br><span class="line">cmdsize 952</span><br><span class="line">segname __TEXT//Segment名</span><br><span class="line">vmaddr 0x0000000100000000</span><br><span class="line">vmsize 0x000000000063c000</span><br><span class="line">fileoff 0</span><br><span class="line">filesize 6537216</span><br><span class="line">maxprot r-x//不包含w（写），即不能篡改代码</span><br><span class="line">initprot r-x</span><br><span class="line">nsects 11</span><br><span class="line">flags (none)</span><br></pre></td></tr></table></figure>
+<h4 id="TEXT-segment下的-常用section用途图示"><a href="#TEXT-segment下的-常用section用途图示" class="headerlink" title="__TEXT segment下的 常用section用途图示"></a>__TEXT segment下的 常用section用途图示</h4><p><img src="http://i12.tietuku.cn/afe2e2ba2fd931e6.png" alt></p>
+<h4 id="DATA-segment下的-常用section用途图示"><a href="#DATA-segment下的-常用section用途图示" class="headerlink" title="__DATA segment下的 常用section用途图示"></a>__DATA segment下的 常用section用途图示</h4><h4 id="通过otool-–s查看某segment的某个section"><a href="#通过otool-–s查看某segment的某个section" class="headerlink" title="通过otool –s查看某segment的某个section"></a>通过otool –s查看某segment的某个section</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">otool -s __TEXT __text Ape</span><br></pre></td></tr></table></figure>
+<h4 id="通过otool-–t直接查看代码段（-TEXT）的-反汇编代码"><a href="#通过otool-–t直接查看代码段（-TEXT）的-反汇编代码" class="headerlink" title="通过otool –t直接查看代码段（__TEXT）的 反汇编代码"></a>通过otool –t直接查看代码段（__TEXT）的 <code>反汇编</code>代码</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">otool -tv Ape</span><br></pre></td></tr></table></figure>
+<p>输出如下汇编形式的代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">00152262        a045    adr    r0, #276</span><br><span class="line">00152264        95d7    str    r5, [sp, #0x35c]</span><br><span class="line">00152266        c134    stm    r1!, &#123;r2, r4, r5&#125;</span><br><span class="line">00152268        0667    lsls    r7, r4, #0x19</span><br><span class="line">0015226a        a41c    adr    r4, #112</span><br><span class="line">0015226c        35b8    adds    r5, #0xb8</span><br><span class="line">0015226e        a209    adr    r2, #36</span><br><span class="line">00152270        71e3    strb    r3, [r4, #0x7]</span><br><span class="line">00152272        095b    lsrs    r3, r3, #0x5</span><br><span class="line">00152274        1c36    adds    r6, r6, #0x0</span><br><span class="line">00152276        33ea    adds    r3, #0xea</span><br><span class="line">00152278    f85886a4    .long    0xf85886a4</span><br><span class="line">0015227c        319f    adds    r1, #0x9f</span><br><span class="line">0015227e        4054    eors    r4, r2</span><br><span class="line">00152280        c55c    stm    r5!, &#123;r2, r3, r4, r6&#125;</span><br><span class="line">00152282        b01a    add    sp, #0x68</span><br><span class="line">00152284        13aa    asrs    r2, r5, #0xe</span><br><span class="line">00152286        826a    strh    r2, [r5, #0x12]</span><br><span class="line">00152288        b4eb    push    &#123;r0, r1, r3, r5, r6, r7&#125;</span><br><span class="line">0015228a        7bd6    ldrb    r6, [r2, #0xf]</span><br><span class="line">0015228c        bd9e    pop    &#123;r1, r2, r3, r4, r7, pc&#125;</span><br><span class="line">0015228e        db40    blt    0x152312</span><br><span class="line">00152290        086b    lsrs    r3, r5, #0x1</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结:"></a>小结:</h3><ul>
+<li>将我们写好的App代码，最终编译成一个<code>二进制的Unix可执行文件</code>，其格式为Mach-O格式</li>
+<li>iOS系统每次运行手机上的App，实际上就是直接运行ipa中的这个<code>二进制可执行文件</code></li>
+<li>该Mach-O可执行文件包含了整个App大部分东西</li>
+<li>程序代码</li>
+<li>各种资源文件</li>
+<li>可以通过otool命令直接将ipa包中的Mach-O格式的可执行文件Ape，直接反编译成汇编代码</li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2017/03/17/Mach-O可执行文件/" data-title="Mach-O可执行文件 | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2017/03/17/Mach-O-代码签名/" title="Mach-O 代码签名">
+  <strong>上一篇：</strong><br>
+  <span>
+  Mach-O 代码签名</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/02/15/NSDictionary/" title="NSDictionary">
+ <strong>下一篇：</strong><br> 
+ <span>NSDictionary
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/03/17/Mach-O可执行文件/" data-title="Mach-O可执行文件" data-url="http://yoursite.com/2017/03/17/Mach-O可执行文件/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Mac-OS-X-iOS平台上可执行文件格式是-Mach-O"><span class="toc-number">1.</span> <span class="toc-text">Mac OS X/iOS平台上可执行文件格式是: Mach-O</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#每一种操作系统平台上都有对应的可执行文件格式"><span class="toc-number">2.</span> <span class="toc-text">每一种操作系统平台上都有对应的可执行文件格式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Mach与Mach-O的区别"><span class="toc-number">3.</span> <span class="toc-text">Mach与Mach-O的区别:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#下载一个App并找到对应的ipa文件"><span class="toc-number">4.</span> <span class="toc-text">下载一个App并找到对应的ipa文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#解压缩ipa包"><span class="toc-number">5.</span> <span class="toc-text">解压缩ipa包</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#可以看解压之后的目录结构"><span class="toc-number">6.</span> <span class="toc-text">可以看解压之后的目录结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#查看Ape-app包内容"><span class="toc-number">7.</span> <span class="toc-text">查看Ape.app包内容</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#文件打开这个可执行的Ape文件，看里面的具体内容"><span class="toc-number">8.</span> <span class="toc-text">文件打开这个可执行的Ape文件，看里面的具体内容</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#大致了解了一个ipa包的目录结构，最重要的是-app文件中的Mach-O格式的可执行文件Ape"><span class="toc-number">8.1.</span> <span class="toc-text">大致了解了一个ipa包的目录结构，最重要的是.app文件中的Mach-O格式的可执行文件Ape</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#接下来具体看下Mach-O格式的文件的文件结构"><span class="toc-number">9.</span> <span class="toc-text">接下来具体看下Mach-O格式的文件的文件结构</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Mach-o包含三个基本区域"><span class="toc-number">9.1.</span> <span class="toc-text">Mach-o包含三个基本区域:</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#使用otool工具来查看Mach-O格式文件（上面的Ape文件）的头部（header-structure）"><span class="toc-number">9.2.</span> <span class="toc-text">使用otool工具来查看Mach-O格式文件（上面的Ape文件）的头部（header structure）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#使用otool工具来查看Mach-O格式文件（上面的Ape文件）的加载命令（load-command）"><span class="toc-number">9.3.</span> <span class="toc-text">使用otool工具来查看Mach-O格式文件（上面的Ape文件）的加载命令（load command）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#对如上Section的c结构体定义"><span class="toc-number">9.4.</span> <span class="toc-text">对如上Section的c结构体定义:</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#常用的Segment、以及其所属的Section情况"><span class="toc-number">9.5.</span> <span class="toc-text">常用的Segment、以及其所属的Section情况</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#TEXT-segment下的-常用section用途图示"><span class="toc-number">9.6.</span> <span class="toc-text">__TEXT segment下的 常用section用途图示</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#DATA-segment下的-常用section用途图示"><span class="toc-number">9.7.</span> <span class="toc-text">__DATA segment下的 常用section用途图示</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#通过otool-–s查看某segment的某个section"><span class="toc-number">9.8.</span> <span class="toc-text">通过otool –s查看某segment的某个section</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#通过otool-–t直接查看代码段（-TEXT）的-反汇编代码"><span class="toc-number">9.9.</span> <span class="toc-text">通过otool –t直接查看代码段（__TEXT）的 反汇编代码</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#小结"><span class="toc-number">10.</span> <span class="toc-text">小结:</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

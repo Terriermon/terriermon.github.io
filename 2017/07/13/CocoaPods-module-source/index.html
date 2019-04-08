@@ -1,0 +1,706 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>CocoaPods module source | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="使用CocoaPods来单独管理封装的可复用的控件公司需要将套在App工程中的一些公共代码单独出来，并使用CocoaPods去管理。  Cocoapods是非常好用的一个iOS依赖管理工具，使用它可以方便的管理和更新项目中所使用到的第三方库，以及将自己的项目中的公共组件交由它去管理。比如，可以将一个项目中的各个业务模块解耦，然后分别做成一个pods源，在主工程通过pods导入，能够极大的解耦业务模">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CocoaPods module source">
+<meta property="og:url" content="http://yoursite.com/2017/07/13/CocoaPods-module-source/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="使用CocoaPods来单独管理封装的可复用的控件公司需要将套在App工程中的一些公共代码单独出来，并使用CocoaPods去管理。  Cocoapods是非常好用的一个iOS依赖管理工具，使用它可以方便的管理和更新项目中所使用到的第三方库，以及将自己的项目中的公共组件交由它去管理。比如，可以将一个项目中的各个业务模块解耦，然后分别做成一个pods源，在主工程通过pods导入，能够极大的解耦业务模">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://i4.piimg.com/8311/6c1074ba4444f653.png">
+<meta property="og:image" content="http://i4.piimg.com/8311/cdac816d83f5b6e0.png">
+<meta property="og:image" content="http://i4.piimg.com/8311/9625776a670d44f8.png">
+<meta property="og:image" content="http://i1.piimg.com/8311/83f7e4c2c3abf848.png">
+<meta property="og:image" content="http://i4.piimg.com/8311/bb9f11bab3801011.png">
+<meta property="og:image" content="http://i4.piimg.com/8311/a7493f3fc6d6b18b.png">
+<meta property="og:image" content="http://i2.piimg.com/8311/db2d4e6d567809cc.png">
+<meta property="og:image" content="http://i2.piimg.com/8311/c0c035a6d7d30520.png">
+<meta property="og:image" content="http://i4.piimg.com/8311/9fc2ad4f6f2e7c12.png">
+<meta property="og:updated_time" content="2019-04-08T13:46:20.069Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CocoaPods module source">
+<meta name="twitter:description" content="使用CocoaPods来单独管理封装的可复用的控件公司需要将套在App工程中的一些公共代码单独出来，并使用CocoaPods去管理。  Cocoapods是非常好用的一个iOS依赖管理工具，使用它可以方便的管理和更新项目中所使用到的第三方库，以及将自己的项目中的公共组件交由它去管理。比如，可以将一个项目中的各个业务模块解耦，然后分别做成一个pods源，在主工程通过pods导入，能够极大的解耦业务模">
+<meta name="twitter:image" content="http://i4.piimg.com/8311/6c1074ba4444f653.png">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/07/13/CocoaPods-module-source/" title="CocoaPods module source" itemprop="url">CocoaPods module source</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2017-07-13T05:12:54.000Z" itemprop="datePublished"> Published 2017-07-13</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#使用CocoaPods来单独管理封装的可复用的控件"><span class="toc-number">1.</span> <span class="toc-text">使用CocoaPods来单独管理封装的可复用的控件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Cocoapods是非常好用的一个iOS依赖管理工具，使用它可以方便的管理和更新项目中所使用到的第三方库，以及将自己的项目中的公共组件交由它去管理。"><span class="toc-number">2.</span> <span class="toc-text">Cocoapods是非常好用的一个iOS依赖管理工具，使用它可以方便的管理和更新项目中所使用到的第三方库，以及将自己的项目中的公共组件交由它去管理。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#安装完CocoaPods后，执行的一条命令-pos-setup-的作用"><span class="toc-number">3.</span> <span class="toc-text">安装完CocoaPods后，执行的一条命令 pos setup 的作用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#podspec文件"><span class="toc-number">4.</span> <span class="toc-text">podspec文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#去创建一个存放库代码的git库（简称git库1）"><span class="toc-number">5.</span> <span class="toc-text">去创建一个存放库代码的git库（简称git库1）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#配置podspec的git库（简称git库2）"><span class="toc-number">6.</span> <span class="toc-text">配置podspec的git库（简称git库2）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#进入到git库1根目录下，编写podspec文件"><span class="toc-number">7.</span> <span class="toc-text">进入到git库1根目录下，编写podspec文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#新建立demo项目pods上马的库"><span class="toc-number">8.</span> <span class="toc-text">新建立demo项目pods上马的库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#subspec使用"><span class="toc-number">9.</span> <span class="toc-text">subspec使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#维护更新podspec以及pod库代码步骤"><span class="toc-number">10.</span> <span class="toc-text">维护更新podspec以及pod库代码步骤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#推送到CocoaPods服务器的pods库"><span class="toc-number">11.</span> <span class="toc-text">推送到CocoaPods服务器的pods库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#当推送spec文件到CocoaPods服务器之后，提示Unable-to-find-a-pod-with-name-author-summary-or-descriptionmatching解决"><span class="toc-number">12.</span> <span class="toc-text">当推送spec文件到CocoaPods服务器之后，提示Unable to find a pod with name, author, summary, or descriptionmatching解决</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#在将项目中大部分互相关联的代码移除时，发现如上只适合类似AFNetworking这样很独立的库。因为互相关联的代码可能有一些代码拖不出来，就导致库工程报错。而一旦报错，CocoaPods不允许上传到服务器。"><span class="toc-number">13.</span> <span class="toc-text">在将项目中大部分互相关联的代码移除时，发现如上只适合类似AFNetworking这样很独立的库。因为互相关联的代码可能有一些代码拖不出来，就导致库工程报错。而一旦报错，CocoaPods不允许上传到服务器。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Mac-OS10-11-执行-“sudo-gem-install-cocoapods”-的时候出现问题：ERROR-While-executing-gem-…-Errno-EPERM-解决"><span class="toc-number">14.</span> <span class="toc-text">Mac OS10.11 执行 “sudo gem install cocoapods” 的时候出现问题：ERROR: While executing gem … (Errno::EPERM) 解决</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#但是发现CocoaPods不适合当前我的情况，因为我是把一些互相关联的代码只是移到静态库工程，但是有一些代码还是需要依赖App工程中却无法移到静态库工程。静态库工程就会缺失一些方法实现的-m文件，虽然是可以通过编译，但是最后使用CocoaPods验证的时候就会报错，无法走面的流程。"><span class="toc-number">15.</span> <span class="toc-text">但是发现CocoaPods不适合当前我的情况，因为我是把一些互相关联的代码只是移到静态库工程，但是有一些代码还是需要依赖App工程中却无法移到静态库工程。静态库工程就会缺失一些方法实现的.m文件，虽然是可以通过编译，但是最后使用CocoaPods验证的时候就会报错，无法走面的流程。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Git-Submodule"><span class="toc-number">16.</span> <span class="toc-text">Git Submodule</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#在主工程git库上注册一个子模块git库-gt-gt-gt-git-submodule-add"><span class="toc-number">17.</span> <span class="toc-text">在主工程git库上注册一个子模块git库 &gt;&gt;&gt; git submodule add</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#在主工程的git库，拉取子模块git库拉的更新"><span class="toc-number">18.</span> <span class="toc-text">在主工程的git库，拉取子模块git库拉的更新</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#对submodule-git库代码的修改"><span class="toc-number">19.</span> <span class="toc-text">对submodule git库代码的修改</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#移除submodule"><span class="toc-number">20.</span> <span class="toc-text">移除submodule</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#导入嵌套的静态库工程，导致主工程无法Archive"><span class="toc-number">21.</span> <span class="toc-text">导入嵌套的静态库工程，导致主工程无法Archive</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#学习来源"><span class="toc-number">22.</span> <span class="toc-text">学习来源</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="使用CocoaPods来单独管理封装的可复用的控件"><a href="#使用CocoaPods来单独管理封装的可复用的控件" class="headerlink" title="使用CocoaPods来单独管理封装的可复用的控件"></a>使用CocoaPods来单独管理封装的可复用的控件</h3><p>公司需要将套在App工程中的一些公共代码单独出来，并使用CocoaPods去管理。</p>
+<hr>
+<h3 id="Cocoapods是非常好用的一个iOS依赖管理工具，使用它可以方便的管理和更新项目中所使用到的第三方库，以及将自己的项目中的公共组件交由它去管理。"><a href="#Cocoapods是非常好用的一个iOS依赖管理工具，使用它可以方便的管理和更新项目中所使用到的第三方库，以及将自己的项目中的公共组件交由它去管理。" class="headerlink" title="Cocoapods是非常好用的一个iOS依赖管理工具，使用它可以方便的管理和更新项目中所使用到的第三方库，以及将自己的项目中的公共组件交由它去管理。"></a>Cocoapods是非常好用的一个iOS依赖管理工具，使用它可以方便的管理和更新项目中所使用到的第三方库，以及将自己的项目中的公共组件交由它去管理。</h3><p>比如，可以将一个项目中的各个业务模块解耦，然后分别做成一个pods源，在主工程通过pods导入，能够极大的解耦业务模块。</p>
+<p>通常大家使用pods去在线下载导入依赖的第三方开源类库，但其实也可以导入配置在自己git服务器上的库代码，最终编译器编译生成一个.a或.framework导入到工程依赖中。</p>
+<hr>
+<h3 id="安装完CocoaPods后，执行的一条命令-pos-setup-的作用"><a href="#安装完CocoaPods后，执行的一条命令-pos-setup-的作用" class="headerlink" title="安装完CocoaPods后，执行的一条命令 pos setup 的作用"></a>安装完CocoaPods后，执行的一条命令 pos setup 的作用</h3><ul>
+<li>(1) 将github上的一个git库中的所有第三方库的podspec描述文件克隆到本地</li>
+<li>所有的项目的Podspec文件都托管在 <code>https://github.com/CocoaPods/Specs</code></li>
+<li><p>可能有一些库并未收录其中</p>
+</li>
+<li><p>(2) podspec文件在本地存放的位置<code>~/.cocoapods</code></p>
+</li>
+<li><p>(3) <code>pod list</code> 和 <code>pod search</code> 命令只搜索存在于本地<code>~/.cocoapods</code>文件夹的所有第三方库，并不会连接到远程服务器</p>
+</li>
+<li><p>(4) <code>pod search --full query</code> 命令作更仔细的搜索，该命令不但搜索类库的名称，同时还搜索类库的描述文本，所以搜索速度也相对慢一些</p>
+</li>
+<li><p>(5) 如果要从github服务器更新本地第三方库的描述文件，执行<code>pod repo update master</code></p>
+</li>
+</ul>
+<hr>
+<h3 id="podspec文件"><a href="#podspec文件" class="headerlink" title="podspec文件"></a>podspec文件</h3><ul>
+<li>(1) podspec文件的结构</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">Pod::Spec.new <span class="keyword">do</span> |s|</span><br><span class="line">s.name             = <span class="string">"MyLib"</span></span><br><span class="line">s.version          = <span class="string">"0.1.0"</span></span><br><span class="line">s.summary          = <span class="string">"A short description of MyLib."</span></span><br><span class="line"></span><br><span class="line">s.description       = <span class="string">"具体的描述信息..."</span></span><br><span class="line"></span><br><span class="line">s.homepage         = <span class="string">"https://github.com/&lt;GITHUB_USERNAME&gt;/MyLib"</span></span><br><span class="line"><span class="meta"># s.screenshots     = <span class="meta-string">"www.example.com/screenshots_1"</span>, <span class="meta-string">"www.example.com/screenshots_2"</span></span></span><br><span class="line">s.license          = 'MIT'</span><br><span class="line">s.author           = &#123; <span class="string">"xiongzenghui"</span> =&gt; <span class="string">"xiongzenghui@myhome.163.com"</span> &#125;</span><br><span class="line">s.source           = &#123; :git =&gt; <span class="string">"https://github.com/&lt;GITHUB_USERNAME&gt;/MyLib.git"</span>, :tag =&gt; s.version.to_s &#125;</span><br><span class="line"><span class="meta"># s.social_media_url = 'https://twitter.com/<span class="meta-string">&lt;TWITTER_USERNAME&gt;</span>'</span></span><br><span class="line"></span><br><span class="line">s.platform     = :ios, '7.0'</span><br><span class="line">s.requires_arc = <span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="meta"># 存放 所有源文件 的目录  Pod/Classes/</span></span><br><span class="line">s.source_files = 'Pod/Classes/**/*'</span><br><span class="line"></span><br><span class="line"><span class="meta"># 存放所有资源文件 Pod/Assets/</span></span><br><span class="line">s.resource_bundles = &#123;</span><br><span class="line">'MyLib' =&gt; ['Pod/Assets/*.png']</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta"># 指定 头文件 的 搜索位置</span></span><br><span class="line"><span class="meta"># s.public_header_files = 'Pod/Classes/**/*.h'</span></span><br><span class="line"></span><br><span class="line"><span class="meta"># 依赖的系统framework</span></span><br><span class="line"><span class="meta"># s.frameworks = 'UIKit', 'MapKit'</span></span><br><span class="line"></span><br><span class="line"><span class="meta"># 依赖的系统的framework</span></span><br><span class="line"><span class="meta"># s.libraries  = 'xxx.framework', 'xxx.framework', 'xxx.framework'</span></span><br><span class="line"></span><br><span class="line"><span class="meta"># 依赖的其他第三方开源库，如果有多个需要填写多个 s.dependency</span></span><br><span class="line">s.dependency 'AFNetworking', '~&gt; 2.6.3'</span><br><span class="line">s.dependency 'JSONModel', '~&gt; 2.6.3'</span><br><span class="line"></span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<p>从上面可以看出，这个文件的作用实际上就是指定pod的名字的、版本号、代码下载的git地址、以及指定依赖的系统Framework、和第三方其他的开源库。</p>
+<p>所说这个文件的作用就是指定，要下载的pods源对于的代码在哪里，以及怎么下载进行依赖配置到工程中。</p>
+<p>了解完基本概念之后，下面开始具体如何操作。</p>
+<hr>
+<h3 id="去创建一个存放库代码的git库（简称git库1）"><a href="#去创建一个存放库代码的git库（简称git库1）" class="headerlink" title="去创建一个存放库代码的git库（简称git库1）"></a>去创建一个存放库代码的git库（简称git库1）</h3><ul>
+<li>(1) 将我们的库代码上传到这个git库1</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://git.coding.net/xiongzenghui/TestLib.git</span><br></pre></td></tr></table></figure>
+<ul>
+<li>(2) 一定要对提交的commit打一个tag</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dev_2_0</span><br></pre></td></tr></table></figure>
+<p>这样我们的代码库就OK了，接下来配置podspec的git库.</p>
+<hr>
+<h3 id="配置podspec的git库（简称git库2）"><a href="#配置podspec的git库（简称git库2）" class="headerlink" title="配置podspec的git库（简称git库2）"></a>配置podspec的git库（简称git库2）</h3><ul>
+<li>(1) 创建一个存在所有的podspec文件的git库</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://git.coding.net/xiongzenghui/podspecgit.git</span><br></pre></td></tr></table></figure>
+<ul>
+<li>(2) 使用<code>pod repo add</code>将我们创建的git库2注册到Cocoapods的库中</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pod repo add TestLibSpecRepo https://git.coding.net/xiongzenghui/podspecgit.git</span><br></pre></td></tr></table></figure>
+<ul>
+<li>(3) 查看添加的自己的spec库</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd ~/.cocoapods/repos</span><br></pre></td></tr></table></figure>
+<p><img src="http://i4.piimg.com/8311/6c1074ba4444f653.png" alt></p>
+<ul>
+<li>(4) 在其他需要pods这个spec库的机器上同样执行上面的注册命令，才能pods下载指定的git库1的代码</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pod repo add TestLibSpecRepo https://git.coding.net/xiongzenghui/podspecgit.git</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="进入到git库1根目录下，编写podspec文件"><a href="#进入到git库1根目录下，编写podspec文件" class="headerlink" title="进入到git库1根目录下，编写podspec文件"></a>进入到git库1根目录下，编写podspec文件</h3><ul>
+<li>(1) 执行<code>pod spec create TestLibSpec</code> 创建spec模板文件</li>
+</ul>
+<p><img src="http://i4.piimg.com/8311/cdac816d83f5b6e0.png" alt></p>
+<p><img src="http://i4.piimg.com/8311/9625776a670d44f8.png" alt></p>
+<ul>
+<li>(2) 编辑生成的podspec文件</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span></span><br><span class="line"><span class="meta">#  Be sure to run `pod spec lint TestLibSpec.podspec' to ensure this is a</span></span><br><span class="line"><span class="meta">#  valid spec and to remove all comments including this before submitting the spec.</span></span><br><span class="line"><span class="meta">#</span></span><br><span class="line"><span class="meta">#  To learn more about Podspec attributes see http://docs.cocoapods.org/specification.html</span></span><br><span class="line"><span class="meta">#  To see working Podspecs in the CocoaPods repo see https://github.com/CocoaPods/Specs/</span></span><br><span class="line"><span class="meta">#</span></span><br><span class="line"></span><br><span class="line">Pod::Spec.new <span class="keyword">do</span> |s|</span><br><span class="line"></span><br><span class="line"><span class="meta"># ―――  Spec Metadata  ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #</span></span><br><span class="line"><span class="meta">#</span></span><br><span class="line"><span class="meta">#  These will help people to find your library, and whilst it</span></span><br><span class="line"><span class="meta">#  can feel like a chore to fill in it's definitely to your advantage. The</span></span><br><span class="line"><span class="meta">#  summary should be tweet-length, and the description more in depth.</span></span><br><span class="line"><span class="meta">#</span></span><br><span class="line"></span><br><span class="line">s.name         = <span class="string">"TestLibSpec"</span></span><br><span class="line">s.version      = <span class="string">"1.0.0"</span></span><br><span class="line">s.summary      = <span class="string">"这是一个测试的pods源."</span></span><br><span class="line"></span><br><span class="line"><span class="meta"># This description is used to generate tags and improve search results.</span></span><br><span class="line"><span class="meta">#   * Think: What does it do? Why did you write it? What is the focus?</span></span><br><span class="line"><span class="meta">#   * Try to keep it short, snappy and to the point.</span></span><br><span class="line"><span class="meta">#   * Write the description between the DESC delimiters below.</span></span><br><span class="line"><span class="meta">#   * Finally, don't worry about the indent, CocoaPods strips it!</span></span><br><span class="line">s.description  = <span class="string">"这是描述这是描述这是描述这是描述这是描述这是描述这是描述"</span></span><br><span class="line"></span><br><span class="line">s.homepage     = <span class="string">"http://www.baidu.com"</span></span><br><span class="line"><span class="meta"># s.screenshots  = <span class="meta-string">"www.example.com/screenshots_1.gif"</span>, <span class="meta-string">"www.example.com/screenshots_2.gif"</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta"># ―――  Spec License  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #</span></span><br><span class="line"><span class="meta">#</span></span><br><span class="line"><span class="meta">#  Licensing your code is important. See http://choosealicense.com for more info.</span></span><br><span class="line"><span class="meta">#  CocoaPods will detect a license file if there is a named LICENSE*</span></span><br><span class="line"><span class="meta">#  Popular ones are 'MIT', 'BSD' and 'Apache License, Version 2.0'.</span></span><br><span class="line"><span class="meta">#</span></span><br><span class="line"></span><br><span class="line">s.license      = <span class="string">"MIT"</span></span><br><span class="line"><span class="meta"># s.license      = &#123; :type =&gt; <span class="meta-string">"MIT"</span>, :file =&gt; <span class="meta-string">"FILE_LICENSE"</span> &#125;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta"># ――― Author Metadata  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #</span></span><br><span class="line"><span class="meta">#</span></span><br><span class="line"><span class="meta">#  Specify the authors of the library, with email addresses. Email addresses</span></span><br><span class="line"><span class="meta">#  of the authors are extracted from the SCM log. E.g. $ git log. CocoaPods also</span></span><br><span class="line"><span class="meta">#  accepts just a name if you'd rather not provide an email address.</span></span><br><span class="line"><span class="meta">#</span></span><br><span class="line"><span class="meta">#  Specify a social_media_url where others can refer to, for example a twitter</span></span><br><span class="line"><span class="meta">#  profile URL.</span></span><br><span class="line"><span class="meta">#</span></span><br><span class="line"></span><br><span class="line">s.author             = &#123; <span class="string">"zain"</span> =&gt; <span class="string">"xiongzenghui@gmail.com"</span> &#125;</span><br><span class="line"><span class="meta"># Or just: s.author    = <span class="meta-string">"zain"</span></span></span><br><span class="line"><span class="meta"># s.authors            = &#123; <span class="meta-string">"zain"</span> =&gt; <span class="meta-string">"xiongzenghui@gmail.com"</span> &#125;</span></span><br><span class="line"><span class="meta"># s.social_media_url   = <span class="meta-string">"http://twitter.com/zain"</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta"># ――― Platform Specifics ――――――――――――――――――――――――――――――――――――――――――――――――――――――― #</span></span><br><span class="line"><span class="meta">#</span></span><br><span class="line"><span class="meta">#  If this Pod runs only on iOS or OS X, then specify the platform and</span></span><br><span class="line"><span class="meta">#  the deployment target. You can optionally include the target after the platform.</span></span><br><span class="line"><span class="meta">#</span></span><br><span class="line"></span><br><span class="line"><span class="meta"># s.platform     = :ios</span></span><br><span class="line">s.platform     = :ios, <span class="string">"6.0"</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#  When using multiple platforms</span></span><br><span class="line"><span class="meta"># s.ios.deployment_target = <span class="meta-string">"5.0"</span></span></span><br><span class="line"><span class="meta"># s.osx.deployment_target = <span class="meta-string">"10.7"</span></span></span><br><span class="line"><span class="meta"># s.watchos.deployment_target = <span class="meta-string">"2.0"</span></span></span><br><span class="line"><span class="meta"># s.tvos.deployment_target = <span class="meta-string">"9.0"</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta"># ――― Source Location ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #</span></span><br><span class="line"><span class="meta">#</span></span><br><span class="line"><span class="meta">#  Specify the location from where the source should be retrieved.</span></span><br><span class="line"><span class="meta">#  Supports git, hg, bzr, svn and HTTP.</span></span><br><span class="line"><span class="meta">#</span></span><br><span class="line"></span><br><span class="line">s.source       = &#123; :git =&gt; <span class="string">"https://git.coding.net/xiongzenghui/TestLib.git"</span>, :tag =&gt; <span class="string">"1.0.0"</span> &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta"># ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #</span></span><br><span class="line"><span class="meta">#</span></span><br><span class="line"><span class="meta">#  CocoaPods is smart about how it includes source code. For source files</span></span><br><span class="line"><span class="meta">#  giving a folder will include any swift, h, m, mm, c &amp; cpp files.</span></span><br><span class="line"><span class="meta">#  For header files it will include any header in the folder.</span></span><br><span class="line"><span class="meta">#  Not including the public_header_files will make all headers public.</span></span><br><span class="line"><span class="meta">#</span></span><br><span class="line"></span><br><span class="line">s.source_files  = <span class="string">"HahaView/Lib/**/*.&#123;h,m&#125;"</span></span><br><span class="line"><span class="meta">#s.exclude_files = <span class="meta-string">"Classes/Exclude"</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta"># s.public_header_files = <span class="meta-string">"Classes/**/*.h"</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta"># ――― Resources ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #</span></span><br><span class="line"><span class="meta">#</span></span><br><span class="line"><span class="meta">#  A list of resources included with the Pod. These are copied into the</span></span><br><span class="line"><span class="meta">#  target bundle with a build phase script. Anything else will be cleaned.</span></span><br><span class="line"><span class="meta">#  You can preserve files from being cleaned, please don't preserve</span></span><br><span class="line"><span class="meta">#  non-essential files like tests, examples and documentation.</span></span><br><span class="line"><span class="meta">#</span></span><br><span class="line"></span><br><span class="line"><span class="meta"># s.resource  = <span class="meta-string">"icon.png"</span></span></span><br><span class="line"><span class="meta"># s.resources = <span class="meta-string">"Resources/*.png"</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta"># s.preserve_paths = <span class="meta-string">"FilesToSave"</span>, <span class="meta-string">"MoreFilesToSave"</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta"># ――― Project Linking ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #</span></span><br><span class="line"><span class="meta">#</span></span><br><span class="line"><span class="meta">#  Link your library with frameworks, or libraries. Libraries do not include</span></span><br><span class="line"><span class="meta">#  the lib prefix of their name.</span></span><br><span class="line"><span class="meta">#</span></span><br><span class="line"></span><br><span class="line"><span class="meta"># s.framework  = <span class="meta-string">"SomeFramework"</span></span></span><br><span class="line"><span class="meta"># s.frameworks = 'CFNetwork', 'SystemConfiguration', 'Security'</span></span><br><span class="line"><span class="meta"># s.xcconfig = &#123;'CLANG_CXX_LIBRARY' =&gt; 'libstdc++'&#125;</span></span><br><span class="line"><span class="meta"># s.xcconfig = &#123; 'OTHER_LDFLAGS' =&gt; '-ObjC' &#125;</span></span><br><span class="line"><span class="meta"># s.library   = <span class="meta-string">"iconv"</span></span></span><br><span class="line"><span class="meta"># s.libraries = <span class="meta-string">"iconv"</span>, <span class="meta-string">"xml2"</span></span></span><br><span class="line"><span class="meta"># s.ios.library = 'c++', 'stdc++', 'z'</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta"># ――― Project Settings ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #</span></span><br><span class="line"><span class="meta">#</span></span><br><span class="line"><span class="meta">#  If your library depends on compiler flags you can set them in the xcconfig hash</span></span><br><span class="line"><span class="meta">#  where they will only apply to your library. If you depend on other Podspecs</span></span><br><span class="line"><span class="meta">#  you can include multiple dependencies to ensure it works.</span></span><br><span class="line"></span><br><span class="line">s.requires_arc = <span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="meta"># s.xcconfig = &#123; <span class="meta-string">"HEADER_SEARCH_PATHS"</span> =&gt; <span class="meta-string">"$(SDKROOT)/usr/include/libxml2"</span> &#125;</span></span><br><span class="line"><span class="meta"># s.dependency <span class="meta-string">"JSONKit"</span>, <span class="meta-string">"~&gt; 1.4"</span></span></span><br><span class="line"></span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<ul>
+<li>(3) <code>pod spec lint</code>检查podspec文件是否正确</li>
+</ul>
+<p><img src="http://i1.piimg.com/8311/83f7e4c2c3abf848.png" alt></p>
+<p>我遇到的报错:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">fenqiledeiMac:MyLib fenqile$ pod spec lint</span><br><span class="line"></span><br><span class="line">-&gt; TestLibSpec (1.0.2)</span><br><span class="line">- ERROR | [iOS] unknown: Encountered an unknown error ([!] /Applications/Xcode.app/Contents/Developer/usr/bin/git clone https://git.coding.net/xiongzenghui/TestLib.git /var/folders/jr/8nt_pqp16z5g83z3v4f78j280000gn/T/d20160713-19790-1caabet --template= --single-branch --depth 1 --branch v1.0.2</span><br><span class="line"></span><br><span class="line">Cloning into &apos;/var/folders/jr/8nt_pqp16z5g83z3v4f78j280000gn/T/d20160713-19790-1caabet&apos;...</span><br><span class="line">warning: Could not find remote branch v1.0.2 to clone.</span><br><span class="line">fatal: Remote branch v1.0.2 not found in upstream origin</span><br><span class="line">) during validation.</span><br><span class="line"></span><br><span class="line">Analyzed 1 podspec.</span><br><span class="line"></span><br><span class="line">[!] The spec did not pass validation, due to 1 error.</span><br></pre></td></tr></table></figure>
+<p>就是要在git库上存在这个<code>1.0.2</code>这个<code>Tag</code>，这个spec从这个分支拉去代码。其他的错误都很简单，按照提示解决即可。</p>
+<p>还有一些构建错误要注意:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1. 对于一些引用的其他第三方库头文件，最好不要在 .h 中使用，放到 .m 中去</span><br><span class="line">2. 如果使用到了，一定要使用 &lt;AFNetworking/AFNetworking.h&gt;，如果使用&quot;AFNetworking.h&quot;那么在pod lib lint会构建错误</span><br></pre></td></tr></table></figure>
+<ul>
+<li>(4) 将上面编写好的podspec文件push到spec文件git库</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pod repo push TestLibSpecRepo TestLibSpec.podspec</span><br></pre></td></tr></table></figure>
+<p>成功后提示信息如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">fenqiledeiMac:MyLib fenqile$ pod repo push TestLibSpecRepo TestLibSpec.podspec</span><br><span class="line"></span><br><span class="line">Validating spec</span><br><span class="line">-&gt; TestLibSpec (1.0.2)</span><br><span class="line"></span><br><span class="line">Updating the `TestLibSpecRepo&apos; repo</span><br><span class="line"></span><br><span class="line">Your configuration specifies to merge with the ref &apos;refs/heads/master&apos;</span><br><span class="line">from the remote, but no such ref was fetched.</span><br><span class="line"></span><br><span class="line">Adding the spec to the `TestLibSpecRepo&apos; repo</span><br><span class="line"></span><br><span class="line">- [Add] TestLibSpec (1.0.2)</span><br><span class="line"></span><br><span class="line">Pushing the `TestLibSpecRepo&apos; repo</span><br><span class="line"></span><br><span class="line">To https://git.coding.net/xiongzenghui/podspecgit.git</span><br><span class="line">* [new branch]      master -&gt; master</span><br></pre></td></tr></table></figure>
+<ul>
+<li>(5) <code>pod search TestLibSpec</code> 在本地spec的git库查询刚才pods库名字</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">-&gt; TestLibSpec (1.0.2)</span><br><span class="line">这是一个测试的pods源.</span><br><span class="line">pod &apos;TestLibSpec&apos;, &apos;~&gt; 1.0.2&apos;</span><br><span class="line">- Homepage: http://www.baidu.com</span><br><span class="line">- Source:   https://git.coding.net/xiongzenghui/TestLib.git</span><br><span class="line">- Versions: 1.0.2 [TestLibSpecRepo repo]</span><br></pre></td></tr></table></figure>
+<ul>
+<li>(6) 去CocoaPods的spec目录下查看我们添加的spec文件、以及spec git库发生的变化</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">fenqiledeiMac:TestLibSpecRepo fenqile$ cd ~/.cocoapods/</span><br><span class="line">fenqiledeiMac:.cocoapods fenqile$ ls</span><br><span class="line">repos</span><br><span class="line">fenqiledeiMac:.cocoapods fenqile$ cd repos/</span><br><span class="line">fenqiledeiMac:repos fenqile$ ls</span><br><span class="line">TestLibSpecRepo    master</span><br><span class="line">fenqiledeiMac:repos fenqile$ cd TestLibSpecRepo/</span><br><span class="line">fenqiledeiMac:TestLibSpecRepo fenqile$ ls</span><br><span class="line">TestLibSpec</span><br><span class="line">fenqiledeiMac:TestLibSpecRepo fenqile$ cd TestLibSpec/</span><br><span class="line">fenqiledeiMac:TestLibSpec fenqile$ ls</span><br><span class="line">1.0.2</span><br><span class="line">fenqiledeiMac:TestLibSpec fenqile$ cd 1.0.2/</span><br><span class="line">fenqiledeiMac:1.0.2 fenqile$ ls</span><br><span class="line">TestLibSpec.podspec</span><br><span class="line">fenqiledeiMac:1.0.2 fenqile$</span><br></pre></td></tr></table></figure>
+<p><img src="http://i4.piimg.com/8311/bb9f11bab3801011.png" alt></p>
+<p><img src="http://i4.piimg.com/8311/a7493f3fc6d6b18b.png" alt></p>
+<hr>
+<h3 id="新建立demo项目pods上马的库"><a href="#新建立demo项目pods上马的库" class="headerlink" title="新建立demo项目pods上马的库"></a>新建立demo项目pods上马的库</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># Uncomment this line to define a global platform for your project</span></span><br><span class="line"><span class="meta"># platform :ios, '9.0'</span></span><br><span class="line"></span><br><span class="line">target 'PodsDemo' do</span><br><span class="line"><span class="meta"># Uncomment this line if you're using Swift or would like to use dynamic frameworks</span></span><br><span class="line"><span class="meta"># use_frameworks!</span></span><br><span class="line"></span><br><span class="line">pod 'TestLibSpec', '~&gt; 1.0.2'</span><br><span class="line"></span><br><span class="line">target 'PodsDemoTests' do</span><br><span class="line">inherit! :search_paths</span><br><span class="line"><span class="meta"># Pods for testing</span></span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">target 'PodsDemoUITests' do</span><br><span class="line">inherit! :search_paths</span><br><span class="line"><span class="meta"># Pods for testing</span></span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<p>但是报错了:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">fenqiledeiMac:PodsDemo fenqile$ pod install</span><br><span class="line">Analyzing dependencies</span><br><span class="line">[!] Unable to find a specification for `TestLibSpec (~&gt; 1.0.2)`</span><br></pre></td></tr></table></figure>
+<p>原因是，pod install只会在master下<code>/Users/fenqile/.cocoapods/repos/master</code>搜索，但是我们的spec文件在<code>/Users/fenqile/.cocoapods/repos/TestLibSpecRepo/</code>目录下</p>
+<p>解决方法，在podfile文件最上添加指定加载spec的git库</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">#第一个地址: 指定搜索spec文件的git库地址</span><br><span class="line">source &quot;https://git.coding.net/xiongzenghui/podspecgit.git&quot;</span><br><span class="line"></span><br><span class="line">#第二个地址: 其他仍然从github下载的代码</span><br><span class="line">source &quot;https://github.com/CocoaPods/Specs.git&quot;</span><br><span class="line"></span><br><span class="line"># platform :ios, &apos;7.0&apos;</span><br><span class="line"></span><br><span class="line">target &apos;PodsDemo&apos; do</span><br><span class="line"># Uncomment this line if you&apos;re using Swift or would like to use dynamic frameworks</span><br><span class="line"># use_frameworks!</span><br><span class="line"></span><br><span class="line">pod &apos;TestLibSpec&apos;, &apos;~&gt; 1.0.2&apos;</span><br><span class="line"></span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<p>运行后成功如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">fenqiledeiMac:PodsDemo fenqile$ pod install</span><br><span class="line">Analyzing dependencies</span><br><span class="line">Downloading dependencies</span><br><span class="line">Installing TestLibSpec (1.0.2)</span><br><span class="line">Generating Pods project</span><br><span class="line">Integrating client project</span><br><span class="line"></span><br><span class="line">[!] Please close any current Xcode sessions and use `PodsDemo.xcworkspace` for this project from now on.</span><br><span class="line">Sending stats</span><br><span class="line">Pod installation complete! There is 1 dependency from the Podfile and 1 total pod installed.</span><br></pre></td></tr></table></figure>
+<p>在别的机器上进行pod时，使用<code>pod update</code></p>
+<p>如果CocoaPods软件版本过低，执行命令后会报错如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">Downloading dependencies</span><br><span class="line">Installing TestLibSpec (1.0.2)</span><br><span class="line">Generating Pods project</span><br><span class="line">2016-07-13 15:41:48.280 ruby[16797:10297231] [MT] DVTAssertions: ASSERTION FAILURE in /Library/Caches/com.apple.xbs/Sources/IDEFrameworks/IDEFrameworks-9548.1/IDEFoundation/Initialization/IDEInitialization.m:590</span><br><span class="line">Details:  Assertion failed: _initializationCompletedSuccessfully</span><br><span class="line">Function: BOOL IDEIsInitializedForUserInteraction()</span><br><span class="line">Thread:   &lt;NSThread: 0x7f985d0d1480&gt;&#123;number = 1, name = main&#125;</span><br><span class="line">Hints: None</span><br><span class="line">Backtrace:</span><br><span class="line">0  0x0000000105f70e1f -[DVTAssertionHandler handleFailureInFunction:fileName:lineNumber:assertionSignature:messageFormat:arguments:] (in DVTFoundation)</span><br><span class="line">1  0x0000000105f705ac _DVTAssertionHandler (in DVTFoundation)</span><br><span class="line">2  0x0000000105f70818 _DVTAssertionFailureHandler (in DVTFoundation)</span><br><span class="line">3  0x0000000105f7077a _DVTAssertionFailureHandler (in DVTFoundation)</span><br><span class="line">4  0x00000001074462cd IDEIsInitializedForUserInteraction (in IDEFoundation)</span><br><span class="line">5  0x000000010a064631 +[PBXProject projectWithFile:errorHandler:readOnly:] (in DevToolsCore)</span><br><span class="line">6  0x000000010a0661b6 +[PBXProject projectWithFile:errorHandler:] (in DevToolsCore)</span><br><span class="line">7  0x00007fff8810af44 ffi_call_unix64 (in libffi.dylib)</span><br><span class="line">Abort trap: 6</span><br></pre></td></tr></table></figure>
+<p>更新CocoaPods能够解决:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ sudo gem update --system // 先更新gem，国内需要切换源</span><br><span class="line">$ gem sources --remove https://rubygems.org/</span><br><span class="line">$ gem sources -a https://ruby.taobao.org/</span><br><span class="line">$ gem sources -l</span><br><span class="line">\*\*\* CURRENT SOURCES \*\*\*</span><br><span class="line">https://ruby.taobao.org/</span><br><span class="line">$ sudo gem install cocoapods // 安装cocoapods</span><br><span class="line">$ pod setup</span><br></pre></td></tr></table></figure>
+<h3 id="subspec使用"><a href="#subspec使用" class="headerlink" title="subspec使用"></a>subspec使用</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">s.subspec &apos;NetWorkEngine&apos; do |networkEngine|</span><br><span class="line">networkEngine.source_files = &apos;Pod/Classes/NetworkEngine/**/*&apos;</span><br><span class="line">networkEngine.public_header_files = &apos;Pod/Classes/NetworkEngine/**/*.h&apos;</span><br><span class="line">networkEngine.dependency &apos;AFNetworking&apos;, &apos;~&gt; 2.3&apos;</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">s.subspec &apos;DataModel&apos; do |dataModel|</span><br><span class="line">dataModel.source_files = &apos;Pod/Classes/DataModel/**/*&apos;</span><br><span class="line">dataModel.public_header_files = &apos;Pod/Classes/DataModel/**/*.h&apos;</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">s.subspec &apos;CommonTools&apos; do |commonTools|</span><br><span class="line">commonTools.source_files = &apos;Pod/Classes/CommonTools/**/*&apos;</span><br><span class="line">commonTools.public_header_files = &apos;Pod/Classes/CommonTools/**/*.h&apos;</span><br><span class="line">commonTools.dependency &apos;OpenUDID&apos;, &apos;~&gt; 1.0.0&apos;</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">s.subspec &apos;UIKitAddition&apos; do |ui|</span><br><span class="line">ui.source_files = &apos;Pod/Classes/UIKitAddition/**/*&apos;</span><br><span class="line">ui.public_header_files = &apos;Pod/Classes/UIKitAddition/**/*.h&apos;</span><br><span class="line">ui.resource = &quot;Pod/Assets/MLSUIKitResource.bundle&quot;</span><br><span class="line">ui.dependency &apos;PodTestLibrary/CommonTools&apos;</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<h3 id="维护更新podspec以及pod库代码步骤"><a href="#维护更新podspec以及pod库代码步骤" class="headerlink" title="维护更新podspec以及pod库代码步骤"></a>维护更新podspec以及pod库代码步骤</h3><ul>
+<li><p>(1) 修改pods库源代码，修改完之后打上一个<code>Tag</code>和代码一起push到git库</p>
+</li>
+<li><p>(2) 修改podspec文件中的<code>s.source:tag</code>对应commit的pods库源码（s.version.to_s表示最新commit）</p>
+</li>
+<li><p>(3) 使用pod lib lint 或 pod spec lint 验证Tag对于的pods库代码是否正确</p>
+</li>
+<li><p>(4) 如果验证错误，可以删除之前提交的Tag，然后按照提示继续修改pods库代码然后再次提交打上Tag</p>
+</li>
+<li><p>(5)删除Tag的步骤:</p>
+</li>
+<li>删除本地Tag、git tag -d Tag名字</li>
+<li><p>删除远程服务器上的Tag、git push origin :refs/tags/Tag名字</p>
+</li>
+<li><p>(6) 如果验证成功，先修改spec文件的版本（<code>s.version</code>），然后将spec文件push到spec文件的git服务器上</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pod repo push fenqile_pod_spec_repo xxx.podspec</span><br></pre></td></tr></table></figure>
+<h3 id="推送到CocoaPods服务器的pods库"><a href="#推送到CocoaPods服务器的pods库" class="headerlink" title="推送到CocoaPods服务器的pods库"></a>推送到CocoaPods服务器的pods库</h3><p>找了好久没有找到<code>私有库</code>之间进行依赖的，所以索性就做做<code>共有库</code>。</p>
+<ul>
+<li>首次使用trunk的时候，需要注册自己的电脑</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pod trunk register [E-mail] [User Name]</span><br></pre></td></tr></table></figure>
+<ul>
+<li>执行完成之后，会受到一封验证邮件，按邮件提示完成验证即可。注册流程完成之后，可以使用验证一下自己是否注册成功</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pod trunk me</span><br></pre></td></tr></table></figure>
+<ul>
+<li>将制作好的pods spec文件 推送到CocoaPods服务器</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pod trunk push xxxxx.podspec</span><br></pre></td></tr></table></figure>
+<p>如果是一些不是特别严重的warn警告</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pod trunk push xxxxx.podspec --allow-warnings</span><br></pre></td></tr></table></figure>
+<h3 id="当推送spec文件到CocoaPods服务器之后，提示Unable-to-find-a-pod-with-name-author-summary-or-descriptionmatching解决"><a href="#当推送spec文件到CocoaPods服务器之后，提示Unable-to-find-a-pod-with-name-author-summary-or-descriptionmatching解决" class="headerlink" title="当推送spec文件到CocoaPods服务器之后，提示Unable to find a pod with name, author, summary, or descriptionmatching解决"></a>当推送spec文件到CocoaPods服务器之后，提示<code>Unable to find a pod with name, author, summary, or descriptionmatching</code>解决</h3><ul>
+<li>首先尝试删除缓存文件</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm ~/Library/Caches/CocoaPods/search_index.json</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pod search xxx</span><br></pre></td></tr></table></figure>
+<ul>
+<li>如果还是报错，尝试更新pods</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pod setup</span><br></pre></td></tr></table></figure>
+<h3 id="在将项目中大部分互相关联的代码移除时，发现如上只适合类似AFNetworking这样很独立的库。因为互相关联的代码可能有一些代码拖不出来，就导致库工程报错。而一旦报错，CocoaPods不允许上传到服务器。"><a href="#在将项目中大部分互相关联的代码移除时，发现如上只适合类似AFNetworking这样很独立的库。因为互相关联的代码可能有一些代码拖不出来，就导致库工程报错。而一旦报错，CocoaPods不允许上传到服务器。" class="headerlink" title="在将项目中大部分互相关联的代码移除时，发现如上只适合类似AFNetworking这样很独立的库。因为互相关联的代码可能有一些代码拖不出来，就导致库工程报错。而一旦报错，CocoaPods不允许上传到服务器。"></a>在将项目中大部分互相关联的代码移除时，发现如上只适合类似AFNetworking这样很独立的库。因为互相关联的代码可能有一些代码拖不出来，就导致库工程报错。而一旦报错，CocoaPods不允许上传到服务器。</h3><p>所以，只能使用重新建立一个<code>静态库</code>工程。因为静态库工程<code>只做代码编译</code>，不做代码链接，就是说不回去查找这些声明的方法到底有没有真的实现函数。</p>
+<ul>
+<li>(1) 问题1、App工程已经pods了AFNetworking，但是创建的静态库工程中代码也使用到了AFNetworking，那静态库工程也需要pods一次AFNetworking吗？（文件）</li>
+</ul>
+<p>很明显，在静态库工程中，不应该继续pods下载AFNetworking代码了，要不然在App工程中就会有两份AFNetworking的代码了，虽然可能会由CocoaPods自动去改掉前缀。</p>
+<p>静态库工程既然只做编译，那么就可以将静态库工程中依赖的类文件的<code>头文件.h</code>拖到静态库工程中，就可以通过编译了。</p>
+<ul>
+<li>(2) 问题2、静态库中使用到了App工程中<code>定义 的变量</code>（变量）</li>
+</ul>
+<p>在静态库工程中，再附加上在App工程中所定义的变量的<code>声明</code>。注意，是声明，而不是定义。</p>
+<p>声明一个变量:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">extern const DDLogLevel ddLogLevel;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FOUNDATION_IMPORT const DDLogLevel ddLogLevel;</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="Mac-OS10-11-执行-“sudo-gem-install-cocoapods”-的时候出现问题：ERROR-While-executing-gem-…-Errno-EPERM-解决"><a href="#Mac-OS10-11-执行-“sudo-gem-install-cocoapods”-的时候出现问题：ERROR-While-executing-gem-…-Errno-EPERM-解决" class="headerlink" title="Mac OS10.11 执行 “sudo gem install cocoapods” 的时候出现问题：ERROR: While executing gem … (Errno::EPERM) 解决"></a>Mac OS10.11 执行 “sudo gem install cocoapods” 的时候出现问题：ERROR: While executing gem … (Errno::EPERM) 解决</h3><p>rvm是什么？为什么要安装rvm呢，因为rvm可以让你拥有多个版本的Ruby，并且可以在多个版本之间自由切换。<br>第一步：安装rvm</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -L get.rvm.io | bash -s stable</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">source ~/.rvm/scripts/rvm</span><br></pre></td></tr></table></figure>
+<p>等待终端加载完毕,后输入：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rvm -v</span><br></pre></td></tr></table></figure>
+<p>如果能显示版本好则安装成功了。</p>
+<p>第二步：安装ruby（cocoapods需要2.2.0以上的噢）</p>
+<p>列出ruby可安装的版本信息</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rvm list known</span><br></pre></td></tr></table></figure>
+<p>安装一个ruby版本</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rvm install 2.1.4</span><br></pre></td></tr></table></figure>
+<p>如果想设置为默认版本，可以用这条命令来完成</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rvm use 2.1.4 --default</span><br></pre></td></tr></table></figure>
+<p>查看已安装的ruby</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rvm list</span><br></pre></td></tr></table></figure>
+<p>卸载一个已安装ruby版本</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rvm remove 2.1.4</span><br></pre></td></tr></table></figure>
+<p>第三步：更换源</p>
+<p>查看已有的源</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gem source</span><br></pre></td></tr></table></figure>
+<p>显示会如下：</p>
+<p>CURRENT SOURCES<br><a href="http://rubygems.org/" target="_blank" rel="noopener">http://rubygems.org/</a><br>然后我们需要来修改更换源（由于国内被墙）所以要把源切换至淘宝镜像服务器 在终端执行以下命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">gem update --system</span><br><span class="line">gem uninstall rubygems-update</span><br><span class="line">gem sources -r http://rubygems.org/</span><br><span class="line">gem sources -a http://ruby.taobao.org</span><br></pre></td></tr></table></figure>
+<p>第四步：<br>安装好ruby 更新完gem后，就可以执行 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo gem install -n /usr/local/bin cocoapods --pre</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="但是发现CocoaPods不适合当前我的情况，因为我是把一些互相关联的代码只是移到静态库工程，但是有一些代码还是需要依赖App工程中却无法移到静态库工程。静态库工程就会缺失一些方法实现的-m文件，虽然是可以通过编译，但是最后使用CocoaPods验证的时候就会报错，无法走面的流程。"><a href="#但是发现CocoaPods不适合当前我的情况，因为我是把一些互相关联的代码只是移到静态库工程，但是有一些代码还是需要依赖App工程中却无法移到静态库工程。静态库工程就会缺失一些方法实现的-m文件，虽然是可以通过编译，但是最后使用CocoaPods验证的时候就会报错，无法走面的流程。" class="headerlink" title="但是发现CocoaPods不适合当前我的情况，因为我是把一些互相关联的代码只是移到静态库工程，但是有一些代码还是需要依赖App工程中却无法移到静态库工程。静态库工程就会缺失一些方法实现的.m文件，虽然是可以通过编译，但是最后使用CocoaPods验证的时候就会报错，无法走面的流程。"></a>但是发现CocoaPods不适合当前我的情况，因为我是把一些互相关联的代码只是移到静态库工程，但是有一些代码还是需要依赖App工程中却无法移到静态库工程。静态库工程就会缺失一些方法实现的.m文件，虽然是可以通过编译，但是最后使用CocoaPods验证的时候就会报错，无法走面的流程。</h3><p>所以，适用于CocoaPods管理的库代码，只能是能够被编译、链接、运行通过的代码。即使有依赖，也只能通过CocoaPods来下载引入CocoaPods自己识别的源对于的代码。</p>
+<p>无法通过CocoaPods来处理，通过git的submodule来解决，自动让主App工程的git库拉去我们静态库工程的git库代码。</p>
+<hr>
+<h3 id="Git-Submodule"><a href="#Git-Submodule" class="headerlink" title="Git Submodule"></a>Git Submodule</h3><p>首先是当前App项目中一些公共代码进行结构划分:</p>
+<ul>
+<li>(1) App主工程，有一个git库</li>
+<li>(2) 封装所有Commom层代码的静态库工程，也有一个git库</li>
+<li>(3) 以后还可能陆续添加的各种子模块的git库</li>
+<li>Network Request</li>
+<li>Font Manager</li>
+<li>等等这些就可以做成一个单独独立的CocoaPods源</li>
+</ul>
+<p>被抽出来的一套公用代码库，可以被多个App工程中引入调用。如果是手动进行拷贝到多个App工程中，还是比较麻烦的，每次公用代码工程修改后，又必须手动导入一次。对于公用代码的版本也不好管理。</p>
+<p>Git提供了这种情况的解决方法 &gt;&gt;&gt; git submodule（git子模块）。</p>
+<ul>
+<li>(1) 对应的每一个公用代码工程由一个远程git服务器仓库管理</li>
+<li>(2) git submodule则允许一个git仓库下，包含其他n多个<code>子git仓库</code></li>
+<li>(3) 可以让多个公用库的代码保持独立，按需拉区其各自git上的更新</li>
+</ul>
+<p>下面是对git submodule的使用步骤记录。</p>
+<hr>
+<h3 id="在主工程git库上注册一个子模块git库-gt-gt-gt-git-submodule-add"><a href="#在主工程git库上注册一个子模块git库-gt-gt-gt-git-submodule-add" class="headerlink" title="在主工程git库上注册一个子模块git库 &gt;&gt;&gt; git submodule add"></a>在主工程git库上注册一个子模块git库 &gt;&gt;&gt; git submodule add</h3><ul>
+<li>(1) 在主App工程的git库中，添加 submudule git库，会将子git库clone到主App工程的指定的目录下</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git submodule add 仓库地址 路径</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">fenqiledeiMac:MyLib fenqile$ git submodule add http://xxxxx.git Commom</span><br><span class="line">Cloning into &apos;Commom&apos;...</span><br><span class="line">remote: 对象计数中: 550, 完成.</span><br><span class="line">remote: 压缩对象中: 100% (414/414), 完成.</span><br><span class="line">remote: Total 550 (delta 132), reused 472 (delta 107)</span><br><span class="line">Receiving objects: 100% (550/550), 430.91 KiB | 0 bytes/s, done.</span><br><span class="line">Resolving deltas: 100% (132/132), done.</span><br><span class="line">Checking connectivity... done.</span><br></pre></td></tr></table></figure>
+<p>会在当前工程根路径下生成一个名为“.gitmodules”的文件，其中记录了子模块git库的信息</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[submodule &quot;Commom&quot;]</span><br><span class="line">path = Commom</span><br><span class="line">url = http://xxxx.git</span><br></pre></td></tr></table></figure>
+<ul>
+<li>(2) 对主工程git库提交前面发生的变化</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cd 主工程根下的.git位置</span><br><span class="line">git add .</span><br><span class="line">git commit -m &quot;....&quot;</span><br><span class="line">git push origin 分支</span><br></pre></td></tr></table></figure>
+<ul>
+<li>(3) 登陆主工程的git管理后台查看是否push成功</li>
+</ul>
+<p><img src="http://i2.piimg.com/8311/db2d4e6d567809cc.png" alt></p>
+<p>可以查看此次push的一些什么东西？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[submodule &quot;Commom&quot;]</span><br><span class="line">path = Commom</span><br><span class="line">url = http://..........................git</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Subproject commit ........................7c58</span><br></pre></td></tr></table></figure>
+<p>截图如下所示:</p>
+<p><img src="http://i2.piimg.com/8311/c0c035a6d7d30520.png" alt></p>
+<p>也就是说在主工程中，使用了一个名字为<code>Commom</code>文件，记录了<code>子工程git库</code>中的某一个commit提交id，和<code>子工程git库</code>的url地址。</p>
+<p>至此，submodule git库已经成功添加到主工程的git库中了。</p>
+<hr>
+<h3 id="在主工程的git库，拉取子模块git库拉的更新"><a href="#在主工程的git库，拉取子模块git库拉的更新" class="headerlink" title="在主工程的git库，拉取子模块git库拉的更新"></a>在主工程的git库，拉取子模块git库拉的更新</h3><p>当添加完子模块后，过段时间后子模块有更新，这时候就需要更新了。</p>
+<ul>
+<li>(1) 第一次clone整个主工程项目</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git clone App主工程git库 存放目录</span><br><span class="line"></span><br><span class="line">// 自动拉去submodule git仓库master分支最新代码</span><br><span class="line">git submodule add http://xxxxx.git Commom</span><br></pre></td></tr></table></figure>
+<ul>
+<li>(2) 非首次clone整个主工程项目</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">//获取静态库工程git库中最新commit id</span><br><span class="line">git submodule init</span><br><span class="line"></span><br><span class="line">//将最新comimit id 写入到主工程目录下的记录文件中</span><br><span class="line">git submodule update</span><br><span class="line"></span><br><span class="line">//拉取静态库工程git库最新代码</span><br><span class="line">git submodule foreach git pull / git submodule foreach git pull origin master</span><br></pre></td></tr></table></figure>
+<p>对于submodule的代码，最好都是放在<code>master分支</code>上。</p>
+<ul>
+<li>(3) 主工程拉取了子模块git库拉的更新后，会修改之前的<code>Commom</code>文件保存最新的submodule的commit</li>
+</ul>
+<p><img src="http://i4.piimg.com/8311/9fc2ad4f6f2e7c12.png" alt></p>
+<hr>
+<h3 id="对submodule-git库代码的修改"><a href="#对submodule-git库代码的修改" class="headerlink" title="对submodule git库代码的修改"></a>对submodule git库代码的修改</h3><ul>
+<li>(1) 进入到子工程的目录下进行修改代码</li>
+<li>(2) 修改完后，提交到submodule自己的git上得master分支</li>
+</ul>
+<hr>
+<h3 id="移除submodule"><a href="#移除submodule" class="headerlink" title="移除submodule"></a>移除submodule</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ cd your_project</span><br><span class="line">$ git rm --cached another_project</span><br><span class="line">$ rm -rf another_project</span><br><span class="line">$ vim .gitmodules</span><br><span class="line">...remove another_project...</span><br><span class="line">$ vim .git/config</span><br><span class="line">...remove another_project...</span><br><span class="line">$ git commit -a -m &apos;Remove another_project submodule&apos;</span><br></pre></td></tr></table></figure>
+<p>有几步的删除操作要手动完成。</p>
+<h3 id="导入嵌套的静态库工程，导致主工程无法Archive"><a href="#导入嵌套的静态库工程，导致主工程无法Archive" class="headerlink" title="导入嵌套的静态库工程，导致主工程无法Archive"></a>导入嵌套的静态库工程，导致主工程无法Archive</h3><p>解决，将静态库中的所有源文件拖到Project区域</p>
+<hr>
+<h3 id="学习来源"><a href="#学习来源" class="headerlink" title="学习来源"></a>学习来源</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">http://www.cocoachina.com/ios/20150228/11206.html</span><br><span class="line">http://re-reference.iteye.com/blog/1755097</span><br><span class="line">http://www.tuicool.com/articles/jqiEJzU</span><br><span class="line">http://www.cocoachina.com/industry/20130509/6161.html</span><br><span class="line">http://blog.csdn.net/bailyzheng/article/details/33405103</span><br><span class="line">组内的微信大大高手亲手指点</span><br></pre></td></tr></table></figure>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2017/07/13/CocoaPods-module-source/" data-title="CocoaPods module source | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2017/08/09/BaseTableViewController设计/" title="BaseTableViewController设计">
+  <strong>上一篇：</strong><br>
+  <span>
+  BaseTableViewController设计</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/07/01/Autolayout2/" title="Autolayout2">
+ <strong>下一篇：</strong><br> 
+ <span>Autolayout2
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/07/13/CocoaPods-module-source/" data-title="CocoaPods module source" data-url="http://yoursite.com/2017/07/13/CocoaPods-module-source/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#使用CocoaPods来单独管理封装的可复用的控件"><span class="toc-number">1.</span> <span class="toc-text">使用CocoaPods来单独管理封装的可复用的控件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Cocoapods是非常好用的一个iOS依赖管理工具，使用它可以方便的管理和更新项目中所使用到的第三方库，以及将自己的项目中的公共组件交由它去管理。"><span class="toc-number">2.</span> <span class="toc-text">Cocoapods是非常好用的一个iOS依赖管理工具，使用它可以方便的管理和更新项目中所使用到的第三方库，以及将自己的项目中的公共组件交由它去管理。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#安装完CocoaPods后，执行的一条命令-pos-setup-的作用"><span class="toc-number">3.</span> <span class="toc-text">安装完CocoaPods后，执行的一条命令 pos setup 的作用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#podspec文件"><span class="toc-number">4.</span> <span class="toc-text">podspec文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#去创建一个存放库代码的git库（简称git库1）"><span class="toc-number">5.</span> <span class="toc-text">去创建一个存放库代码的git库（简称git库1）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#配置podspec的git库（简称git库2）"><span class="toc-number">6.</span> <span class="toc-text">配置podspec的git库（简称git库2）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#进入到git库1根目录下，编写podspec文件"><span class="toc-number">7.</span> <span class="toc-text">进入到git库1根目录下，编写podspec文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#新建立demo项目pods上马的库"><span class="toc-number">8.</span> <span class="toc-text">新建立demo项目pods上马的库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#subspec使用"><span class="toc-number">9.</span> <span class="toc-text">subspec使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#维护更新podspec以及pod库代码步骤"><span class="toc-number">10.</span> <span class="toc-text">维护更新podspec以及pod库代码步骤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#推送到CocoaPods服务器的pods库"><span class="toc-number">11.</span> <span class="toc-text">推送到CocoaPods服务器的pods库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#当推送spec文件到CocoaPods服务器之后，提示Unable-to-find-a-pod-with-name-author-summary-or-descriptionmatching解决"><span class="toc-number">12.</span> <span class="toc-text">当推送spec文件到CocoaPods服务器之后，提示Unable to find a pod with name, author, summary, or descriptionmatching解决</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#在将项目中大部分互相关联的代码移除时，发现如上只适合类似AFNetworking这样很独立的库。因为互相关联的代码可能有一些代码拖不出来，就导致库工程报错。而一旦报错，CocoaPods不允许上传到服务器。"><span class="toc-number">13.</span> <span class="toc-text">在将项目中大部分互相关联的代码移除时，发现如上只适合类似AFNetworking这样很独立的库。因为互相关联的代码可能有一些代码拖不出来，就导致库工程报错。而一旦报错，CocoaPods不允许上传到服务器。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Mac-OS10-11-执行-“sudo-gem-install-cocoapods”-的时候出现问题：ERROR-While-executing-gem-…-Errno-EPERM-解决"><span class="toc-number">14.</span> <span class="toc-text">Mac OS10.11 执行 “sudo gem install cocoapods” 的时候出现问题：ERROR: While executing gem … (Errno::EPERM) 解决</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#但是发现CocoaPods不适合当前我的情况，因为我是把一些互相关联的代码只是移到静态库工程，但是有一些代码还是需要依赖App工程中却无法移到静态库工程。静态库工程就会缺失一些方法实现的-m文件，虽然是可以通过编译，但是最后使用CocoaPods验证的时候就会报错，无法走面的流程。"><span class="toc-number">15.</span> <span class="toc-text">但是发现CocoaPods不适合当前我的情况，因为我是把一些互相关联的代码只是移到静态库工程，但是有一些代码还是需要依赖App工程中却无法移到静态库工程。静态库工程就会缺失一些方法实现的.m文件，虽然是可以通过编译，但是最后使用CocoaPods验证的时候就会报错，无法走面的流程。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Git-Submodule"><span class="toc-number">16.</span> <span class="toc-text">Git Submodule</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#在主工程git库上注册一个子模块git库-gt-gt-gt-git-submodule-add"><span class="toc-number">17.</span> <span class="toc-text">在主工程git库上注册一个子模块git库 &gt;&gt;&gt; git submodule add</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#在主工程的git库，拉取子模块git库拉的更新"><span class="toc-number">18.</span> <span class="toc-text">在主工程的git库，拉取子模块git库拉的更新</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#对submodule-git库代码的修改"><span class="toc-number">19.</span> <span class="toc-text">对submodule git库代码的修改</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#移除submodule"><span class="toc-number">20.</span> <span class="toc-text">移除submodule</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#导入嵌套的静态库工程，导致主工程无法Archive"><span class="toc-number">21.</span> <span class="toc-text">导入嵌套的静态库工程，导致主工程无法Archive</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#学习来源"><span class="toc-number">22.</span> <span class="toc-text">学习来源</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
