@@ -74,6 +74,203 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
+    <a href="/2017/01/12/objection/" title="objection" itemprop="url">
+  
+    <h1 itemprop="name">objection</h1>
+    
+     
+           <p itemprop="description">Objection能干什么？
+objection 是一个轻量级的依赖注入的实现框架.
+
+依赖注入的概念
+
+角色1、接口，即抽象方法集合.
+
+角色2、接口的实现，定义一个具体类，具体实现接口中定义的所有的抽象方法
+
+角色3、注入器或工厂，负责完成如下几件事
+
+事情1、管理一系列的接</p>
+        
+    
+    <time datetime="2017-01-11T16:37:19.000Z" itemprop="datePublished">2017-01-12</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2017/01/10/LaunchImage和LaunchScreen-xib的作用/" title="LaunchImage和LaunchScreen.xib的作用" itemprop="url">
+  
+    <h1 itemprop="name">LaunchImage和LaunchScreen.xib的作用</h1>
+    
+     
+           <p itemprop="description">这两个东西都都是用来设置App的启动图。
+
+在iOS7与iOS8以上，LaunchImage和LaunchScreen.xib设置的问题
+二者存在的问题
+问题1) 在iOS8中，如果同时设置LaunchImage和LaunchScreen.xib的启动图，那么只调用LaunchS</p>
+        
+    
+    <time datetime="2017-01-10T12:08:45.000Z" itemprop="datePublished">2017-01-10</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2017/01/08/CFSocket底层网络请求/" title="CFSocket底层网络请求" itemprop="url">
+  
+    <h1 itemprop="name">CFSocket底层网络请求</h1>
+    
+     
+           <p itemprop="description">刚好今天回看自己之前的文章，突然不经意看到了CFSocket最终使用NSMachPort完成向用户子线程发送获取到的网络数据这个部分，所以觉得还是有必要仔细学习一下这个部分做的一些事情.
+网络请求delegate回调 使用到了 RunLoop + Mach Port完成不同线程之</p>
+        
+    
+    <time datetime="2017-01-08T03:40:16.000Z" itemprop="datePublished">2017-01-08</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2017/01/06/App-Start-Task-Queue/" title="App Start Task Queue" itemprop="url">
+  
+    <h1 itemprop="name">App Start Task Queue</h1>
+    
+     
+           <p itemprop="description">通常App程序启动，我们需要做一些初始化事件:
+选择最优网络通道
+加载初始化服务器数据
+版本更新监测
+
+
+但是希望有一个Manager类，来管理所有的Task，让每一种不同的业务单独封装到一个Task类中.
+那么，可以单独抽一个启动任务管理Manager类接下来开始抽象出需要的角</p>
+        
+    
+    <time datetime="2017-01-06T10:54:04.000Z" itemprop="datePublished">2017-01-06</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2017/01/05/APNS优化/" title="APNS优化" itemprop="url">
+  
+    <h1 itemprop="name">APNS优化</h1>
+    
+     
+           <p itemprop="description">苹果对ios push发送的长度有限制(官方文档提示ios 8以下是256byte，ios 8以上是2k，目前从发送反馈来看，一致定位256byte) ，其中包括push的属性字段。所以为了提高push中字段尽可能多一些，只能通过缩减push属性字段的长度
+
+
+序号
+修改前
+修改</p>
+        
+    
+    <time datetime="2017-01-05T03:53:18.000Z" itemprop="datePublished">2017-01-05</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2017/01/05/Ping-Host-Select-Best-NetworkConnection/" title="Ping Host Select Best NetworkConnection" itemprop="url">
+  
+    <h1 itemprop="name">Ping Host Select Best NetworkConnection</h1>
+    
+     
+           <p itemprop="description">获取当前手机的dns1234567891011121314#import &amp;lt;netinet/in.h&amp;gt;#import &amp;lt;netdb.h&amp;gt;#import &amp;lt;ifaddrs.h&amp;gt;#import &amp;lt;arpa/inet.h&amp;gt;#import </p>
+        
+    
+    <time datetime="2017-01-05T03:11:46.000Z" itemprop="datePublished">2017-01-05</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/12/20/weibo/" title="weibo" itemprop="url">
+  
+    <h1 itemprop="name">weibo</h1>
+    
+     
+           <p itemprop="description">###自己模仿Sina Weibo做了一个Demo，记录一下。
+
+###使用CocoaPods导入第三方的框架
+1234567891011121314151617181920212223242526#自动布局pod &amp;apos;Masonry&amp;apos;				#依赖注入pod </p>
+        
+    
+    <time datetime="2016-12-20T06:51:04.000Z" itemprop="datePublished">2016-12-20</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/11/20/UIWindow/" title="UIWindow" itemprop="url">
+  
+    <h1 itemprop="name">UIWindow</h1>
+    
+     
+           <p itemprop="description">UIScreen、UIWindow、UIView三者之间的关系
+(1) UIScreen为硬件设备的屏幕抽象，其中一个属性是整个屏幕区域bounds
+
+(2) UIWindow为内容显示提供背景平台，一个App程序必须至少要有一个UIWindow，否则不会显示任何的东西
+
+
+12</p>
+        
+    
+    <time datetime="2016-11-20T09:21:06.000Z" itemprop="datePublished">2016-11-20</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
     <a href="/2016/09/26/Runtime-Part13-TypeEncodings/" title="Runtime Part13 TypeEncodings" itemprop="url">
   
     <h1 itemprop="name">Runtime Part13 TypeEncodings</h1>
@@ -117,212 +314,9 @@
 
 
 
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/09/25/Runtime-Part11-NSInvocation/" title="Runtime Part11 NSInvocation" itemprop="url">
-  
-    <h1 itemprop="name">Runtime Part11 NSInvocation</h1>
-    
-     
-           <p itemprop="description">NSInvocation学习记录首先看一个简单的示例代码
-1234567891011121314151617181920212223242526//1. 创建要调用方法的SEL标识SEL myMethod = @selector(myLog:parm:parm:);//2. 设置</p>
-        
-    
-    <time datetime="2016-09-24T16:39:25.000Z" itemprop="datePublished">2016-09-25</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/09/24/Runtime-Part10-Forward/" title="Runtime Part10 Forward" itemprop="url">
-  
-    <h1 itemprop="name">Runtime Part10 Forward</h1>
-    
-     
-           <p itemprop="description">完整的消息转发阶段
-foward to a target 
-forward with NSInvocation
-
-
-当向对象或类发送一个没有对应方法实现的消息SEL时，由系统自动调用消息转发的几个系统函数。注意： 必须是执行一个不存在方法实现的SEL，才会调用如下的几个函数.
-
-</p>
-        
-    
-    <time datetime="2016-09-23T16:26:56.000Z" itemprop="datePublished">2016-09-24</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/09/24/Runtime-Part9-Resolve/" title="Runtime Part9  Resolve" itemprop="url">
-  
-    <h1 itemprop="name">Runtime Part9  Resolve</h1>
-    
-     
-           <p itemprop="description">在没有找到发送消息中的SEL对应的Method时，系统会调用指定的系统函数，来处理这种情况.
-可以是实现方法拦截的思路之一.
-
-本文介绍使用 Resolve 动态决议的方式处理 没有找到 SEL对应的方法实现时进行消息转发.
-动态方法决议、可以对类方法与对象方法进行拦截对象方法、</p>
-        
-    
-    <time datetime="2016-09-23T16:18:44.000Z" itemprop="datePublished">2016-09-24</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/09/24/Runtime-Part8-Associate/" title="Runtime Part8 Associate" itemprop="url">
-  
-    <h1 itemprop="name">Runtime Part8 Associate</h1>
-    
-     
-           <p itemprop="description">在运行时，给对象关联一个其他对象，解决分类无法添加变量的缺陷.
-Category只能添加方法，而不能添加成员变量
-
-动态添加成员变量，只能由object associate完成
-
-主要是两个c函数
-
-
-123456789101. 把一个对象与另外一个对象进行关联objc_setA</p>
-        
-    
-    <time datetime="2016-09-23T16:13:26.000Z" itemprop="datePublished">2016-09-24</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/09/23/Runtime-Part7-Method/" title="Runtime Part7 Method" itemprop="url">
-  
-    <h1 itemprop="name">Runtime Part7 Method</h1>
-    
-     
-           <p itemprop="description">Method: 抽象一个方法的结构体类型
-Method定义为objc_method结构体类型的一个指针类型
-
-1typedef struct objc_method *Method;
-Method本身就是一个指针类型，所以不要使用如下代码
-1Method * method = .</p>
-        
-    
-    <time datetime="2016-09-23T15:48:52.000Z" itemprop="datePublished">2016-09-23</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/09/23/Runtime-Part6-MetaClass/" title="Runtime Part6 MetaClass" itemprop="url">
-  
-    <h1 itemprop="name">Runtime Part6 MetaClass</h1>
-    
-     
-           <p itemprop="description">Meta Class 元类年前在看YYModel源码，刚好碰到关于MetaClass相关东西，之前也一直模模糊糊。过年在家休息没事就学习学习，新的码农一年又开始了…
-
-Objective-c 中的 每一个类 如: Person类 其实包含两部分一、普通类（类本身）
-如、Perso</p>
-        
-    
-    <time datetime="2016-09-23T15:46:40.000Z" itemprop="datePublished">2016-09-23</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/09/23/Runtime-Part5-Class/" title="Runtime Part5 Class" itemprop="url">
-  
-    <h1 itemprop="name">Runtime Part5 Class</h1>
-    
-     
-           <p itemprop="description">通常我们编写一个类并继承自NSObject，然后编写所有的变量、所有的方法、以及实现的所有的协议….Foundation中提供了两个根类NSObject、平时使用最多的根类，提供了很多我们常用的api基本的功能
-
-(BOOL)isEqual:(id)object;@propert</p>
-        
-    
-    <time datetime="2016-09-23T12:39:52.000Z" itemprop="datePublished">2016-09-23</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/09/23/Runtime-Part4-Ivar-Property/" title="Runtime Part4 Ivar Property" itemprop="url">
-  
-    <h1 itemprop="name">Runtime Part4 Ivar Property</h1>
-    
-     
-           <p itemprop="description">成员变量 与 属性 是不同的
-成员变量 Ivar
-
-
-仅仅只是一个对象的内部使用的 变量
-
-
-属性 Property
-
-
-首先包括成员变量，并且还包括对成员变量操作的 setter方法与getter方法
-
-
-成员变量的相关操作#Ivar 结构体定义1typedef struct </p>
-        
-    
-    <time datetime="2016-09-23T11:21:10.000Z" itemprop="datePublished">2016-09-23</time>
-  </a>
-</section>
-
-
-
-
-
-
 
   <nav id="page-nav" class="clearfix unexpand">
-    <a class="extend prev" rel="prev" href="/page/4/"><span></span>Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/6/">Next<span></span></a>
+    <a class="extend prev" rel="prev" href="/page/4/"><span></span>Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/6/">Next<span></span></a>
   </nav>
 
 </div>

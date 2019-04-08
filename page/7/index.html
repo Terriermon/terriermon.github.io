@@ -74,6 +74,227 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
+    <a href="/2016/09/21/Runtime-Part1-认识/" title="Runtime Part1 认识" itemprop="url">
+  
+    <h1 itemprop="name">Runtime Part1 认识</h1>
+    
+     
+           <p itemprop="description">运行时系统组成部分: 编译器 和 运行时动态链接库
+编译器、做的事情
+
+
+(1) 在程序编译期间负责完成一些Objetive-C代码编译生成c代码
+(2) 而这些被编译的c代码不仅仅只是普通的c代码，而是使用了运行时系统库中api的代码
+
+
+运行时链接库、组成结构
+
+
+(1) 类</p>
+        
+    
+    <time datetime="2016-09-20T18:31:21.000Z" itemprop="datePublished">2016-09-21</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/08/05/iOS-common-crash-problem/" title="iOS common crash problem" itemprop="url">
+  
+    <h1 itemprop="name">iOS common crash problem</h1>
+    
+     
+           <p itemprop="description">常见问题整理
+Array的一些崩溃
+(1) 数组对象是id类型，并不清楚到底是可变还是不可变
+
+12id array = [NSArray new];[array addObject:@&#34;111&#34;];
+
+(2) 添加一个nil到数组对象
+
+12id array = [NSMuta</p>
+        
+    
+    <time datetime="2016-08-05T03:47:42.000Z" itemprop="datePublished">2016-08-05</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/08/01/APNS远程推送/" title="APNS远程推送" itemprop="url">
+  
+    <h1 itemprop="name">APNS远程推送</h1>
+    
+     
+           <p itemprop="description">###推送通知简介
+
+此通知不是NSNotificationCenter发出的通知NSNotification，而是推送通知。
+
+推送通知主要用途
+
+App 与 APNS苹果服务器 之间的交互
+确切的说让不在前台运行的App被动触发做一些事情
+
+推送通知的分类
+
+1) 远程推送通</p>
+        
+    
+    <time datetime="2016-08-01T14:58:52.000Z" itemprop="datePublished">2016-08-01</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/07/31/APNS推送证书配置/" title="APNS推送证书配置" itemprop="url">
+  
+    <h1 itemprop="name">APNS推送证书配置</h1>
+    
+     
+           <p itemprop="description">好久以前弄过APNS推送证书的配置，忘记了…今天又要搞，弄了好久才搞定，做个笔记.
+主要关键:
+
+Xcode工程的Bundle Id
+Apple开发中中心配置的App Id
+推送证书对应的App Id
+
+这三个Id必须一致.
+
+下面给出操作步骤截图:
+No1. 进入Applde开</p>
+        
+    
+    <time datetime="2016-07-31T14:13:18.000Z" itemprop="datePublished">2016-07-31</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/06/03/UITableViewCell的一些优化/" title="UITableViewCell的一些优化" itemprop="url">
+  
+    <h1 itemprop="name">UITableViewCell的一些优化</h1>
+    
+     
+           <p itemprop="description">编写一个自定义UITableViewCell的基本步骤新建一个UITableViewCell子类
+重写initWithStyle:方法
+创建所有的UI Subviews实例将所有的subviews实例添加到UITableViewCell.contentView对一些subview</p>
+        
+    
+    <time datetime="2016-06-03T12:28:07.000Z" itemprop="datePublished">2016-06-03</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/03/01/UIControl/" title="UIControl" itemprop="url">
+  
+    <h1 itemprop="name">UIControl</h1>
+    
+     
+           <p itemprop="description">UIControl是继承自UIView，所以其实UIControl也是一个UI控件
+
+UIControl就是一个最简单的UIView子类，只具备接收事件的功能，其他显示的子控件什么的都没有
+
+UIControl适用于自定义一些接收事件、内部非常规的subviews的自定义UI控件</p>
+        
+    
+    <time datetime="2016-02-29T16:59:13.000Z" itemprop="datePublished">2016-03-01</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/02/23/nil-nsnull-null-kcfnull/" title="nil-nsnull-null-kcfnull" itemprop="url">
+  
+    <h1 itemprop="name">nil-nsnull-null-kcfnull</h1>
+    
+     
+           <p itemprop="description">NULL
+
+c语法中的指针
+1char *p = NULL;
+
+nil
+
+ObjC 对象的字面空值，对应 id 类型的对象
+123NSString *someString = nil;NSURL *someURL = nil;id someObject = nil;
+
+Nil
+
+</p>
+        
+    
+    <time datetime="2016-02-23T08:33:08.000Z" itemprop="datePublished">2016-02-23</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/02/16/枚举Mask/" title="枚举Mask" itemprop="url">
+  
+    <h1 itemprop="name">枚举Mask</h1>
+    
+     
+           <p itemprop="description">Mask 掩码，用于截取获得低n位的枚举值，让枚举值之间可以使用运算符|相加
+带Mask掩码的枚举值定义
+
+12345678910111213141516typedef NS_OPTIONS(NSInteger, Test) &amp;#123;TestIvarMask         </p>
+        
+    
+    <time datetime="2016-02-16T07:36:05.000Z" itemprop="datePublished">2016-02-16</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
     <a href="/2016/01/21/NSCharacterSet/" title="NSCharacterSet" itemprop="url">
   
     <h1 itemprop="name">NSCharacterSet</h1>
@@ -126,204 +347,9 @@
 
 
 
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/01/17/设计模式-策略模式/" title="设计模式-策略模式" itemprop="url">
-  
-    <h1 itemprop="name">设计模式-策略模式</h1>
-    
-     
-           <p itemprop="description">策略、将多种条件路径if-elseif中的业务逻辑，封装成一个单独的策略实现类.123456789101112131415if (满足条件1) &amp;#123;执行逻辑1&amp;#125; else if (满足条件2) &amp;#123;执行逻辑2&amp;#125; else if (满足条件3) </p>
-        
-    
-    <time datetime="2016-01-17T08:21:54.000Z" itemprop="datePublished">2016-01-17</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/01/16/设计模式-状态模式/" title="设计模式-状态模式" itemprop="url">
-  
-    <h1 itemprop="name">设计模式-状态模式</h1>
-    
-     
-           <p itemprop="description">状态机、将一个事物的不同的状态执行的业务逻辑，单独封装到一个对应状态实现类中去.
-抽象状态12345678910111213141516171819202122////  State.h//  demos//#import &amp;lt;Foundation/Foundation.h&amp;</p>
-        
-    
-    <time datetime="2016-01-16T08:11:54.000Z" itemprop="datePublished">2016-01-16</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/01/15/设计模式-观察者模式/" title="设计模式-观察者模式" itemprop="url">
-  
-    <h1 itemprop="name">设计模式-观察者模式</h1>
-    
-     
-           <p itemprop="description">观察者、某个对象的值改变时，通知所有注册过的对象做出处理，类似响应式.
-假设某个页面获取了钱包的最新钱数量，那么返回到其他页面同样也需要保持这个最新钱数量，要不然就造成钱数量不统一。
-那么在多个页面同步最新网络数据办法:
-每个页面都发一次请求，获取最新数据
-
-一个页面触发请求，获</p>
-        
-    
-    <time datetime="2016-01-15T07:42:40.000Z" itemprop="datePublished">2016-01-15</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/01/14/设计模式-中介者模式/" title="设计模式-中介者模式" itemprop="url">
-  
-    <h1 itemprop="name">设计模式-中介者模式</h1>
-    
-     
-           <p itemprop="description">中介者、通过中间者解耦 消息发送者与消息接收者 之间的强耦合.
-消息发送者和消息接受者都需要实现的协议1234567891011121314151617181920212223242526////  MediaContact.h//  demos////  Created by </p>
-        
-    
-    <time datetime="2016-01-14T07:01:51.000Z" itemprop="datePublished">2016-01-14</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/01/13/设计模式-命令模式/" title="设计模式-命令模式" itemprop="url">
-  
-    <h1 itemprop="name">设计模式-命令模式</h1>
-    
-     
-           <p itemprop="description">命令模式、将如下两个部分的工作分割开来
-
-一、谁发出的命令
-二、谁来执行命令
-
-也就是说将二者分开:
-
-命令发出者
-接收到一个命令后的处理者
-
-命令模式的大概过程:
-
-首先对一条命令进行封装，包含:
-指定命令的接收者
-指定命令要执行的处理
-
-命令发送方，发送一个命令
-
-命令接收方</p>
-        
-    
-    <time datetime="2016-01-13T05:12:26.000Z" itemprop="datePublished">2016-01-13</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/01/12/设计模式-责任链模式/" title="设计模式-责任链模式" itemprop="url">
-  
-    <h1 itemprop="name">设计模式-责任链模式</h1>
-    
-     
-           <p itemprop="description">责任链、将多个对象组装在一起，按照顺序依次执行处理.
-抽象Request类1234567891011121314151617181920////  AbstractChainRequest.h//  demos//#import &amp;lt;Foundation/Foundation</p>
-        
-    
-    <time datetime="2016-01-12T04:48:25.000Z" itemprop="datePublished">2016-01-12</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/01/11/开发者证书/" title="开发者证书" itemprop="url">
-  
-    <h1 itemprop="name">开发者证书</h1>
-    
-     
-           <p itemprop="description">开发者账号的种类
-个人(individual) $99/year
-可以真机调试, 发布 appstore, 每年 最多为 100台设备分发。
-
-公司(company) $99/year
-
-与个人帐号类似, 只有这两种帐号（个人和公司）可以发布 appstore。
-但是比个人账号申</p>
-        
-    
-    <time datetime="2016-01-11T13:29:58.000Z" itemprop="datePublished">2016-01-11</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/01/11/设计模式-模板模式/" title="设计模式-模板模式" itemprop="url">
-  
-    <h1 itemprop="name">设计模式-模板模式</h1>
-    
-     
-           <p itemprop="description">模板模式、提供一些基础的模板方法、步骤性的逻辑代码框架给其他的子类.之前BaseViewController使用过这个模式.
-
-抽象模板接口12345678910111213141516171819202122232425262728////  Template.h//  dem</p>
-        
-    
-    <time datetime="2016-01-11T04:32:29.000Z" itemprop="datePublished">2016-01-11</time>
-  </a>
-</section>
-
-
-
-
-
-
 
   <nav id="page-nav" class="clearfix unexpand">
-    <a class="extend prev" rel="prev" href="/page/6/"><span></span>Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/8/">Next<span></span></a>
+    <a class="extend prev" rel="prev" href="/page/6/"><span></span>Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/8/">Next<span></span></a>
   </nav>
 
 </div>

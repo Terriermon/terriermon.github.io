@@ -1,0 +1,507 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>后台执行一段代码 | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="记录一些使用后台的代码方法一、让App每隔一段时间，都执行一段代码1234567891011121314#pragma mark UIApplicationDelegate- (void)applicationDidEnterBackground:(UIApplication *)application &amp;#123;if ([application respondsToSelector:@sele">
+<meta property="og:type" content="article">
+<meta property="og:title" content="后台执行一段代码">
+<meta property="og:url" content="http://yoursite.com/2017/10/25/后台执行一段代码/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="记录一些使用后台的代码方法一、让App每隔一段时间，都执行一段代码1234567891011121314#pragma mark UIApplicationDelegate- (void)applicationDidEnterBackground:(UIApplication *)application &amp;#123;if ([application respondsToSelector:@sele">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://i4.tietuku.com/bdd92a85ab5e496d.png">
+<meta property="og:image" content="http://i4.tietuku.com/8adf55741f66c6f7.png">
+<meta property="og:image" content="http://i4.tietuku.com/30f5b4379da31d9a.png">
+<meta property="og:image" content="http://i4.tietuku.com/39c93e83938b5215.png">
+<meta property="og:image" content="http://i4.tietuku.com/6a286da67576ec83.png">
+<meta property="og:image" content="http://i4.tietuku.com/7d741a5b148dc684.png">
+<meta property="og:updated_time" content="2019-04-08T14:44:44.065Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="后台执行一段代码">
+<meta name="twitter:description" content="记录一些使用后台的代码方法一、让App每隔一段时间，都执行一段代码1234567891011121314#pragma mark UIApplicationDelegate- (void)applicationDidEnterBackground:(UIApplication *)application &amp;#123;if ([application respondsToSelector:@sele">
+<meta name="twitter:image" content="http://i4.tietuku.com/bdd92a85ab5e496d.png">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/10/25/后台执行一段代码/" title="后台执行一段代码" itemprop="url">后台执行一段代码</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2017-10-24T17:22:16.000Z" itemprop="datePublished"> Published 2017-10-25</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#记录一些使用后台的代码"><span class="toc-number">1.</span> <span class="toc-text">记录一些使用后台的代码</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#方法一、让App每隔一段时间，都执行一段代码"><span class="toc-number">1.1.</span> <span class="toc-text">方法一、让App每隔一段时间，都执行一段代码</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方法二、后台执行一次性的任务，好像最长是10分钟"><span class="toc-number">2.</span> <span class="toc-text">方法二、后台执行一次性的任务，好像最长是10分钟</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#此种方法提交的后台任务优先级比较低，当系统内存紧张时，首先会关闭这种类似的后台任务。"><span class="toc-number">2.1.</span> <span class="toc-text">此种方法提交的后台任务优先级比较低，当系统内存紧张时，首先会关闭这种类似的后台任务。</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方法三、当App进入后台之前，后台播放一个0-KB的mp3音频文件，来提高方法二申请的后台任务的权限"><span class="toc-number">3.</span> <span class="toc-text">方法三、当App进入后台之前，后台播放一个0 KB的mp3音频文件，来提高方法二申请的后台任务的权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用-UIBackgroundModes-后台完成获取数据"><span class="toc-number">4.</span> <span class="toc-text">使用 UIBackgroundModes 后台完成获取数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#测试后台数据获取"><span class="toc-number">5.</span> <span class="toc-text">测试后台数据获取</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="记录一些使用后台的代码"><a href="#记录一些使用后台的代码" class="headerlink" title="记录一些使用后台的代码"></a>记录一些使用后台的代码</h3><h4 id="方法一、让App每隔一段时间，都执行一段代码"><a href="#方法一、让App每隔一段时间，都执行一段代码" class="headerlink" title="方法一、让App每隔一段时间，都执行一段代码"></a>方法一、让App每隔一段时间，都执行一段代码</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">#pragma mark UIApplicationDelegate</span><br><span class="line"></span><br><span class="line">- (void)applicationDidEnterBackground:(UIApplication *)application </span><br><span class="line">&#123;</span><br><span class="line">if ([application respondsToSelector:@selector(setKeepAliveTimeout:handler:)]) </span><br><span class="line">&#123;</span><br><span class="line">[application setKeepAliveTimeout:600 handler:^&#123;</span><br><span class="line"></span><br><span class="line">DDLogVerbose(@&quot;KeepAliveHandler&quot;);</span><br><span class="line"></span><br><span class="line">// 这里写在后台执行的代码.</span><br><span class="line">&#125;];</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意:</p>
+<ol>
+<li>必须在Info.plist里设UIBackgroundModes键的array值之一voip字符串</li>
+<li>timeout必须&gt;=600</li>
+<li>唤醒app的时间间隔是不精准</li>
+<li>唤醒后只有10秒执行时间，即handler里的代码要在10秒类执行完，10秒后app再次被阻塞</li>
+<li>使用backgroundTimeRemaining属性，来返回剩余时间</li>
+<li>该函数的效果在回到前台运行时，依然会继续执行</li>
+<li>clearKeepAliveTimeout函数用来清除handler</li>
+</ol>
+<hr>
+<h3 id="方法二、后台执行一次性的任务，好像最长是10分钟"><a href="#方法二、后台执行一次性的任务，好像最长是10分钟" class="headerlink" title="方法二、后台执行一次性的任务，好像最长是10分钟"></a>方法二、后台执行一次性的任务，好像最长是10分钟</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">// AppDelegate.h文件 </span><br><span class="line">@property (assign, nonatomic) UIBackgroundTaskIdentifier backgroundUpdateTask; </span><br><span class="line"></span><br><span class="line">// AppDelegate.m文件 </span><br><span class="line"></span><br><span class="line">- (void)applicationDidEnterBackground:(UIApplication *)application &#123; </span><br><span class="line">[self beingBackgroundUpdateTask]; </span><br><span class="line">// 在这里加上你需要长久运行的代码 </span><br><span class="line">[self endBackgroundUpdateTask]; </span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line">- (void)beingBackgroundUpdateTask &#123; </span><br><span class="line">self.backgroundUpdateTask = [[UIApplication sharedApplication]       beginBackgroundTaskWithExpirationHandler:^&#123; </span><br><span class="line">[self endBackgroundUpdateTask];</span><br><span class="line">&#125;]; </span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line">- (void)endBackgroundUpdateTask &#123;</span><br><span class="line">[[UIApplication sharedApplication] endBackgroundTask: self.backgroundUpdateTask];   self.backgroundUpdateTask = UIBackgroundTaskInvalid; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="此种方法提交的后台任务优先级比较低，当系统内存紧张时，首先会关闭这种类似的后台任务。"><a href="#此种方法提交的后台任务优先级比较低，当系统内存紧张时，首先会关闭这种类似的后台任务。" class="headerlink" title="此种方法提交的后台任务优先级比较低，当系统内存紧张时，首先会关闭这种类似的后台任务。"></a>此种方法提交的后台任务优先级比较低，当系统内存紧张时，首先会关闭这种类似的后台任务。</h4><hr>
+<h3 id="方法三、当App进入后台之前，后台播放一个0-KB的mp3音频文件，来提高方法二申请的后台任务的权限"><a href="#方法三、当App进入后台之前，后台播放一个0-KB的mp3音频文件，来提高方法二申请的后台任务的权限" class="headerlink" title="方法三、当App进入后台之前，后台播放一个0 KB的mp3音频文件，来提高方法二申请的后台任务的权限"></a>方法三、当App进入后台之前，<code>后台播放</code>一个<code>0 KB</code>的mp3音频文件，来提高<code>方法二</code>申请的后台任务的权限</h3><ul>
+<li>在plish文件中加入背景播放的支持</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">key: Required background modes</span><br><span class="line">value: App plays audio</span><br></pre></td></tr></table></figure>
+<ul>
+<li>在<code>AppDelegate</code>的如下函数申请后台任务执行</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">- (void)applicationDidEnterBackground:(UIApplication *)application &#123;</span><br><span class="line"></span><br><span class="line">//1. 开启一个后台任务</span><br><span class="line">myTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^&#123;</span><br><span class="line">[application endBackgroundTask:myTask];</span><br><span class="line">myTask = UIBackgroundTaskInvalid;</span><br><span class="line">&#125;];</span><br><span class="line"></span><br><span class="line">//2. 后台完成的代码</span><br><span class="line">//开启一个NSTimer，不断的执行读取服务器数据</span><br><span class="line"></span><br><span class="line">//3. 完成后提交任务</span><br><span class="line">//如果是无限制重复执行的任务，可以不写如下两句</span><br><span class="line">//[application endBackgroundTask:myTask];</span><br><span class="line">//myTask = UIBackgroundTaskInvalid;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>在<code>AppDelegate</code>如下方法，播放一个无声音的MP3文件，提高后台任务的权限</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">- (void)applicationWillResignActive:(UIApplication *)application &#123;</span><br><span class="line"></span><br><span class="line">//在App即将失去焦点时，在后台播放一个无声的MP3，来提高后台任务的权限</span><br><span class="line">[self backgroudTaskViaMp3];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">- (void)backgroudTaskViaMp3 &#123;</span><br><span class="line"></span><br><span class="line">//1. 使用指定的MP3文件的url，</span><br><span class="line">NSString *string = [[NSBundle mainBundle] pathForResource:@&quot;轻音乐 - 萨克斯回家&quot; ofType:@&quot;mp3&quot;];</span><br><span class="line"></span><br><span class="line">//2. 把音频文件转换成url格式</span><br><span class="line">NSURL *url = [NSURL fileURLWithPath:string];</span><br><span class="line"></span><br><span class="line">//3. 使用音频文件的url，创建一个音频播放器</span><br><span class="line">_player = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:nil];</span><br><span class="line"></span><br><span class="line">//4. 设置代理</span><br><span class="line">//    _player.delegate = self;</span><br><span class="line"></span><br><span class="line">//5. 设置音乐播放次数为一直循环</span><br><span class="line">_player.numberOfLoops = -1;</span><br><span class="line"></span><br><span class="line">//6. 预播放</span><br><span class="line">[_player prepareToPlay];</span><br><span class="line"></span><br><span class="line">//7.</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="使用-UIBackgroundModes-后台完成获取数据"><a href="#使用-UIBackgroundModes-后台完成获取数据" class="headerlink" title="使用 UIBackgroundModes 后台完成获取数据"></a>使用 UIBackgroundModes 后台完成获取数据</h3><ul>
+<li>首先在Xcode工程中配置如下</li>
+</ul>
+<p><img src="http://i4.tietuku.com/bdd92a85ab5e496d.png" alt></p>
+<ul>
+<li>在App启动完毕回调函数中，告诉系统App在后台，多长时间进行一次数据获取</li>
+<li>一定要设置application这个间隔时间</li>
+<li>否则，App程序 永远不能在后台被唤醒，执行任务</li>
+<li>UIApplicationBackgroundFetchIntervalMinimum这个系统值，意思是告诉系统尽可能频繁的执行后台任务</li>
+<li>也应该指定一个你想要的的时间间隔</li>
+<li>例如，一个天气的应用程序，可能只需要几个小时才更新一次，iOS 将会在后台获取之间至少等待你指定的时间间隔</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">[application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];</span><br><span class="line"></span><br><span class="line">return YES;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>当某个时刻不需要再执行后台数据获取任务时，设置时间间隔为 <code>never</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalNever];</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>最后在 AppDelegate.m 实现 <code>UIApplicationDelegate</code>的如下方法，完后后台数据获取的代码，当<code>系统唤醒App时</code>会回调执行如下函数</p>
+</li>
+<li><p>注意: 只有 <code>30秒</code> 的时间来进行获取数据的操作</p>
+</li>
+<li>最后一定要执行 <code>completionHandler</code>这个Block</li>
+<li>告诉系统任务操作结束</li>
+<li>系统会将更新UI之后的界面重新进行<code>截图</code>，并作为<code>App切换时的缩略图</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">- (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler</span><br><span class="line">&#123;</span><br><span class="line">//如下模拟完成一个后台网络数据获取的操作</span><br><span class="line"></span><br><span class="line">NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];</span><br><span class="line">NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfiguration];</span><br><span class="line"></span><br><span class="line">NSURL *url = [[NSURL alloc] initWithString:@&quot;http://yourserver.com/data.json&quot;];</span><br><span class="line">NSURLSessionDataTask *task = [session dataTaskWithURL:url</span><br><span class="line">completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) &#123;</span><br><span class="line"></span><br><span class="line">if (error) &#123;</span><br><span class="line">completionHandler(UIBackgroundFetchResultFailed);</span><br><span class="line">return;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 解析响应/数据以决定新内容是否可用</span><br><span class="line">BOOL hasNewData = ...;</span><br><span class="line"></span><br><span class="line">//根据数据更新UI</span><br><span class="line">if (hasNewData)</span><br><span class="line">&#123;</span><br><span class="line">//1.</span><br><span class="line">dispatch_async(dispatch_get_main_queue(), &#123;</span><br><span class="line">//更新UI操作</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">//2. 告诉系统后台任务执行完毕</span><br><span class="line">completionHandler(UIBackgroundFetchResultNewData);</span><br><span class="line"></span><br><span class="line">&#125; else &#123;</span><br><span class="line"></span><br><span class="line">completionHandler(UIBackgroundFetchResultNoData);</span><br><span class="line">&#125;</span><br><span class="line">&#125;];</span><br><span class="line"></span><br><span class="line">// 开始任务</span><br><span class="line">[task resume];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="测试后台数据获取"><a href="#测试后台数据获取" class="headerlink" title="测试后台数据获取"></a>测试后台数据获取</h3><p><img src="http://i4.tietuku.com/8adf55741f66c6f7.png" alt></p>
+<p><img src="http://i4.tietuku.com/30f5b4379da31d9a.png" alt></p>
+<p><img src="http://i4.tietuku.com/39c93e83938b5215.png" alt></p>
+<p><img src="http://i4.tietuku.com/6a286da67576ec83.png" alt></p>
+<p><img src="http://i4.tietuku.com/7d741a5b148dc684.png" alt></p>
+<p>注意，下次需要改回来。<br>或者重新建立一个scheme专门用来测试后台任务。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2017/10/25/后台执行一段代码/" data-title="后台执行一段代码 | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2017/12/04/Block模拟链式语法/" title="Block模拟链式语法">
+  <strong>上一篇：</strong><br>
+  <span>
+  Block模拟链式语法</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/09/23/如题，最近又开始面试了，然后基本上都会问到你的项目是如何做架构设计的？/" title="如题，最近又开始面试了，然后基本上都会问到你的项目是如何做架构设计的？">
+ <strong>下一篇：</strong><br> 
+ <span>如题，最近又开始面试了，然后基本上都会问到你的项目是如何做架构设计的？
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/10/25/后台执行一段代码/" data-title="后台执行一段代码" data-url="http://yoursite.com/2017/10/25/后台执行一段代码/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#记录一些使用后台的代码"><span class="toc-number">1.</span> <span class="toc-text">记录一些使用后台的代码</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#方法一、让App每隔一段时间，都执行一段代码"><span class="toc-number">1.1.</span> <span class="toc-text">方法一、让App每隔一段时间，都执行一段代码</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方法二、后台执行一次性的任务，好像最长是10分钟"><span class="toc-number">2.</span> <span class="toc-text">方法二、后台执行一次性的任务，好像最长是10分钟</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#此种方法提交的后台任务优先级比较低，当系统内存紧张时，首先会关闭这种类似的后台任务。"><span class="toc-number">2.1.</span> <span class="toc-text">此种方法提交的后台任务优先级比较低，当系统内存紧张时，首先会关闭这种类似的后台任务。</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方法三、当App进入后台之前，后台播放一个0-KB的mp3音频文件，来提高方法二申请的后台任务的权限"><span class="toc-number">3.</span> <span class="toc-text">方法三、当App进入后台之前，后台播放一个0 KB的mp3音频文件，来提高方法二申请的后台任务的权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用-UIBackgroundModes-后台完成获取数据"><span class="toc-number">4.</span> <span class="toc-text">使用 UIBackgroundModes 后台完成获取数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#测试后台数据获取"><span class="toc-number">5.</span> <span class="toc-text">测试后台数据获取</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

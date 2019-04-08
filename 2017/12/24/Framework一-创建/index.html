@@ -1,0 +1,598 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>Framework一 创建 | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="首先一般的解释行语言的程序的运行过程 比如c语言的程序运行过程  1预编译 &amp;gt;&amp;gt; 编译(Compile) &amp;gt;&amp;gt; 链接(Link) &amp;gt;&amp;gt; 运行(Run)  其中的连接Link，就是将一些系统Lib库以及用户自己开发的Lib库链接到c程序中  虽然Objective-C为消息型语言，但是也少不了如上四个步骤  只是Objective-C将 编译 &amp;gt;&amp;gt; 连">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Framework一 创建">
+<meta property="og:url" content="http://yoursite.com/2017/12/24/Framework一-创建/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="首先一般的解释行语言的程序的运行过程 比如c语言的程序运行过程  1预编译 &amp;gt;&amp;gt; 编译(Compile) &amp;gt;&amp;gt; 链接(Link) &amp;gt;&amp;gt; 运行(Run)  其中的连接Link，就是将一些系统Lib库以及用户自己开发的Lib库链接到c程序中  虽然Objective-C为消息型语言，但是也少不了如上四个步骤  只是Objective-C将 编译 &amp;gt;&amp;gt; 连">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://i4.tietuku.com/cf619460a30842b2.png">
+<meta property="og:image" content="http://i4.tietuku.com/82153ca7107fd602.png">
+<meta property="og:image" content="http://i4.tietuku.com/98f77c8b95153c8f.png">
+<meta property="og:updated_time" content="2019-04-08T14:51:20.177Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Framework一 创建">
+<meta name="twitter:description" content="首先一般的解释行语言的程序的运行过程 比如c语言的程序运行过程  1预编译 &amp;gt;&amp;gt; 编译(Compile) &amp;gt;&amp;gt; 链接(Link) &amp;gt;&amp;gt; 运行(Run)  其中的连接Link，就是将一些系统Lib库以及用户自己开发的Lib库链接到c程序中  虽然Objective-C为消息型语言，但是也少不了如上四个步骤  只是Objective-C将 编译 &amp;gt;&amp;gt; 连">
+<meta name="twitter:image" content="http://i4.tietuku.com/cf619460a30842b2.png">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/12/24/Framework一-创建/" title="Framework一 创建" itemprop="url">Framework一 创建</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2017-12-24T09:30:17.000Z" itemprop="datePublished"> Published 2017-12-24</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#首先一般的解释行语言的程序的运行过程"><span class="toc-number">1.</span> <span class="toc-text">首先一般的解释行语言的程序的运行过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#为什么需要-静态库-或者-动态库？"><span class="toc-number">2.</span> <span class="toc-text">为什么需要 静态库 或者 动态库？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#静态库"><span class="toc-number">3.</span> <span class="toc-text">静态库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#动态库"><span class="toc-number">4.</span> <span class="toc-text">动态库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Frmaework-与-a-的区别"><span class="toc-number">5.</span> <span class="toc-text">Frmaework 与 .a 的区别:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#模拟器-和-真机-的cpu架构区别"><span class="toc-number">6.</span> <span class="toc-text">模拟器 和 真机 的cpu架构区别</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#Sets-the-target-folders-and-the-final-framework-product"><span class="toc-number"></span> <span class="toc-text">Sets the target folders and the final framework product.</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#如果工程名称和Framework的Target名称不一样的话，要自定义FMKNAME"><span class="toc-number"></span> <span class="toc-text">如果工程名称和Framework的Target名称不一样的话，要自定义FMKNAME</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#例如-FMK-NAME-“MyFramework”"><span class="toc-number"></span> <span class="toc-text">例如: FMK_NAME = “MyFramework”</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Install-dir-will-be-the-final-output-to-the-framework"><span class="toc-number"></span> <span class="toc-text">Install dir will be the final output to the framework.</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#The-following-line-create-it-in-the-root-folder-of-the-current-project"><span class="toc-number"></span> <span class="toc-text">The following line create it in the root folder of the current project.</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Working-dir-will-be-deleted-after-the-framework-creation"><span class="toc-number"></span> <span class="toc-text">Working dir will be deleted after the framework creation.</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#configuration-CONFIGURATION"><span class="toc-number"></span> <span class="toc-text">-configuration ${CONFIGURATION}</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Clean-and-Building-both-architectures"><span class="toc-number"></span> <span class="toc-text">Clean and Building both architectures.</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Cleaning-the-oldest"><span class="toc-number"></span> <span class="toc-text">Cleaning the oldest.</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Uses-the-Lipo-Tool-to-merge-both-binary-files-i386-armv6-armv7-into-one-Universal-final-product"><span class="toc-number"></span> <span class="toc-text">Uses the Lipo Tool to merge both binary files (i386 + armv6/armv7) into one Universal final product.</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#小结下制作framework当中的问题"><span class="toc-number">1.</span> <span class="toc-text">小结下制作framework当中的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#OK，到此为止使用framework打包源码，开发一个framework库的方式记录完毕。"><span class="toc-number">2.</span> <span class="toc-text">OK，到此为止使用framework打包源码，开发一个framework库的方式记录完毕。</span></a></li></ol>
+		
+		</li></div>
+		
+		<h3 id="首先一般的解释行语言的程序的运行过程"><a href="#首先一般的解释行语言的程序的运行过程" class="headerlink" title="首先一般的解释行语言的程序的运行过程"></a>首先一般的解释行语言的程序的运行过程</h3><ul>
+<li>比如c语言的程序运行过程</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">预编译 &gt;&gt; 编译(Compile) &gt;&gt; 链接(Link) &gt;&gt; 运行(Run)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>其中的连接Link，就是将一些<code>系统Lib库</code>以及<code>用户自己开发的Lib库</code>链接到c程序中</p>
+</li>
+<li><p>虽然Objective-C为<code>消息型</code>语言，但是也少不了如上四个步骤</p>
+</li>
+<li><p>只是Objective-C将 <code>编译 &gt;&gt; 连接</code>这个过程，推迟到<code>运行时</code></p>
+</li>
+</ul>
+<h3 id="为什么需要-静态库-或者-动态库？"><a href="#为什么需要-静态库-或者-动态库？" class="headerlink" title="为什么需要 静态库 或者 动态库？"></a>为什么需要 静态库 或者 动态库？</h3><ul>
+<li><p>库不提供<code>源码</code>给调用者。</p>
+</li>
+<li><p>库只提供一些没有main函数的程序代码集合，经过编译后产生的<code>二进制 可执行文件</code>。</p>
+</li>
+<li><p>为了不想让别人看到内部代码的实现（Host、参数、加密、Api..），所以<code>库</code>实际上就是一种<code>闭源</code>的方法。</p>
+</li>
+<li><p>那么对于<code>开源 实现代码</code>形式的组件，可以使用<code>CocoaPods源</code>。</p>
+</li>
+<li><p>也可以是一种 <code>模块化</code> 开发App的方法，将一些重用性较高的代码单独做成一个framework。</p>
+</li>
+</ul>
+<hr>
+<h3 id="静态库"><a href="#静态库" class="headerlink" title="静态库"></a><code>静</code>态库</h3><ul>
+<li>主要实现方式</li>
+<li>实现方式一、<code>.a</code>包 + <code>暴露头文件</code></li>
+<li><p>实现方式二、<code>staic framework</code></p>
+</li>
+<li><p>需要<code>编译</code>到目标工程中，就造成<code>库</code> 与 <code>主App工程</code> 无法解耦</p>
+</li>
+<li><p>每次库代码更新之后，就必须让主App重新引入库，然后进行编译，再发布最终编译生成的App</p>
+</li>
+<li><p>静态库，<code>链接时</code>，系统会完整地<code>复制到</code>可执行文件中， 被多次使用就有多份冗余拷贝</p>
+</li>
+</ul>
+<p><img src="http://i4.tietuku.com/cf619460a30842b2.png" alt></p>
+<p>可以看到 程序1 与 程序2 ，都含有一份 静态库内可执行文件的拷贝</p>
+<hr>
+<h3 id="动态库"><a href="#动态库" class="headerlink" title="动态库"></a><code>动</code>态库</h3><ul>
+<li><p>是在<code>App程序运行</code>时，可以选择性加载</p>
+</li>
+<li><p>运行时，将动态库载入到<code>内存</code>，并使用同一个内存块，使得工程中到处都可以使用，而无需重复开辟内存，提高系统性能</p>
+</li>
+<li><p>动态库 可以动态的<code>更新</code>，然后动态的加载，不影响App版本发布</p>
+</li>
+<li><p><code>iOS 8</code>中已允许开发者可以创建自己动态</p>
+</li>
+<li><p>主要实现方式</p>
+</li>
+<li>实现方式一、<code>dynamic framework</code></li>
+<li>iOS9以后，苹果支持此种动态库</li>
+<li>实现方式二、<code>.dylib</code></li>
+<li><p>苹果不允许创建这种动态库</p>
+</li>
+<li><p>动态库，<code>链接时</code>，<code>不会被复制</code>，程序运行时由系统动态<code>加载到内存</code>，供程序调用，系统<code>只加载一次</code>，<code>多个程序共用</code>，节省内存</p>
+</li>
+</ul>
+<p><img src="http://i4.tietuku.com/82153ca7107fd602.png" alt></p>
+<hr>
+<h3 id="Frmaework-与-a-的区别"><a href="#Frmaework-与-a-的区别" class="headerlink" title="Frmaework 与 .a 的区别:"></a>Frmaework 与 .a 的区别:</h3><ul>
+<li>之间的关系</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Xxx.a + Xxx.h + 各种资源文件 = Xxx.framework</span><br></pre></td></tr></table></figure>
+<ul>
+<li>不管是 .a还是.framework，都是包含<code>实现代码编译之后的二进制文件</code></li>
+<li>.a 还需要单独提供 实现代码的 .h接口声明</li>
+<li><p>.framework就不需要再提供，因为直接打包进去了</p>
+</li>
+<li><p>建议用framework来实现<code>模块化</code>开发App</p>
+</li>
+<li><p>可能遇到的问题: <code>静态库中的Category分类中的方法可能无法找到</code></p>
+</li>
+<li>解决: 在静态库Lib工程中配置<code>other linker flags</code>的值为-<code>ObjC</code></li>
+</ul>
+<hr>
+<h3 id="模拟器-和-真机-的cpu架构区别"><a href="#模拟器-和-真机-的cpu架构区别" class="headerlink" title="模拟器 和 真机 的cpu架构区别"></a><code>模拟器</code> 和 <code>真机</code> 的cpu架构区别</h3><ul>
+<li>常见在一个SDK拖入Xcode工程之后，编译之后报如下的错误:</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">undefined symbols for architecture x86_64</span><br><span class="line">```</span><br></pre></td></tr></table></figure>
+<p>undefined symbols for architecture i386<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
+<p>undefined symbols for architecture armv7<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
+<p>undefined symbols for architecture armv7s<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
+<p>undefined symbols for architecture arm64<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 其中的英文单词 `architecture` 的意思是: `cpu 架构`</span><br><span class="line"></span><br><span class="line">- 那么如上错误也就是说: `没有找到如上这5种 cpu 架构 支持的 可执行文件`</span><br><span class="line">- 此时，就需要提供不同cpu架构下的，可执行文件</span><br><span class="line">- 然后合并为一个`通用`的可执行文件</span><br><span class="line"></span><br><span class="line">- `模拟器` 的 cpu 架构</span><br><span class="line"></span><br><span class="line">- i386  ---&gt; 32位系统: iphonesimulator 3gs 到 iphonesimulator 5</span><br><span class="line">- x86_64 ---&gt; 64位系统: iphonesimulator 5s 到 iphonesimulator 6 plus</span><br><span class="line"></span><br><span class="line">- `真机设备` 的 cpu 架构</span><br><span class="line"></span><br><span class="line">- armv6 ---&gt; iPhone 2G/3G，iPod 1G/2G</span><br><span class="line">- armv7 ---&gt; iPhone 3GS/4/4s，iPod 3G/4G，iPad 1G/2G/3G</span><br><span class="line">- armv7s ---&gt; iphone5，iphone5c</span><br><span class="line">- arm64 ---&gt; iphone5s，iphone6plus，iphone6s</span><br><span class="line"></span><br><span class="line">- 原因: `因为不同的cpu架构下，支持的cpu指令长度就不同`</span><br></pre></td></tr></table></figure></p>
+<p>armv7 , armv7s对应真机的32位处理器，<br>arm64对应真机的64位模拟器，<br>i386对应模拟器的32位模拟器；<br>x86_64对应模拟器的64位模拟器<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">***</span><br><span class="line"></span><br><span class="line">### 下面开始记录创建一个 静态库 的步骤，如下主要使用`.a 二进制包` + `公开暴露头文件`形式.</span><br><span class="line"></span><br><span class="line">***</span><br><span class="line"></span><br><span class="line">#### 创建一个 `Cocoa Touch Static Library 工程`</span><br><span class="line"></span><br><span class="line">![](http://i4.tietuku.com/510bb90cc4774b90.png)</span><br><span class="line"></span><br><span class="line">****</span><br><span class="line"></span><br><span class="line">#### 一个静态库工程，由 `头文件` 和 `实现文件` 组成，这些文件最终经过编译之后，生成库</span><br><span class="line"></span><br><span class="line">![](http://i4.tietuku.com/b9fa08963a38b02b.png)</span><br><span class="line"></span><br><span class="line">****</span><br><span class="line"></span><br><span class="line">#### 配置向外暴露、向外隐藏的源文件</span><br><span class="line"></span><br><span class="line">- 首先选中 静态库工程的 target</span><br><span class="line"></span><br><span class="line">![](http://i4.tietuku.com/e605d40ff748a56c.png)</span><br><span class="line"></span><br><span class="line">- 然后添加 `copy headers`</span><br><span class="line"></span><br><span class="line">![](http://i4.tietuku.com/dfb73b2e31f280c4.png)</span><br><span class="line"></span><br><span class="line">- Headers 内的三种 访问权限</span><br><span class="line"></span><br><span class="line">- Public 是你希望暴露给外部调用者的</span><br><span class="line">- Private 下的头文件依然是`可以暴露`出来的</span><br><span class="line">- Project下的头文件对你的工程来说才是`私有`的</span><br><span class="line">- 那么一般公开就放在Public下，私有就放在Project下</span><br><span class="line"></span><br><span class="line">![](http://i1.tietuku.com/8b4506bdf8f531a9.png)</span><br><span class="line"></span><br><span class="line">- 将project中的想要暴露的头文件.h，添加到public.</span><br><span class="line"></span><br><span class="line">![](http://i1.tietuku.com/5ba3ecce2ce1c12d.png)</span><br><span class="line"></span><br><span class="line">![](http://i4.tietuku.com/0a54e1c368b594a4.png)</span><br><span class="line"></span><br><span class="line">****</span><br><span class="line"></span><br><span class="line">#### 在 静态库工程 中创建一个测试类，仅仅执行NSLog打印</span><br><span class="line"></span><br><span class="line">![](http://i4.tietuku.com/98817e2714a51724.png)</span><br><span class="line"></span><br><span class="line">![](http://i4.tietuku.com/c13d0bc71acb77a2.png)</span><br><span class="line"></span><br><span class="line">****</span><br><span class="line"></span><br><span class="line">#### 让外部调用者可以使用我们的`Logger`代码</span><br><span class="line"></span><br><span class="line">- 首先，调整访问权限</span><br><span class="line"></span><br><span class="line">![](http://i4.tietuku.com/33bc84c06fea9492.png)</span><br><span class="line"></span><br><span class="line">- 然后，在 `MyStaticFramework.h` 统一暴露</span><br><span class="line"></span><br><span class="line">![](http://i4.tietuku.com/c52a716d18355d29.png)</span><br><span class="line"></span><br><span class="line">***</span><br><span class="line"></span><br><span class="line">### 接下来配置 静态库工程的 Target 中的 `Build Settings`</span><br><span class="line"></span><br><span class="line">***</span><br><span class="line"></span><br><span class="line">### 指定一个`目录`名，表示你将把拷贝的 `公共头文件` 存放到哪里</span><br><span class="line"></span><br><span class="line">- 选中 静态库工程的 Target</span><br><span class="line">- 选择 Build Setting</span><br><span class="line">- 搜索 public header</span><br><span class="line">- 双击 Public Headers Folder Path</span><br><span class="line">- 输入 `include/$(PROJECT_NAME)`</span><br><span class="line"></span><br><span class="line">![](http://i4.tietuku.com/7fad83e500f3f2c8.png)</span><br><span class="line"></span><br><span class="line">****</span><br><span class="line"></span><br><span class="line">### 接着改变一些其他的设置，尤其是那些在`二进制库`中遗留下的设置，编译器提供给你一个选项，来`消除无效代码`，也可以移除掉一些`debug用符号`</span><br><span class="line"></span><br><span class="line">和之前一样，使用搜索框，改变下述设置</span><br><span class="line"></span><br><span class="line">- Dead Code Stripping 设置为 NO</span><br><span class="line"></span><br><span class="line">![](http://i4.tietuku.com/bd229e73df19a281.png)</span><br><span class="line"></span><br><span class="line">- Strip Debug .. 全部设置为 NO</span><br><span class="line"></span><br><span class="line">![](http://i4.tietuku.com/25d4f0fc346802ca.png)</span><br><span class="line"></span><br><span class="line">- Strip Style 设置为 Non-Global Symbols</span><br><span class="line"></span><br><span class="line">![](http://i4.tietuku.com/70d8399a6ca68bd2.png)</span><br><span class="line"></span><br><span class="line">****</span><br><span class="line"></span><br><span class="line">### 然后选择目标为 `iOS Device`，按下command + B进行编译。编译成功之后，工程导航栏中`Product目录`下`libMyStaticFramework.a文件`将从 `红色` 变为 `黑色`，表明现在该文件`已经存在`了。</span><br><span class="line"></span><br><span class="line">- 红色 表示 不存在</span><br><span class="line">- 黑色 表示 存在</span><br><span class="line"></span><br><span class="line">****</span><br><span class="line"></span><br><span class="line">### 右键单击`libMyStaticFramework.a`，选择 Show in Finder，可以找到 </span><br><span class="line"></span><br><span class="line">- .a包，将源码编译之后二进制文件库</span><br><span class="line">- 公开的头文件，所有暴露出去的.h文件</span><br><span class="line"></span><br><span class="line">#### 真机编译目录 与 模拟器编译目录</span><br><span class="line"></span><br><span class="line">- /Users/`用户名`/Library/Developer/Xcode/DerivedData/`项目名`-`随机值`/</span><br><span class="line">- Build/</span><br><span class="line">- Products/</span><br><span class="line">- Debug-iphoneos/  ---&gt; 真机编译的目录</span><br><span class="line">- Debug-iphonesimulator/  ---&gt; 模拟器编译的目录</span><br><span class="line"></span><br><span class="line">- 注意:</span><br></pre></td></tr></table></figure></p>
+<ol>
+<li><p>如果选择的是debug模式:<br>那么编译出来的就是Debug-iphoneos目录与Debug-iphonesimulator目录</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果选择的是Release模式:<br>那么编译出来的就是Release-iphoneos目录与Release-iphonesimulator目录</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">#### 由于之前是使用`iOS Device`是基于`真机`cpu架构编译的，所以先看下`真机编译目录xxx-iphoneos`下生成的文件</span><br><span class="line"></span><br><span class="line">- Debug-`iphoneos`/</span><br><span class="line">- include/</span><br><span class="line">- MyStaticFramework/</span><br><span class="line">- MyStaticFramework.h</span><br><span class="line">- Looger.h</span><br><span class="line">- libMyStaticFramework.a</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">OK，到这里就得到了一个适用于`真机`的 `.a`包</span><br><span class="line"></span><br><span class="line">****</span><br><span class="line"></span><br><span class="line">### 然后创建一个依赖开发（Dependent Development）工程，来测试 静态库工程</span><br><span class="line"></span><br><span class="line">- 1) Xcode选择 `File\Close Project` 关闭之前的 `静态库工程`</span><br><span class="line"></span><br><span class="line">- 2) 使用File\New\Project创建一个新的`App工程`</span><br><span class="line"></span><br><span class="line">- 3) 最后将新创建的`App项目工程`保存到和之前的`静态库工程`相同的目录下</span><br><span class="line"></span><br><span class="line">![](http://i4.tietuku.com/b17b3b810f4b8e48.png)</span><br><span class="line"></span><br><span class="line">- 4) 将`静态库工程`的xcodeproj文件，拖动到`App工程`中，方便在`App工程`中直接修改`静态库工程`的代码</span><br><span class="line"></span><br><span class="line">![](http://i4.tietuku.com/b17b3b810f4b8e48.png)</span><br><span class="line"></span><br><span class="line">![](http://i4.tietuku.com/6635120f21ac944c.png)</span><br><span class="line"></span><br><span class="line">- 注意:</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>你无法将同一工程在两个Xcode窗口中同时打开，<br>如果你发现你无法在你的工程中导航到库工程的话，<br>检查一下是否库工程在其他Xcode窗口中打开了。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">****</span><br><span class="line"></span><br><span class="line">### 给App工程添加 静态库 作为依赖库</span><br><span class="line"></span><br><span class="line">- 选中App工程</span><br><span class="line">- 继续选中 App工程 的 Target</span><br><span class="line">- Build Phases</span><br><span class="line">- Target Dependencies，点击 `+` 按钮调出选择器</span><br><span class="line"></span><br><span class="line">![](http://i4.tietuku.com/8faa17c75ebf4c9d.png)</span><br><span class="line"></span><br><span class="line">![](http://i4.tietuku.com/360b4bfc0478eeef.png)</span><br><span class="line"></span><br><span class="line">![](http://i4.tietuku.com/ccfb4757874c2edc.png)</span><br><span class="line"></span><br><span class="line">****</span><br><span class="line"></span><br><span class="line">### 将生成的 .a包 目录下的 `公开的头文件` 拖入到App工程</span><br><span class="line"></span><br><span class="line">![](http://i4.tietuku.com/b72625136bf1fa91.png)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">****</span><br><span class="line"></span><br><span class="line">### 在App工程中测试静态库</span><br></pre></td></tr></table></figure></p>
+<p>#import “ViewController.h”</p>
+<p>//导入头文件</p>
+<p>#import “MyStaticFramework.h”</p>
+<p>@interface ViewController ()</p>
+<p>@end</p>
+<p>@implementation ViewController</p>
+<ul>
+<li>(void)viewDidLoad {<br>[super viewDidLoad];</li>
+</ul>
+<p>//测试静态库<br>[Looger log];<br>}</p>
+<p>@end<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">然后看到控制器输出</span><br></pre></td></tr></table></figure></p>
+<p>2015-12-24 23:16:47.953 FrameworkAppDemo[8489:395857] Framework Code execute…<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">#### OK，到此为止是使用`.a` + `暴露头文件`的形式完成静态库</span><br><span class="line"></span><br><span class="line">***</span><br><span class="line"></span><br><span class="line">### 接下来创建一个 `Framework` 来代替 `.a` + `暴露头文件`</span><br><span class="line"></span><br><span class="line">#### 一个framework其实就是 `静态库 .a包` + `一组头文件`，大致上可以任务framework是对这二者的一个包装</span><br><span class="line"></span><br><span class="line">#### framework也有几点不同之处</span><br><span class="line"></span><br><span class="line">- 目录结构:</span><br><span class="line"></span><br><span class="line">- Framework有一个能被Xcode识别的特殊的目录结构</span><br><span class="line">- 我们创建一个`build task`，由它来创建这种特殊结构</span><br><span class="line"></span><br><span class="line">- 片段（Slice）:</span><br><span class="line"></span><br><span class="line">- 也就是frameowork能够支持的`cpu架构`（architecture）</span><br><span class="line">- architecture 例如: i386、x86_64、arm7、armv7、arm64</span><br><span class="line">- 需要针对所有的cpu架构，`都构建一次`</span><br><span class="line">- 然后将构建得到的所有的情况，都添加到framework中</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#### 首先看下 Framework 的 特殊结构</span><br><span class="line"></span><br><span class="line">- Bugly.framework </span><br><span class="line">- Headers/  点击会进入到 Versions/Current/Headers/</span><br><span class="line">- Bugly/   点击会进入到 Versions/Current/Headers/Bugly</span><br><span class="line">- Versions/</span><br><span class="line">- A/</span><br><span class="line">- Headers/</span><br><span class="line">- 业务接口类1.h</span><br><span class="line">- 业务接口类2.h</span><br><span class="line">- 业务接口类3.h</span><br><span class="line">- ....所有会`暴露的`头文件</span><br><span class="line">- Bugly</span><br><span class="line">- Current/  点击会进入到 A/</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">- 这个是转载自其他技术博客的结构示意图</span><br><span class="line"></span><br><span class="line">![](http://i4.tietuku.com/41dd9d29c857574d.png)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">****</span><br><span class="line"></span><br><span class="line">### 创建一个新的 `Cocoa Touch Framework 工程`，来完成framework</span><br><span class="line"></span><br><span class="line">- 注意前面使用的是 `Cocoa Touch Static Library 工程`，生成的是 `.a包` 与 `公共头文件`</span><br><span class="line"></span><br><span class="line">- 而现在是创建一个`Cocoa Touch Framework 工程`</span><br><span class="line"></span><br><span class="line">![](http://i4.tietuku.com/0e13656d750aa7f4.png)</span><br><span class="line"></span><br><span class="line">- 默认创建的是 `动态库` framework，如果需要修改成 `静态库`，因为Xcode5之前的项目只支持 `静态库`形式的framework</span><br><span class="line"></span><br><span class="line">![](http://i4.tietuku.com/111b6cdc481b6504.png)</span><br><span class="line"></span><br><span class="line">****</span><br><span class="line"></span><br><span class="line">### 在多种不同cpu架构下的编译生成静态库</span><br><span class="line"></span><br><span class="line">- 目前需要支持的所有cpu架构</span><br><span class="line"></span><br><span class="line">- 真机</span><br><span class="line">- arm7: 在最老的支持iOS7的设备上使用</span><br><span class="line">- arm7s: 在iPhone5和5C上使用</span><br><span class="line">- arm64: 运行于iPhone5S的64位 ARM 处理器 上</span><br><span class="line"></span><br><span class="line">- 模拟器</span><br><span class="line">- i386: 32位模拟器上使用</span><br><span class="line">- x86_64: 64为模拟器上使用</span><br><span class="line"></span><br><span class="line">- 每一种CPU架构，都需要 `不同` 的 `二进制数据`</span><br><span class="line"></span><br><span class="line">***</span><br><span class="line"></span><br><span class="line">### 在静态库工程下，新创建一个Target -- `Aggregate`，使用Aggregate代替前面创建script生成framework.</span><br><span class="line"></span><br><span class="line">- 首先，给 静态库工程 添加一个 `Aggregate Target`</span><br><span class="line"></span><br><span class="line">![](http://i4.tietuku.com/2ff2e5d12cb55d0e.png)</span><br><span class="line"></span><br><span class="line">![](http://i4.tietuku.com/44d4351e627f1aa6.png)</span><br><span class="line"></span><br><span class="line">![](http://i4.tietuku.com/e0dbea1a4288fc0b.png)</span><br><span class="line"></span><br><span class="line">- 然后，选中 静态库工程 的 `Aggregate Target`，添加 静态库工程的 `主Target` 依赖</span><br><span class="line"></span><br><span class="line">![](http://i4.tietuku.com/5b5835ceed37019b.png)</span><br><span class="line"></span><br><span class="line">![](http://i4.tietuku.com/d84f76249111779a.png)</span><br><span class="line"></span><br><span class="line">- 在`Aggregate Target`下，选择Build Phases栏，点击Editor/Add Build Phase/Add Run Script Build Phase，创建一个新的`Run Script Build Phase`脚本，完成`多种cpu架构下编译静态库`</span><br><span class="line"></span><br><span class="line">![](http://i4.tietuku.com/765e8c7719ded01e.png)</span><br><span class="line"></span><br><span class="line">![](http://i4.tietuku.com/4ff322cf4c0a0f99.png)</span><br><span class="line"></span><br><span class="line">- 编写脚本代码区域</span><br></pre></td></tr></table></figure></p>
+<h1 id="Sets-the-target-folders-and-the-final-framework-product"><a href="#Sets-the-target-folders-and-the-final-framework-product" class="headerlink" title="Sets the target folders and the final framework product."></a>Sets the target folders and the final framework product.</h1><h1 id="如果工程名称和Framework的Target名称不一样的话，要自定义FMKNAME"><a href="#如果工程名称和Framework的Target名称不一样的话，要自定义FMKNAME" class="headerlink" title="如果工程名称和Framework的Target名称不一样的话，要自定义FMKNAME"></a>如果工程名称和Framework的Target名称不一样的话，要自定义FMKNAME</h1><h1 id="例如-FMK-NAME-“MyFramework”"><a href="#例如-FMK-NAME-“MyFramework”" class="headerlink" title="例如: FMK_NAME = “MyFramework”"></a>例如: FMK_NAME = “MyFramework”</h1><p>FMK_NAME=${PROJECT_NAME}</p>
+<h1 id="Install-dir-will-be-the-final-output-to-the-framework"><a href="#Install-dir-will-be-the-final-output-to-the-framework" class="headerlink" title="Install dir will be the final output to the framework."></a>Install dir will be the final output to the framework.</h1><h1 id="The-following-line-create-it-in-the-root-folder-of-the-current-project"><a href="#The-following-line-create-it-in-the-root-folder-of-the-current-project" class="headerlink" title="The following line create it in the root folder of the current project."></a>The following line create it in the root folder of the current project.</h1><p>INSTALL_DIR=${SRCROOT}/Products/${FMK_NAME}.framework</p>
+<h1 id="Working-dir-will-be-deleted-after-the-framework-creation"><a href="#Working-dir-will-be-deleted-after-the-framework-creation" class="headerlink" title="Working dir will be deleted after the framework creation."></a>Working dir will be deleted after the framework creation.</h1><p>WRK_DIR=build<br>DEVICE_DIR=${WRK_DIR}/Release-iphoneos/${FMK_NAME}.framework<br>SIMULATOR_DIR=${WRK_DIR}/Release-iphonesimulator/${FMK_NAME}.framework</p>
+<h1 id="configuration-CONFIGURATION"><a href="#configuration-CONFIGURATION" class="headerlink" title="-configuration ${CONFIGURATION}"></a>-configuration ${CONFIGURATION}</h1><h1 id="Clean-and-Building-both-architectures"><a href="#Clean-and-Building-both-architectures" class="headerlink" title="Clean and Building both architectures."></a>Clean and Building both architectures.</h1><p>xcodebuild -configuration “Release” -target “${FMK_NAME}” -sdk iphoneos clean build<br>xcodebuild -configuration “Release” -target “${FMK_NAME}” -sdk iphonesimulator clean build</p>
+<h1 id="Cleaning-the-oldest"><a href="#Cleaning-the-oldest" class="headerlink" title="Cleaning the oldest."></a>Cleaning the oldest.</h1><p>if [ -d “${INSTALL_DIR}” ]<br>then<br>rm -rf “${INSTALL_DIR}”<br>fi<br>mkdir -p “${INSTALL_DIR}”<br>cp -R “${DEVICE_DIR}/“ “${INSTALL_DIR}/“</p>
+<h1 id="Uses-the-Lipo-Tool-to-merge-both-binary-files-i386-armv6-armv7-into-one-Universal-final-product"><a href="#Uses-the-Lipo-Tool-to-merge-both-binary-files-i386-armv6-armv7-into-one-Universal-final-product" class="headerlink" title="Uses the Lipo Tool to merge both binary files (i386 + armv6/armv7) into one Universal final product."></a>Uses the Lipo Tool to merge both binary files (i386 + armv6/armv7) into one Universal final product.</h1><p>lipo -create “${DEVICE_DIR}/${FMK_NAME}” “${SIMULATOR_DIR}/${FMK_NAME}” -output “${INSTALL_DIR}/${FMK_NAME}”<br>rm -r “${WRK_DIR}”<br>open “${INSTALL_DIR}”<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">![](http://i4.tietuku.com/7a5d4723529510fa.png)</span><br><span class="line"></span><br><span class="line">- 注意: 如上针对 `release`模式生成的framework</span><br><span class="line"></span><br><span class="line">****</span><br><span class="line"></span><br><span class="line">### 选择 `Aggregate Target`，按下 cmd+B 编译生成framework，会自动弹出 framework的文件夹所在目录</span><br><span class="line"></span><br><span class="line">![](http://i4.tietuku.com/f229c73b4c67fc7d.png)</span><br><span class="line"></span><br><span class="line">****</span><br><span class="line"></span><br><span class="line">### 查看生成的framework支持的cpu架构</span><br><span class="line"></span><br><span class="line">- 进入到framework的文件夹下</span><br></pre></td></tr></table></figure></p>
+<p>cd /Users/xiongzenghui/Desktop/FrameworkDemo/MyFramework/Products/MyFramework.framework<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 使用lipo命令查看framework支持的cpu架构</span><br></pre></td></tr></table></figure></p>
+<p>lipo -info MyFramework（生成的二进制文件，就是库）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 可以看到如下信息，说明只支持 i386、x86_64、armv7、arm64</span><br></pre></td></tr></table></figure></p>
+<p>Architectures in the fat file: MyFramework are: i386 x86_64 armv7 arm64<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">![](http://i4.tietuku.com/3395dbef459cdd09.png)</span><br><span class="line"></span><br><span class="line">- 那么想要支持 iphone 5c了？也就是支持 `armv7s` 架构</span><br><span class="line"></span><br><span class="line">![](http://i4.tietuku.com/111b6cdc481b6504.png)</span><br><span class="line"></span><br><span class="line">然后重新编译 Agregate Target 生成的 framework就可以了</span><br><span class="line"></span><br><span class="line">- 使用lipo命令查看framework支持的cpu架构</span><br><span class="line"></span><br><span class="line">![](http://i4.tietuku.com/0a29c1df79ad3116.png)</span><br><span class="line"></span><br><span class="line">****</span><br><span class="line"></span><br><span class="line">### 在framework工程中，添加测试类</span><br><span class="line"></span><br><span class="line">- Logger.h</span><br></pre></td></tr></table></figure></p>
+<p>#import &lt;Foundation/Foundation.h&gt;</p>
+<p>@interface Logger : NSObject</p>
+<ul>
+<li>(void)log;</li>
+</ul>
+<p>@end<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- Logger.m</span><br></pre></td></tr></table></figure></p>
+<p>#import “Logger.h”</p>
+<p>@implementation Logger</p>
+<ul>
+<li>(void)log {<br>NSLog(@”ahahahahahahhahaahah…..\n”);<br>}</li>
+</ul>
+<p>@end<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 将`Logger.h`添加到 `public`区域</span><br><span class="line"></span><br><span class="line">- 将`Logger.h`在framework统一向外暴露的头文件中暴露出去</span><br></pre></td></tr></table></figure></p>
+<p>#import &lt;UIKit/UIKit.h&gt;</p>
+<p>//! Project version number for MyFramework.<br>FOUNDATION_EXPORT double MyFrameworkVersionNumber;</p>
+<p>//! Project version string for MyFramework.<br>FOUNDATION_EXPORT const unsigned char MyFrameworkVersionString[];</p>
+<p>// In this header, you should import all the public headers of your framework using statements like #import &lt;MyFramework/PublicHeader.h&gt;</p>
+<p>//此后面，导入我们在工程中的public区域的公共头文件.h</p>
+<p>#import &lt;MyFramework/Logger.h&gt;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 然后选中 `Agregate Target`重新 command+B 编译，然后生成新的framework包</span><br><span class="line"></span><br><span class="line">****</span><br><span class="line"></span><br><span class="line">### 新建一个App工程，测试生成的framework，拖到`Embedded Binaries`区域</span><br><span class="line"></span><br><span class="line">- 将生成的framework包，直接拖到App工程中</span><br><span class="line"></span><br><span class="line">![](http://i4.tietuku.com/b9bd501f5297abc7.png)</span><br><span class="line"></span><br><span class="line">- 在App工程的ViewController中测试`Logger`类</span><br></pre></td></tr></table></figure></p>
+<p>#import “ViewController.h”</p>
+<p>//导入framework中的公共头文件</p>
+<p>#import &lt;MyFramework/MyFramework.h&gt;</p>
+<p>@interface ViewController ()</p>
+<p>@end</p>
+<p>@implementation ViewController</p>
+<ul>
+<li>(void)viewDidLoad {<br>[super viewDidLoad];</li>
+</ul>
+<p>//调用framework提供的类Api<br>[Logger log];<br>}</p>
+<p>@end</p>
+<p><code>`</code></p>
+<p><img src="http://i4.tietuku.com/98f77c8b95153c8f.png" alt></p>
+<hr>
+<h3 id="小结下制作framework当中的问题"><a href="#小结下制作framework当中的问题" class="headerlink" title="小结下制作framework当中的问题"></a>小结下制作framework当中的问题</h3><ul>
+<li>支持的cpu架构不全</li>
+<li>framework工程没有配置 <code>Code Signing Identify</code>，设置<code>开发者证书 的 描述Provisioning</code></li>
+<li>Category方法找不到，看前面的解决方法</li>
+</ul>
+<hr>
+<h3 id="OK，到此为止使用framework打包源码，开发一个framework库的方式记录完毕。"><a href="#OK，到此为止使用framework打包源码，开发一个framework库的方式记录完毕。" class="headerlink" title="OK，到此为止使用framework打包源码，开发一个framework库的方式记录完毕。"></a>OK，到此为止使用framework打包源码，开发一个framework库的方式记录完毕。</h3>  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2017/12/24/Framework一-创建/" data-title="Framework一 创建 | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2017/12/25/Framework二-动态库/" title="Framework二 动态库">
+  <strong>上一篇：</strong><br>
+  <span>
+  Framework二 动态库</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/12/04/Block模拟链式语法/" title="Block模拟链式语法">
+ <strong>下一篇：</strong><br> 
+ <span>Block模拟链式语法
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/12/24/Framework一-创建/" data-title="Framework一 创建" data-url="http://yoursite.com/2017/12/24/Framework一-创建/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#首先一般的解释行语言的程序的运行过程"><span class="toc-number">1.</span> <span class="toc-text">首先一般的解释行语言的程序的运行过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#为什么需要-静态库-或者-动态库？"><span class="toc-number">2.</span> <span class="toc-text">为什么需要 静态库 或者 动态库？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#静态库"><span class="toc-number">3.</span> <span class="toc-text">静态库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#动态库"><span class="toc-number">4.</span> <span class="toc-text">动态库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Frmaework-与-a-的区别"><span class="toc-number">5.</span> <span class="toc-text">Frmaework 与 .a 的区别:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#模拟器-和-真机-的cpu架构区别"><span class="toc-number">6.</span> <span class="toc-text">模拟器 和 真机 的cpu架构区别</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#Sets-the-target-folders-and-the-final-framework-product"><span class="toc-number"></span> <span class="toc-text">Sets the target folders and the final framework product.</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#如果工程名称和Framework的Target名称不一样的话，要自定义FMKNAME"><span class="toc-number"></span> <span class="toc-text">如果工程名称和Framework的Target名称不一样的话，要自定义FMKNAME</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#例如-FMK-NAME-“MyFramework”"><span class="toc-number"></span> <span class="toc-text">例如: FMK_NAME = “MyFramework”</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Install-dir-will-be-the-final-output-to-the-framework"><span class="toc-number"></span> <span class="toc-text">Install dir will be the final output to the framework.</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#The-following-line-create-it-in-the-root-folder-of-the-current-project"><span class="toc-number"></span> <span class="toc-text">The following line create it in the root folder of the current project.</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Working-dir-will-be-deleted-after-the-framework-creation"><span class="toc-number"></span> <span class="toc-text">Working dir will be deleted after the framework creation.</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#configuration-CONFIGURATION"><span class="toc-number"></span> <span class="toc-text">-configuration ${CONFIGURATION}</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Clean-and-Building-both-architectures"><span class="toc-number"></span> <span class="toc-text">Clean and Building both architectures.</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Cleaning-the-oldest"><span class="toc-number"></span> <span class="toc-text">Cleaning the oldest.</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Uses-the-Lipo-Tool-to-merge-both-binary-files-i386-armv6-armv7-into-one-Universal-final-product"><span class="toc-number"></span> <span class="toc-text">Uses the Lipo Tool to merge both binary files (i386 + armv6/armv7) into one Universal final product.</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#小结下制作framework当中的问题"><span class="toc-number">1.</span> <span class="toc-text">小结下制作framework当中的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#OK，到此为止使用framework打包源码，开发一个framework库的方式记录完毕。"><span class="toc-number">2.</span> <span class="toc-text">OK，到此为止使用framework打包源码，开发一个framework库的方式记录完毕。</span></a></li></ol>
+ 
+  </li></div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

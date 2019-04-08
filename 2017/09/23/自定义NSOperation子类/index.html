@@ -1,0 +1,549 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>自定义NSOperation子类 | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="昨天接到了蘑菇街的面试，在关于NSOperation的问题，觉得自己回答的不是太好，决定仔细看看.那么，就从自己写一个自定义NSOperation开始，才知道一些具体细节. No1. 首先给出使用自己定义的operation的示例代码.123456789101112131415161718//1. _operationQueue = [[NSOperationQueue alloc] init];">
+<meta property="og:type" content="article">
+<meta property="og:title" content="自定义NSOperation子类">
+<meta property="og:url" content="http://yoursite.com/2017/09/23/自定义NSOperation子类/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="昨天接到了蘑菇街的面试，在关于NSOperation的问题，觉得自己回答的不是太好，决定仔细看看.那么，就从自己写一个自定义NSOperation开始，才知道一些具体细节. No1. 首先给出使用自己定义的operation的示例代码.123456789101112131415161718//1. _operationQueue = [[NSOperationQueue alloc] init];">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-08T14:39:23.327Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="自定义NSOperation子类">
+<meta name="twitter:description" content="昨天接到了蘑菇街的面试，在关于NSOperation的问题，觉得自己回答的不是太好，决定仔细看看.那么，就从自己写一个自定义NSOperation开始，才知道一些具体细节. No1. 首先给出使用自己定义的operation的示例代码.123456789101112131415161718//1. _operationQueue = [[NSOperationQueue alloc] init];">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/09/23/自定义NSOperation子类/" title="自定义NSOperation子类" itemprop="url">自定义NSOperation子类</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2017-09-23T03:44:56.000Z" itemprop="datePublished"> Published 2017-09-23</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#昨天接到了蘑菇街的面试，在关于NSOperation的问题，觉得自己回答的不是太好，决定仔细看看"><span class="toc-number">1.</span> <span class="toc-text">昨天接到了蘑菇街的面试，在关于NSOperation的问题，觉得自己回答的不是太好，决定仔细看看.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#那么，就从自己写一个自定义NSOperation开始，才知道一些具体细节"><span class="toc-number">2.</span> <span class="toc-text">那么，就从自己写一个自定义NSOperation开始，才知道一些具体细节.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No1-首先给出使用自己定义的operation的示例代码"><span class="toc-number">3.</span> <span class="toc-text">No1. 首先给出使用自己定义的operation的示例代码.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No2-开始写MyOperation-h文件，向外暴露的方法与属性"><span class="toc-number">4.</span> <span class="toc-text">No2. 开始写MyOperation.h文件，向外暴露的方法与属性.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No3-开始写MyOperation-m-具体实现"><span class="toc-number">5.</span> <span class="toc-text">No3. 开始写MyOperation.m 具体实现.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No4-提供了两个c函数，分别获取NSOperation状态的工具函数"><span class="toc-number">6.</span> <span class="toc-text">No4. 提供了两个c函数，分别获取NSOperation状态的工具函数.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No6-MyOperation-m-匿名分类添加扩展属性与方法"><span class="toc-number">7.</span> <span class="toc-text">No6. MyOperation.m 匿名分类添加扩展属性与方法.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No6-MyOperation实现-implementation部分代码-写一个类方法，创建一个单子子线程，开启runloop"><span class="toc-number">8.</span> <span class="toc-text">No6. MyOperation实现@implementation部分代码: 写一个类方法，创建一个单子子线程，开启runloop.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-MyOperation实现-implementation部分代码-MyOperation-init"><span class="toc-number">9.</span> <span class="toc-text">7. MyOperation实现@implementation部分代码: -[MyOperation init]</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-MyOperation实现-implementation部分代码-获取当前operation状态，都是重写NSOperation实例方法"><span class="toc-number">10.</span> <span class="toc-text">8. MyOperation实现@implementation部分代码: 获取当前operation状态，都是重写NSOperation实例方法.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-MyOperation实现-implementation部分代码-operation被调度时由系统执行的start函数，重写-NSOperation-start-完成自己的开始执行oepration"><span class="toc-number">11.</span> <span class="toc-text">9. MyOperation实现@implementation部分代码: operation被调度时由系统执行的start函数，重写-[NSOperation start]完成自己的开始执行oepration.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-MyOperation实现-implementation部分代码-执行用户传入的Block任务代码，执行完任务执行-MyOperation-finish-修改status并发出KVO通知，让系统结束执行operation"><span class="toc-number">12.</span> <span class="toc-text">10. MyOperation实现@implementation部分代码: 执行用户传入的Block任务代码，执行完任务执行-[MyOperation finish]修改status并发出KVO通知，让系统结束执行operation.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-MyOperation实现-implementation部分代码-添加结束执行operation的方法"><span class="toc-number">13.</span> <span class="toc-text">11. MyOperation实现@implementation部分代码: 添加结束执行operation的方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-MyOperation实现-implementation部分代码-重写-property-readwrite-nonatomic-assign-MyOperationStatus-status-生成的setter方法，第一是修改operation的status，第二是手动发出对应状态修改的KVO通知，实现一个operation的状态机"><span class="toc-number">14.</span> <span class="toc-text">12. MyOperation实现@implementation部分代码: 重写@property (readwrite, nonatomic, assign) MyOperationStatus status;生成的setter方法，第一是修改operation的status，第二是手动发出对应状态修改的KVO通知，实现一个operation的状态机.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No13-MyOperation实现-implementation部分代码-执行operation的comppletionBlock。"><span class="toc-number">15.</span> <span class="toc-text">No13. MyOperation实现@implementation部分代码: 执行operation的comppletionBlock。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No14-MyOperation实现-implementation部分代码-重写-NSOperation-cancel-方法完成取消执行operation"><span class="toc-number">16.</span> <span class="toc-text">No14. MyOperation实现@implementation部分代码: 重写 -[NSOperation cancel]方法完成取消执行operation.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No15-暂停执行operation"><span class="toc-number">17.</span> <span class="toc-text">No15. 暂停执行operation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No16-恢复执行resumeoperation"><span class="toc-number">18.</span> <span class="toc-text">No16. 恢复执行resumeoperation.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No17-实现断网将operation归档到本地文件，恢复网络从本地文件恢复"><span class="toc-number">19.</span> <span class="toc-text">No17. 实现断网将operation归档到本地文件，恢复网络从本地文件恢复.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#小结AFNetworking-iOS7以下时进行网络通信的原理"><span class="toc-number">20.</span> <span class="toc-text">小结AFNetworking iOS7以下时进行网络通信的原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NSOperationQueue的suspend暂停的示例代码"><span class="toc-number">21.</span> <span class="toc-text">NSOperationQueue的suspend暂停的示例代码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NSOperationQueue为串行队列时被suspend时，仍然会将当前正在执行中的operation执行完毕，再将后续正准备调度执行的operation暂停"><span class="toc-number">22.</span> <span class="toc-text">NSOperationQueue为串行队列时被suspend时，仍然会将当前正在执行中的operation执行完毕，再将后续正准备调度执行的operation暂停.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Operation的cancel取消，一个operation即使被cancel，但是并不会立刻被系统回收释放掉，所以该operation内部的任务代码仍然会被继续执行，所以需要在内部任务中，需要时时监测operation是否已经被cancel掉"><span class="toc-number">23.</span> <span class="toc-text">Operation的cancel取消，一个operation即使被cancel，但是并不会立刻被系统回收释放掉，所以该operation内部的任务代码仍然会被继续执行，所以需要在内部任务中，需要时时监测operation是否已经被cancel掉.</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#但是上述在每一此循环中都会判断operation是否已经被取消，这样还是不太好，苹果建议执行完一段耗时任务之后再去判断operation的取消状态"><span class="toc-number">23.1.</span> <span class="toc-text">但是上述在每一此循环中都会判断operation是否已经被取消，这样还是不太好，苹果建议执行完一段耗时任务之后再去判断operation的取消状态</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<h3 id="昨天接到了蘑菇街的面试，在关于NSOperation的问题，觉得自己回答的不是太好，决定仔细看看"><a href="#昨天接到了蘑菇街的面试，在关于NSOperation的问题，觉得自己回答的不是太好，决定仔细看看" class="headerlink" title="昨天接到了蘑菇街的面试，在关于NSOperation的问题，觉得自己回答的不是太好，决定仔细看看."></a>昨天接到了蘑菇街的面试，在关于NSOperation的问题，觉得自己回答的不是太好，决定仔细看看.</h3><h3 id="那么，就从自己写一个自定义NSOperation开始，才知道一些具体细节"><a href="#那么，就从自己写一个自定义NSOperation开始，才知道一些具体细节" class="headerlink" title="那么，就从自己写一个自定义NSOperation开始，才知道一些具体细节."></a>那么，就从自己写一个自定义NSOperation开始，才知道一些具体细节.</h3><hr>
+<h3 id="No1-首先给出使用自己定义的operation的示例代码"><a href="#No1-首先给出使用自己定义的operation的示例代码" class="headerlink" title="No1. 首先给出使用自己定义的operation的示例代码."></a>No1. 首先给出使用自己定义的operation的示例代码.</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">//1. </span><br><span class="line">_operationQueue = [[NSOperationQueue alloc] init];</span><br><span class="line"></span><br><span class="line">//2. </span><br><span class="line">_myOperation = [[MyOperation alloc] init];</span><br><span class="line"></span><br><span class="line">//3. </span><br><span class="line">[_myOperation setCompletionBlock:^&#123;</span><br><span class="line">while (1) &#123;</span><br><span class="line">NSLog(@&quot;my operation is run ....\n&quot;);</span><br><span class="line">&#125;</span><br><span class="line">&#125;];</span><br><span class="line"></span><br><span class="line">//4. </span><br><span class="line">[_operationQueue addOperation:_myOperation];</span><br><span class="line"></span><br><span class="line">//5. </span><br><span class="line">[self performSelector:@selector(cancelOperation) withObject:nil afterDelay:3.f];</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="No2-开始写MyOperation-h文件，向外暴露的方法与属性"><a href="#No2-开始写MyOperation-h文件，向外暴露的方法与属性" class="headerlink" title="No2. 开始写MyOperation.h文件，向外暴露的方法与属性."></a>No2. 开始写<code>MyOperation.h</code>文件，向外暴露的方法与属性.</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">//定义operation的所有可能的状态</span><br><span class="line">typedef NS_ENUM(NSInteger, MyOperationStatus) &#123;</span><br><span class="line">MyOperationStatusReady          = 1, //准备就绪</span><br><span class="line">MyOperationStatusExcuting       = 2, //正在执行</span><br><span class="line">MyOperationStatusPaused         = 3, //已经暂停</span><br><span class="line">MyOperationStatusFinished       = 4, //已经结束</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">@interface MyOperation : NSOperation</span><br><span class="line"></span><br><span class="line">//</span><br><span class="line">@property (nonatomic, strong, readonly) NSSet *runLoopModes;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<p>OK，先让自定义的NSOperation能够跑起来把，就只先加这么多属性把…</p>
+<hr>
+<h3 id="No3-开始写MyOperation-m-具体实现"><a href="#No3-开始写MyOperation-m-具体实现" class="headerlink" title="No3. 开始写MyOperation.m 具体实现."></a>No3. 开始写<code>MyOperation.m</code> 具体实现.</h3><p>主要是如下几点:</p>
+<ol>
+<li>NSOperation实例的<code>状态改变</code>时，<code>需要手动发出KVO通知</code>，否则NSOperation不会起作用.</li>
+<li>NSOperation具体工作函数（start、cancel、finish ….）</li>
+<li>NSOperation执行一些任务代码</li>
+<li>完成后进行回调</li>
+</ol>
+<hr>
+<h3 id="No4-提供了两个c函数，分别获取NSOperation状态的工具函数"><a href="#No4-提供了两个c函数，分别获取NSOperation状态的工具函数" class="headerlink" title="No4. 提供了两个c函数，分别获取NSOperation状态的工具函数."></a>No4. 提供了两个c函数，分别获取NSOperation状态的工具函数.</h3><p>第一个c函数，将<code>MyOperationStatus枚举值</code>转换成对应的<code>iOS系统认识的NSOperation KVO通知key</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line">*  根据status枚举值获取对应状态的字符串</span><br><span class="line">*</span><br><span class="line">*   这四个状态字符串 isReady、isExecuting、isPaused、isFinished 必须写对</span><br><span class="line">*</span><br><span class="line">*/</span><br><span class="line">static inline NSString * AFKeyPathFromOperationState(MyOperationStatus status) &#123;</span><br><span class="line"></span><br><span class="line">switch (status) &#123;</span><br><span class="line">case MyOperationStatusReady:</span><br><span class="line">return @&quot;isReady&quot;;</span><br><span class="line"></span><br><span class="line">case MyOperationStatusExcuting:</span><br><span class="line">return @&quot;isExecuting&quot;;</span><br><span class="line"></span><br><span class="line">case MyOperationStatusPaused:</span><br><span class="line">return @&quot;isPaused&quot;;</span><br><span class="line"></span><br><span class="line">case MyOperationStatusFinished:</span><br><span class="line">return @&quot;isFinished&quot;;</span><br><span class="line"></span><br><span class="line">default: &#123;</span><br><span class="line">#pragma clang diagnostic push</span><br><span class="line">#pragma clang diagnostic ignored &quot;-Wunreachable-code&quot;</span><br><span class="line">return @&quot;state&quot;;</span><br><span class="line">#pragma clang diagnostic pop</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>第二个c函数，判断当前要修改NSOperation实例状态是否合法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line">*  从一个状态改变到另一个状态，是否合法</span><br><span class="line">*/</span><br><span class="line">static inline BOOL AFStateTransitionIsValid(MyOperationStatus fromStatus, MyOperationStatus toStatus, BOOL isCancelled) &#123;</span><br><span class="line"></span><br><span class="line">switch (fromStatus) &#123;</span><br><span class="line"></span><br><span class="line">//1. 当前状态为ready</span><br><span class="line">case MyOperationStatusReady:</span><br><span class="line">switch (toStatus) &#123;</span><br><span class="line">case MyOperationStatusPaused:</span><br><span class="line">case MyOperationStatusExcuting:</span><br><span class="line">return YES;</span><br><span class="line">case MyOperationStatusFinished:</span><br><span class="line">return isCancelled;</span><br><span class="line">default:</span><br><span class="line">return NO;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//2. 当前状态为excuting</span><br><span class="line">case MyOperationStatusExcuting:</span><br><span class="line">switch (toStatus) &#123;</span><br><span class="line">case MyOperationStatusPaused:</span><br><span class="line">case MyOperationStatusFinished:</span><br><span class="line">return YES;</span><br><span class="line">default:</span><br><span class="line">return NO;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//3. 当前状态为finished</span><br><span class="line">case MyOperationStatusFinished:</span><br><span class="line">return NO;</span><br><span class="line"></span><br><span class="line">//4. 当前状态为paused</span><br><span class="line">case MyOperationStatusPaused:</span><br><span class="line">return toStatus == MyOperationStatusReady;</span><br><span class="line"></span><br><span class="line">//5. 默认情况</span><br><span class="line">default: &#123;</span><br><span class="line">#pragma clang diagnostic push</span><br><span class="line">#pragma clang diagnostic ignored &quot;-Wunreachable-code&quot;</span><br><span class="line">switch (toStatus) &#123;</span><br><span class="line">case MyOperationStatusPaused:</span><br><span class="line">case MyOperationStatusReady:</span><br><span class="line">case MyOperationStatusExcuting:</span><br><span class="line">case MyOperationStatusFinished:</span><br><span class="line">return YES;</span><br><span class="line">default:</span><br><span class="line">return NO;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">#pragma clang diagnostic pop</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="No6-MyOperation-m-匿名分类添加扩展属性与方法"><a href="#No6-MyOperation-m-匿名分类添加扩展属性与方法" class="headerlink" title="No6. MyOperation.m 匿名分类添加扩展属性与方法."></a>No6. <code>MyOperation.m</code> 匿名分类添加扩展属性与方法.</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">@interface MyOperation ()</span><br><span class="line"></span><br><span class="line">//递归锁，防止多线程危险</span><br><span class="line">@property (readwrite, nonatomic, strong) NSRecursiveLock *lock;</span><br><span class="line"></span><br><span class="line">//保存当前operation的状态</span><br><span class="line">@property (readwrite, nonatomic, assign) MyOperationStatus status;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">* 执行要在operation执行的任务代码</span><br><span class="line">*/</span><br><span class="line">- (void)operationDidStart;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">* 取消执行operation</span><br><span class="line">*/</span><br><span class="line">- (void)cancelOperation;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">* 结束执行operation的</span><br><span class="line">*/</span><br><span class="line">- (void)finish;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">*    执行operatin暂停时需要执行的代码</span><br><span class="line">*/</span><br><span class="line">- (void)operationDidPause;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="No6-MyOperation实现-implementation部分代码-写一个类方法，创建一个单子子线程，开启runloop"><a href="#No6-MyOperation实现-implementation部分代码-写一个类方法，创建一个单子子线程，开启runloop" class="headerlink" title="No6. MyOperation实现@implementation部分代码: 写一个类方法，创建一个单子子线程，开启runloop."></a>No6. <code>MyOperation</code>实现@implementation部分代码: 写一个类方法，创建一个单子子线程，开启runloop.</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">//线程的入口函数，开启线程的runloop，并注册线程通信的端口</span><br><span class="line">+ (void)networkRequestThreadEntryPoint:(id)__unused object &#123;</span><br><span class="line">@autoreleasepool &#123;</span><br><span class="line"></span><br><span class="line">//1. </span><br><span class="line">[[NSThread currentThread] setName:@&quot;MyOperationThread&quot;];</span><br><span class="line"></span><br><span class="line">//2. </span><br><span class="line">NSRunLoop *runLoop = [NSRunLoop currentRunLoop];</span><br><span class="line">[runLoop addPort:[NSMachPort port] forMode:NSDefaultRunLoopMode];</span><br><span class="line">[runLoop run];</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//创建线程</span><br><span class="line">+ (NSThread *)networkRequestThread &#123;</span><br><span class="line"></span><br><span class="line">static NSThread *_networkRequestThread = nil;</span><br><span class="line">static dispatch_once_t oncePredicate;</span><br><span class="line"></span><br><span class="line">dispatch_once(&amp;oncePredicate, ^&#123;</span><br><span class="line"></span><br><span class="line">//创建线程</span><br><span class="line">_networkRequestThread = [[NSThread alloc] initWithTarget:self selector:@selector(networkRequestThreadEntryPoint:) object:nil];</span><br><span class="line"></span><br><span class="line">//启动线程</span><br><span class="line">[_networkRequestThread start];</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">return _networkRequestThread;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="7-MyOperation实现-implementation部分代码-MyOperation-init"><a href="#7-MyOperation实现-implementation部分代码-MyOperation-init" class="headerlink" title="7. MyOperation实现@implementation部分代码: -[MyOperation init]"></a>7. <code>MyOperation</code>实现@implementation部分代码: <code>-[MyOperation init]</code></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">- (instancetype)init &#123;</span><br><span class="line">self = [super init];</span><br><span class="line">if (self) &#123;</span><br><span class="line"></span><br><span class="line">//初始化时，设置ready状态</span><br><span class="line">_status = MyOperationStatusReady;</span><br><span class="line"></span><br><span class="line">//初始化锁</span><br><span class="line">_lock = [[NSRecursiveLock alloc] init];</span><br><span class="line">_lock.name = @&quot;MyOperatioLock&quot;;</span><br><span class="line"></span><br><span class="line">//设置runloop的modes</span><br><span class="line">self.runLoopModes = [NSSet setWithObject:NSRunLoopCommonModes];</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">return self;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="8-MyOperation实现-implementation部分代码-获取当前operation状态，都是重写NSOperation实例方法"><a href="#8-MyOperation实现-implementation部分代码-获取当前operation状态，都是重写NSOperation实例方法" class="headerlink" title="8. MyOperation实现@implementation部分代码: 获取当前operation状态，都是重写NSOperation实例方法."></a>8. <code>MyOperation</code>实现@implementation部分代码: 获取当前operation状态，都是<code>重写NSOperation实例方法</code>.</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">- (BOOL)isReady &#123;</span><br><span class="line">return self.status == MyOperationStatusReady &amp;&amp; [super isReady];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (BOOL)isExecuting &#123;</span><br><span class="line">return self.status == MyOperationStatusExcuting;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (BOOL)isFinished &#123;</span><br><span class="line">return self.status == MyOperationStatusFinished;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (BOOL)isConcurrent &#123;</span><br><span class="line">return YES;//默认是并发</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="9-MyOperation实现-implementation部分代码-operation被调度时由系统执行的start函数，重写-NSOperation-start-完成自己的开始执行oepration"><a href="#9-MyOperation实现-implementation部分代码-operation被调度时由系统执行的start函数，重写-NSOperation-start-完成自己的开始执行oepration" class="headerlink" title="9. MyOperation实现@implementation部分代码: operation被调度时由系统执行的start函数，重写-[NSOperation start]完成自己的开始执行oepration."></a>9. <code>MyOperation</code>实现@implementation部分代码: operation被调度时由系统执行的<code>start</code>函数，<code>重写-[NSOperation start]</code>完成自己的开始执行oepration.</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">- (void)start &#123;</span><br><span class="line">[self.lock lock];</span><br><span class="line"></span><br><span class="line">//1. 如下判断operation是否取消，只能是在operation没有被调度之前，就执行cancel.</span><br><span class="line">//2. 如下【执行operation】和【取消operation】函数都是在【另一个单例子线程上】执行，由runloop来激活线程.</span><br><span class="line"></span><br><span class="line">if ([self isCancelled]) &#123;</span><br><span class="line"></span><br><span class="line">[self performSelector:@selector(cancelOperation)</span><br><span class="line">onThread:[[self class] networkRequestThread]</span><br><span class="line">withObject:nil</span><br><span class="line">waitUntilDone:NO</span><br><span class="line">modes:[self.runLoopModes allObjects]];</span><br><span class="line"></span><br><span class="line">&#125; else &#123;</span><br><span class="line"></span><br><span class="line">//1.</span><br><span class="line">self.status = MyOperationStatusExcuting;</span><br><span class="line"></span><br><span class="line">//2.</span><br><span class="line">[self performSelector:@selector(operationDidStart)</span><br><span class="line">onThread:[[self class] networkRequestThread]</span><br><span class="line">withObject:nil</span><br><span class="line">waitUntilDone:NO</span><br><span class="line">modes:[self.runLoopModes allObjects]];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">[self.lock unlock];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="10-MyOperation实现-implementation部分代码-执行用户传入的Block任务代码，执行完任务执行-MyOperation-finish-修改status并发出KVO通知，让系统结束执行operation"><a href="#10-MyOperation实现-implementation部分代码-执行用户传入的Block任务代码，执行完任务执行-MyOperation-finish-修改status并发出KVO通知，让系统结束执行operation" class="headerlink" title="10. MyOperation实现@implementation部分代码: 执行用户传入的Block任务代码，执行完任务执行-[MyOperation finish]修改status并发出KVO通知，让系统结束执行operation."></a>10. <code>MyOperation</code>实现@implementation部分代码: 执行用户传入的Block任务代码，执行完任务执行<code>-[MyOperation finish]</code>修改status并发出KVO通知，让系统结束执行operation.</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">- (void)operationDidStart &#123;</span><br><span class="line">[self.lock lock];</span><br><span class="line"></span><br><span class="line">//1. 在当先子线程的runloop发送事件源，执行耗时任务代码</span><br><span class="line">//....</span><br><span class="line"></span><br><span class="line">//2. 【重要】执行完任务后，让operation结束执行</span><br><span class="line">[self finish];</span><br><span class="line"></span><br><span class="line">[self.lock unlock];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="11-MyOperation实现-implementation部分代码-添加结束执行operation的方法"><a href="#11-MyOperation实现-implementation部分代码-添加结束执行operation的方法" class="headerlink" title="11. MyOperation实现@implementation部分代码: 添加结束执行operation的方法"></a>11. <code>MyOperation</code>实现@implementation部分代码: 添加结束执行operation的方法</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">- (void)finish &#123;</span><br><span class="line"></span><br><span class="line">//1. 修改operation状态</span><br><span class="line">[self.lock lock];</span><br><span class="line">self.status = MyOperationStatusFinished;</span><br><span class="line">[self.lock unlock];</span><br><span class="line"></span><br><span class="line">//2. 发送通知，operation已经结束执行</span><br><span class="line">//...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="12-MyOperation实现-implementation部分代码-重写-property-readwrite-nonatomic-assign-MyOperationStatus-status-生成的setter方法，第一是修改operation的status，第二是手动发出对应状态修改的KVO通知，实现一个operation的状态机"><a href="#12-MyOperation实现-implementation部分代码-重写-property-readwrite-nonatomic-assign-MyOperationStatus-status-生成的setter方法，第一是修改operation的status，第二是手动发出对应状态修改的KVO通知，实现一个operation的状态机" class="headerlink" title="12. MyOperation实现@implementation部分代码: 重写@property (readwrite, nonatomic, assign) MyOperationStatus status;生成的setter方法，第一是修改operation的status，第二是手动发出对应状态修改的KVO通知，实现一个operation的状态机."></a>12. <code>MyOperation</code>实现@implementation部分代码: 重写<code>@property (readwrite, nonatomic, assign) MyOperationStatus status;</code>生成的setter方法，第一是<code>修改operation的status</code>，第二是手动<code>发出对应状态修改的KVO通知</code>，实现一个operation的状态机.</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">- (void)setStatus:(MyOperationStatus)status &#123;</span><br><span class="line"></span><br><span class="line">//检查从当前status到目标status的变化，是否合法</span><br><span class="line">if (!AFStateTransitionIsValid(self.status, status, [self isCancelled])) &#123;</span><br><span class="line">return;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">[self.lock lock];</span><br><span class="line"></span><br><span class="line">//获取status枚举对应的字符串值</span><br><span class="line">NSString *oldStateKey = AFKeyPathFromOperationState(self.status);</span><br><span class="line">NSString *newStateKey = AFKeyPathFromOperationState(status);</span><br><span class="line"></span><br><span class="line">//手动发出KVO属性修改通知</span><br><span class="line">[self willChangeValueForKey:newStateKey];</span><br><span class="line">[self willChangeValueForKey:oldStateKey];</span><br><span class="line">_status = status;</span><br><span class="line">[self didChangeValueForKey:oldStateKey];</span><br><span class="line">[self didChangeValueForKey:newStateKey];</span><br><span class="line"></span><br><span class="line">[self.lock unlock];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意:</p>
+<p>不管是【开始执行operation】、【取消执行operation】、【暂停operation】、【执行完毕operation】，<br>所有的状态改变，必须手动发出KVO通知，否则系统不会执行<code>NSOperation实例对应的函数</code>。</p>
+<hr>
+<h3 id="No13-MyOperation实现-implementation部分代码-执行operation的comppletionBlock。"><a href="#No13-MyOperation实现-implementation部分代码-执行operation的comppletionBlock。" class="headerlink" title="No13. MyOperation实现@implementation部分代码: 执行operation的comppletionBlock。"></a>No13. <code>MyOperation</code>实现@implementation部分代码: 执行operation的comppletionBlock。</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line">*    重写设置nsoperation的回调代码方法</span><br><span class="line">*/</span><br><span class="line">- (void)setCompletionBlock:(void (^)(void))completionBlock &#123;</span><br><span class="line"></span><br><span class="line">[self.lock lock];</span><br><span class="line"></span><br><span class="line">if (!completionBlock) &#123;</span><br><span class="line">[super setCompletionBlock:nil];</span><br><span class="line">&#125; else &#123;</span><br><span class="line">__weak __typeof(self)weakSelf = self;</span><br><span class="line">[super setCompletionBlock:^ &#123;</span><br><span class="line">__strong __typeof(weakSelf)strongSelf = weakSelf;</span><br><span class="line"></span><br><span class="line">//判断当operation取消后，不执行传入的任务代码</span><br><span class="line">if (strongSelf.isCancelled == NO) &#123;</span><br><span class="line">dispatch_async(dispatch_get_main_queue(), completionBlock);</span><br><span class="line">&#125;</span><br><span class="line">&#125;];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">[self.lock unlock];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意:</p>
+<ol>
+<li><p>这个<code>completionBlock</code>只有手动发出了<code>isFinish修改的KVO通知</code>之后，才会由系统执行.</p>
+</li>
+<li><p>未解决的问题: 如上设置的completionBlock，在cancel掉operation之后，还是在执行.</p>
+</li>
+</ol>
+<hr>
+<h3 id="No14-MyOperation实现-implementation部分代码-重写-NSOperation-cancel-方法完成取消执行operation"><a href="#No14-MyOperation实现-implementation部分代码-重写-NSOperation-cancel-方法完成取消执行operation" class="headerlink" title="No14. MyOperation实现@implementation部分代码: 重写 -[NSOperation cancel]方法完成取消执行operation."></a>No14. <code>MyOperation</code>实现@implementation部分代码: 重写 <code>-[NSOperation cancel]</code>方法完成取消执行operation.</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">- (void)cancel &#123;</span><br><span class="line">[self.lock lock];</span><br><span class="line"></span><br><span class="line">if (!self.isFinished &amp;&amp; !self.isCancelled) &#123;</span><br><span class="line">[super cancel];</span><br><span class="line"></span><br><span class="line">[self performSelector:@selector(cancelOperation)</span><br><span class="line">onThread:[[self class] networkRequestThread]</span><br><span class="line">withObject:nil</span><br><span class="line">waitUntilDone:NO</span><br><span class="line">modes:[self.runLoopModes allObjects]];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">[self.lock unlock];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">- (void)cancelOperation &#123;</span><br><span class="line"></span><br><span class="line">if (![self isFinished]) &#123;</span><br><span class="line"></span><br><span class="line">//1. 做一些清除对象</span><br><span class="line">//比如: 取消NSURLConnection对象执行</span><br><span class="line"></span><br><span class="line">//2. 结束执行operation（应该写在NSURLConnectionDelegate回调函数中）</span><br><span class="line">[self finish];</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>OK，到此为止，最早列出的使用<code>MyOperation</code>的代码，可以执行了也可以看到输出.</p>
+<p>但是还有很多问题:</p>
+<ol>
+<li>取消执行operaiton</li>
+<li>暂停执行operation</li>
+</ol>
+<p>有时间再来看吧…</p>
+<hr>
+<h3 id="No15-暂停执行operation"><a href="#No15-暂停执行operation" class="headerlink" title="No15. 暂停执行operation"></a>No15. 暂停执行operation</h3><blockquote>
+<p>注意: 需要在operation上执行一些长时间耗时的任务，要不然operaiton就很快就结束了.</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- (void)pause;</span><br><span class="line">- (BOOL)isPaused;</span><br><span class="line">- (void)resume;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- (BOOL)isPaused &#123;</span><br><span class="line">return self.status == MyOperationStatusPaused;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">- (void)pause &#123;</span><br><span class="line"></span><br><span class="line">//暂停条件: 不能已经暂停 &amp; 不能已经结束 &amp; 不能已经取消</span><br><span class="line">if ([self isPaused] || [self isFinished] || [self isCancelled]) &#123;</span><br><span class="line">return;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">[self.lock lock];</span><br><span class="line"></span><br><span class="line">//如果正在执行ing</span><br><span class="line">if ([self isExecuting]) &#123;</span><br><span class="line"></span><br><span class="line">//1. 执行暂停执行任务代码</span><br><span class="line">[self performSelector:@selector(operationDidPause)</span><br><span class="line">onThread:[[self class] networkRequestThread]</span><br><span class="line">withObject:nil</span><br><span class="line">waitUntilDone:NO</span><br><span class="line">modes:[self.runLoopModes allObjects]];</span><br><span class="line"></span><br><span class="line">//2. 发送通知，operation已经暂停</span><br><span class="line">//.....</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//修改状态，发出KVO通知</span><br><span class="line">self.status = MyOperationStatusPaused;</span><br><span class="line"></span><br><span class="line">[self.lock unlock];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">- (void)operationDidPause &#123;</span><br><span class="line">[self.lock lock];</span><br><span class="line"></span><br><span class="line">//取消执行建立网络连接..等等</span><br><span class="line">//[self.conection cancel];</span><br><span class="line">NSLog(@&quot;operation暂停执行..., 线程: %@\n&quot;, [NSThread currentThread]);</span><br><span class="line"></span><br><span class="line">//结束执行（应该写在NSURLConnectionDelegate回调函数中）</span><br><span class="line">[self finish];</span><br><span class="line"></span><br><span class="line">[self.lock unlock];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>实际上pause暂停就是直接让operation结束执行，发出finish的KVO通知.</p>
+<hr>
+<h3 id="No16-恢复执行resumeoperation"><a href="#No16-恢复执行resumeoperation" class="headerlink" title="No16. 恢复执行resumeoperation."></a>No16. 恢复执行<code>resume</code>operation.</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">- (void)resume &#123;</span><br><span class="line"></span><br><span class="line">//只有被paused的operation才可以恢复</span><br><span class="line">if(![self isPaused]) &#123;</span><br><span class="line">return;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">[self.lock lock];</span><br><span class="line"></span><br><span class="line">//1.</span><br><span class="line">self.status = MyOperationStatusReady;</span><br><span class="line"></span><br><span class="line">//2.</span><br><span class="line">[self start];</span><br><span class="line"></span><br><span class="line">[self.lock unlock];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>实际上resume恢复operaiton操作，就是直接让operation直行start开始方法.</p>
+<hr>
+<h3 id="No17-实现断网将operation归档到本地文件，恢复网络从本地文件恢复"><a href="#No17-实现断网将operation归档到本地文件，恢复网络从本地文件恢复" class="headerlink" title="No17. 实现断网将operation归档到本地文件，恢复网络从本地文件恢复."></a>No17. 实现断网<code>将operation归档到本地文件</code>，恢复网络从本地文件恢复.</h3><ol>
+<li>NSOperation实现协议 <code>NSSecureCoding, NSCopying</code></li>
+<li>判断网络状态</li>
+<li>归档或解档</li>
+</ol>
+<hr>
+<h3 id="小结AFNetworking-iOS7以下时进行网络通信的原理"><a href="#小结AFNetworking-iOS7以下时进行网络通信的原理" class="headerlink" title="小结AFNetworking iOS7以下时进行网络通信的原理"></a>小结AFNetworking iOS7以下时进行网络通信的原理</h3><ul>
+<li><p>第一个阶段，每一个独立的网络请求</p>
+</li>
+<li><p>网络请求1 &gt;&gt;&gt; 在一个NSOperation子线程执行</p>
+</li>
+<li>网络请求2 &gt;&gt;&gt; 在一个NSOperation子线程执行</li>
+<li>网络请求3 &gt;&gt;&gt; 在一个NSOperation子线程执行</li>
+<li>网络请求4 &gt;&gt;&gt; 在一个NSOperation子线程执行</li>
+<li><p>….</p>
+</li>
+<li><p>然后所有的operation最终通过一个单例NSThread上进行网络通信</p>
+</li>
+<li>创建一个单例的<code>AFNetworking Thread</code>对象</li>
+<li>打开Thread对象的Runloop来接收事件源，唤醒Thread线程处理</li>
+<li>创建AutoReleasePool对象，管理对象释放</li>
+<li><p>最后让NSURLConnection连接、调度、delegate回调，都放在单例的<code>AFNetworking Thread</code>对象上执行</p>
+</li>
+<li><p>当网络操作完成时，单例的<code>AFNetworking Thread</code>对象的runloop接收到系统线程的事件源source，告知网络数据交换完毕</p>
+</li>
+<li><p>单例的<code>AFNetworking Thread</code>对象被runloop唤醒，并回调operation对象</p>
+</li>
+<li><p>最终operation对象又回调给用户线程进行后续处理</p>
+</li>
+</ul>
+<hr>
+<h3 id="NSOperationQueue的suspend暂停的示例代码"><a href="#NSOperationQueue的suspend暂停的示例代码" class="headerlink" title="NSOperationQueue的suspend暂停的示例代码"></a>NSOperationQueue的suspend暂停的示例代码</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">ViewController</span> ()</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">strong</span>, <span class="keyword">nonatomic</span>) <span class="built_in">NSOperationQueue</span> *queue;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ViewController</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)touchesBegan:(<span class="built_in">NSSet</span>&lt;<span class="built_in">UITouch</span> *&gt; *)touches withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line">[<span class="keyword">self</span> testQueueSuspendAndResume];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSOperationQueue</span> *)queue &#123;</span><br><span class="line"><span class="keyword">if</span> (!_queue) &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//默认创建出来的队列，没有并发数限制的</span></span><br><span class="line">_queue = [[<span class="built_in">NSOperationQueue</span> alloc] init];</span><br><span class="line"></span><br><span class="line"><span class="comment">//设置最大并发数</span></span><br><span class="line">_queue.maxConcurrentOperationCount = <span class="number">4</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> _queue;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)viewDidAppear:(<span class="built_in">BOOL</span>)animated &#123;</span><br><span class="line">[<span class="keyword">super</span> viewDidAppear:animated];</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">while</span> (i &lt; <span class="number">10000</span>) &#123;</span><br><span class="line">[<span class="keyword">self</span>.queue addOperationWithBlock:^&#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"%@"</span>, [<span class="built_in">NSThread</span> currentThread]);</span><br><span class="line">&#125;];</span><br><span class="line">i++;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)testQueueSuspendAndResume &#123;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">self</span>.queue.isSuspended) &#123;</span><br><span class="line"><span class="comment">//恢复</span></span><br><span class="line">[<span class="keyword">self</span>.queue setSuspended:<span class="literal">NO</span>];</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"><span class="comment">//暂停</span></span><br><span class="line">[<span class="keyword">self</span>.queue setSuspended:<span class="literal">YES</span>];</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="NSOperationQueue为串行队列时被suspend时，仍然会将当前正在执行中的operation执行完毕，再将后续正准备调度执行的operation暂停"><a href="#NSOperationQueue为串行队列时被suspend时，仍然会将当前正在执行中的operation执行完毕，再将后续正准备调度执行的operation暂停" class="headerlink" title="NSOperationQueue为串行队列时被suspend时，仍然会将当前正在执行中的operation执行完毕，再将后续正准备调度执行的operation暂停."></a>NSOperationQueue为<code>串行队列</code>时被suspend时，仍然会将当前正在执行中的operation执行完毕，再将后续正准备调度执行的operation暂停.</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">ViewController</span> ()</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">strong</span>, <span class="keyword">nonatomic</span>) <span class="built_in">NSOperationQueue</span> *queue;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ViewController</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)touchesBegan:(<span class="built_in">NSSet</span>&lt;<span class="built_in">UITouch</span> *&gt; *)touches withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line">[<span class="keyword">self</span> testQueueSuspendAndResume];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSOperationQueue</span> *)queue &#123;</span><br><span class="line"><span class="keyword">if</span> (!_queue) &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//默认创建出来的队列，没有并发数限制的</span></span><br><span class="line">_queue = [[<span class="built_in">NSOperationQueue</span> alloc] init];</span><br><span class="line"></span><br><span class="line"><span class="comment">//设置最大并发数</span></span><br><span class="line">_queue.maxConcurrentOperationCount = <span class="number">4</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> _queue;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)viewDidAppear:(<span class="built_in">BOOL</span>)animated &#123;</span><br><span class="line">[<span class="keyword">super</span> viewDidAppear:animated];</span><br><span class="line"></span><br><span class="line"><span class="comment">//    [self queueData1];</span></span><br><span class="line">[<span class="keyword">self</span> queueData2];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)queueData2 &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//修改为串行队列</span></span><br><span class="line"><span class="keyword">self</span>.queue.maxConcurrentOperationCount = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">[<span class="keyword">self</span>.queue addOperationWithBlock:^&#123;</span><br><span class="line"><span class="keyword">for</span> (<span class="built_in">NSInteger</span> i = <span class="number">0</span>; i &lt; <span class="number">10000</span>; i++) &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"Thread 1: %ld"</span>, i);</span><br><span class="line">&#125;</span><br><span class="line">&#125;];</span><br><span class="line"></span><br><span class="line">[<span class="keyword">self</span>.queue addOperationWithBlock:^&#123;</span><br><span class="line"><span class="keyword">for</span> (<span class="built_in">NSInteger</span> i = <span class="number">0</span>; i &lt; <span class="number">10000</span>; i++) &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"Thread 2: %ld"</span>, i);</span><br><span class="line">&#125;</span><br><span class="line">&#125;];</span><br><span class="line"></span><br><span class="line">[<span class="keyword">self</span>.queue addOperationWithBlock:^&#123;</span><br><span class="line"><span class="keyword">for</span> (<span class="built_in">NSInteger</span> i = <span class="number">0</span>; i &lt; <span class="number">10000</span>; i++) &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"Thread 3: %ld"</span>, i);</span><br><span class="line">&#125;</span><br><span class="line">&#125;];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)testQueueSuspendAndResume &#123;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">self</span>.queue.isSuspended) &#123;</span><br><span class="line"><span class="comment">//恢复</span></span><br><span class="line">[<span class="keyword">self</span>.queue setSuspended:<span class="literal">NO</span>];</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"><span class="comment">//暂停</span></span><br><span class="line">[<span class="keyword">self</span>.queue setSuspended:<span class="literal">YES</span>];</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>程序运行起来立刻点击屏幕，那么会看到关于<code>Thread 1</code>一直输出到9999，而看不到<code>Thread 2</code>与<code>Thread 3</code>相关的输出，即使队列被suspend，但是仍然把<code>Thread 1</code>相关的任务代码全部执行完毕，再将队列中后续的任务挂起.</p>
+<hr>
+<h3 id="Operation的cancel取消，一个operation即使被cancel，但是并不会立刻被系统回收释放掉，所以该operation内部的任务代码仍然会被继续执行，所以需要在内部任务中，需要时时监测operation是否已经被cancel掉"><a href="#Operation的cancel取消，一个operation即使被cancel，但是并不会立刻被系统回收释放掉，所以该operation内部的任务代码仍然会被继续执行，所以需要在内部任务中，需要时时监测operation是否已经被cancel掉" class="headerlink" title="Operation的cancel取消，一个operation即使被cancel，但是并不会立刻被系统回收释放掉，所以该operation内部的任务代码仍然会被继续执行，所以需要在内部任务中，需要时时监测operation是否已经被cancel掉."></a>Operation的cancel取消，一个operation即使被cancel，但是并不会立刻被系统回收释放掉，所以该operation内部的任务代码仍然会被继续执行，所以需要在内部任务中，需要<code>时时监测operation是否已经被cancel掉</code>.</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">ViewController</span> ()</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">strong</span>, <span class="keyword">nonatomic</span>) <span class="built_in">NSOperationQueue</span> *queue;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">strong</span>, <span class="keyword">nonatomic</span>) <span class="built_in">NSOperation</span> *op;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ViewController</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)touchesBegan:(<span class="built_in">NSSet</span>&lt;<span class="built_in">UITouch</span> *&gt; *)touches withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line">[<span class="keyword">self</span> testOperationCancel];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)invocationBlockCallback &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//耗时任务1</span></span><br><span class="line"><span class="keyword">for</span> (<span class="built_in">NSInteger</span> i = <span class="number">0</span>; i &lt; <span class="number">10000</span>; i++) &#123;</span><br><span class="line"><span class="comment">//判断op是否已经被取消</span></span><br><span class="line"><span class="keyword">if</span> ([_op isCancelled] != <span class="literal">YES</span>) &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"Operation did execute: %ld"</span>, i);</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//耗时任务2</span></span><br><span class="line"><span class="keyword">for</span> (<span class="built_in">NSInteger</span> i = <span class="number">0</span>; i &lt; <span class="number">10000</span>; i++) &#123;</span><br><span class="line"><span class="comment">//判断op是否已经被取消</span></span><br><span class="line"><span class="keyword">if</span> ([_op isCancelled] != <span class="literal">YES</span>) &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"Operation did execute: %ld"</span>, i);</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//耗时任务3</span></span><br><span class="line"><span class="keyword">for</span> (<span class="built_in">NSInteger</span> i = <span class="number">0</span>; i &lt; <span class="number">10000</span>; i++) &#123;</span><br><span class="line"><span class="comment">//判断op是否已经被取消</span></span><br><span class="line"><span class="keyword">if</span> ([_op isCancelled] != <span class="literal">YES</span>) &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"Operation did execute: %ld"</span>, i);</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)testOperationCancel &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//1.</span></span><br><span class="line">_op = [[<span class="built_in">NSInvocationOperation</span> alloc] initWithTarget:<span class="keyword">self</span></span><br><span class="line">selector:<span class="keyword">@selector</span>(invocationBlockCallback)</span><br><span class="line">object:<span class="literal">nil</span>];</span><br><span class="line"><span class="comment">//2.</span></span><br><span class="line">[<span class="keyword">self</span>.queue addOperation:_op];</span><br><span class="line"></span><br><span class="line"><span class="comment">//3. 5秒后取消operaiton执行</span></span><br><span class="line">dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(<span class="number">5</span> * <span class="built_in">NSEC_PER_SEC</span>)), dispatch_get_main_queue(), ^&#123;</span><br><span class="line">[_op cancel];</span><br><span class="line">&#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>在所有的block任务代码块中，包含监测<code>if(![op isCancel]) { do some work ...;}</code>这样的判断代码，来响应operation被执行cancel.</p>
+<h4 id="但是上述在每一此循环中都会判断operation是否已经被取消，这样还是不太好，苹果建议执行完一段耗时任务之后再去判断operation的取消状态"><a href="#但是上述在每一此循环中都会判断operation是否已经被取消，这样还是不太好，苹果建议执行完一段耗时任务之后再去判断operation的取消状态" class="headerlink" title="但是上述在每一此循环中都会判断operation是否已经被取消，这样还是不太好，苹果建议执行完一段耗时任务之后再去判断operation的取消状态"></a>但是上述在每一此循环中都会判断operation是否已经被取消，这样还是不太好，<code>苹果建议执行完一段耗时任务之后再去判断operation的取消状态</code></h4><p>将上去的block任务回调函数实现修改如下</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)invocationBlockCallback &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//耗时任务1</span></span><br><span class="line"><span class="keyword">for</span> (<span class="built_in">NSInteger</span> i = <span class="number">0</span>; i &lt; <span class="number">10000</span>; i++) &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"Operation did execute: %ld"</span>, i);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> ([_op isCancelled]) <span class="keyword">return</span>;<span class="comment">//判断是否已经被取消</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//耗时任务2</span></span><br><span class="line"><span class="keyword">for</span> (<span class="built_in">NSInteger</span> i = <span class="number">0</span>; i &lt; <span class="number">10000</span>; i++) &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"Operation did execute: %ld"</span>, i);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> ([_op isCancelled]) <span class="keyword">return</span>;<span class="comment">//判断是否已经被取消</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//耗时任务3</span></span><br><span class="line"><span class="keyword">for</span> (<span class="built_in">NSInteger</span> i = <span class="number">0</span>; i &lt; <span class="number">10000</span>; i++) &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"Operation did execute: %ld"</span>, i);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> ([_op isCancelled]) <span class="keyword">return</span>;<span class="comment">//判断是否已经被取消</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>即执行完一段耗时任务之后，再去判断operation是否已经被取消.</p>
+<hr>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2017/09/23/自定义NSOperation子类/" data-title="自定义NSOperation子类 | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2017/09/23/如题，最近又开始面试了，然后基本上都会问到你的项目是如何做架构设计的？/" title="如题，最近又开始面试了，然后基本上都会问到你的项目是如何做架构设计的？">
+  <strong>上一篇：</strong><br>
+  <span>
+  如题，最近又开始面试了，然后基本上都会问到你的项目是如何做架构设计的？</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/09/19/HTTPS、SSL与TLS/" title="HTTPS、SSL与TLS">
+ <strong>下一篇：</strong><br> 
+ <span>HTTPS、SSL与TLS
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/09/23/自定义NSOperation子类/" data-title="自定义NSOperation子类" data-url="http://yoursite.com/2017/09/23/自定义NSOperation子类/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#昨天接到了蘑菇街的面试，在关于NSOperation的问题，觉得自己回答的不是太好，决定仔细看看"><span class="toc-number">1.</span> <span class="toc-text">昨天接到了蘑菇街的面试，在关于NSOperation的问题，觉得自己回答的不是太好，决定仔细看看.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#那么，就从自己写一个自定义NSOperation开始，才知道一些具体细节"><span class="toc-number">2.</span> <span class="toc-text">那么，就从自己写一个自定义NSOperation开始，才知道一些具体细节.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No1-首先给出使用自己定义的operation的示例代码"><span class="toc-number">3.</span> <span class="toc-text">No1. 首先给出使用自己定义的operation的示例代码.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No2-开始写MyOperation-h文件，向外暴露的方法与属性"><span class="toc-number">4.</span> <span class="toc-text">No2. 开始写MyOperation.h文件，向外暴露的方法与属性.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No3-开始写MyOperation-m-具体实现"><span class="toc-number">5.</span> <span class="toc-text">No3. 开始写MyOperation.m 具体实现.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No4-提供了两个c函数，分别获取NSOperation状态的工具函数"><span class="toc-number">6.</span> <span class="toc-text">No4. 提供了两个c函数，分别获取NSOperation状态的工具函数.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No6-MyOperation-m-匿名分类添加扩展属性与方法"><span class="toc-number">7.</span> <span class="toc-text">No6. MyOperation.m 匿名分类添加扩展属性与方法.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No6-MyOperation实现-implementation部分代码-写一个类方法，创建一个单子子线程，开启runloop"><span class="toc-number">8.</span> <span class="toc-text">No6. MyOperation实现@implementation部分代码: 写一个类方法，创建一个单子子线程，开启runloop.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-MyOperation实现-implementation部分代码-MyOperation-init"><span class="toc-number">9.</span> <span class="toc-text">7. MyOperation实现@implementation部分代码: -[MyOperation init]</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-MyOperation实现-implementation部分代码-获取当前operation状态，都是重写NSOperation实例方法"><span class="toc-number">10.</span> <span class="toc-text">8. MyOperation实现@implementation部分代码: 获取当前operation状态，都是重写NSOperation实例方法.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-MyOperation实现-implementation部分代码-operation被调度时由系统执行的start函数，重写-NSOperation-start-完成自己的开始执行oepration"><span class="toc-number">11.</span> <span class="toc-text">9. MyOperation实现@implementation部分代码: operation被调度时由系统执行的start函数，重写-[NSOperation start]完成自己的开始执行oepration.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-MyOperation实现-implementation部分代码-执行用户传入的Block任务代码，执行完任务执行-MyOperation-finish-修改status并发出KVO通知，让系统结束执行operation"><span class="toc-number">12.</span> <span class="toc-text">10. MyOperation实现@implementation部分代码: 执行用户传入的Block任务代码，执行完任务执行-[MyOperation finish]修改status并发出KVO通知，让系统结束执行operation.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-MyOperation实现-implementation部分代码-添加结束执行operation的方法"><span class="toc-number">13.</span> <span class="toc-text">11. MyOperation实现@implementation部分代码: 添加结束执行operation的方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-MyOperation实现-implementation部分代码-重写-property-readwrite-nonatomic-assign-MyOperationStatus-status-生成的setter方法，第一是修改operation的status，第二是手动发出对应状态修改的KVO通知，实现一个operation的状态机"><span class="toc-number">14.</span> <span class="toc-text">12. MyOperation实现@implementation部分代码: 重写@property (readwrite, nonatomic, assign) MyOperationStatus status;生成的setter方法，第一是修改operation的status，第二是手动发出对应状态修改的KVO通知，实现一个operation的状态机.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No13-MyOperation实现-implementation部分代码-执行operation的comppletionBlock。"><span class="toc-number">15.</span> <span class="toc-text">No13. MyOperation实现@implementation部分代码: 执行operation的comppletionBlock。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No14-MyOperation实现-implementation部分代码-重写-NSOperation-cancel-方法完成取消执行operation"><span class="toc-number">16.</span> <span class="toc-text">No14. MyOperation实现@implementation部分代码: 重写 -[NSOperation cancel]方法完成取消执行operation.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No15-暂停执行operation"><span class="toc-number">17.</span> <span class="toc-text">No15. 暂停执行operation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No16-恢复执行resumeoperation"><span class="toc-number">18.</span> <span class="toc-text">No16. 恢复执行resumeoperation.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No17-实现断网将operation归档到本地文件，恢复网络从本地文件恢复"><span class="toc-number">19.</span> <span class="toc-text">No17. 实现断网将operation归档到本地文件，恢复网络从本地文件恢复.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#小结AFNetworking-iOS7以下时进行网络通信的原理"><span class="toc-number">20.</span> <span class="toc-text">小结AFNetworking iOS7以下时进行网络通信的原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NSOperationQueue的suspend暂停的示例代码"><span class="toc-number">21.</span> <span class="toc-text">NSOperationQueue的suspend暂停的示例代码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NSOperationQueue为串行队列时被suspend时，仍然会将当前正在执行中的operation执行完毕，再将后续正准备调度执行的operation暂停"><span class="toc-number">22.</span> <span class="toc-text">NSOperationQueue为串行队列时被suspend时，仍然会将当前正在执行中的operation执行完毕，再将后续正准备调度执行的operation暂停.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Operation的cancel取消，一个operation即使被cancel，但是并不会立刻被系统回收释放掉，所以该operation内部的任务代码仍然会被继续执行，所以需要在内部任务中，需要时时监测operation是否已经被cancel掉"><span class="toc-number">23.</span> <span class="toc-text">Operation的cancel取消，一个operation即使被cancel，但是并不会立刻被系统回收释放掉，所以该operation内部的任务代码仍然会被继续执行，所以需要在内部任务中，需要时时监测operation是否已经被cancel掉.</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#但是上述在每一此循环中都会判断operation是否已经被取消，这样还是不太好，苹果建议执行完一段耗时任务之后再去判断operation的取消状态"><span class="toc-number">23.1.</span> <span class="toc-text">但是上述在每一此循环中都会判断operation是否已经被取消，这样还是不太好，苹果建议执行完一段耗时任务之后再去判断operation的取消状态</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
