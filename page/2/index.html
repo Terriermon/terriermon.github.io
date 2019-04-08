@@ -74,6 +74,126 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
+    <a href="/2016/11/20/UIWindow/" title="UIWindow" itemprop="url">
+  
+    <h1 itemprop="name">UIWindow</h1>
+    
+     
+           <p itemprop="description">UIScreen、UIWindow、UIView三者之间的关系
+(1) UIScreen为硬件设备的屏幕抽象，其中一个属性是整个屏幕区域bounds
+
+(2) UIWindow为内容显示提供背景平台，一个App程序必须至少要有一个UIWindow，否则不会显示任何的东西
+
+
+12</p>
+        
+    
+    <time datetime="2016-11-20T09:21:06.000Z" itemprop="datePublished">2016-11-20</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/09/26/Runtime-Part13-TypeEncodings/" title="Runtime Part13 TypeEncodings" itemprop="url">
+  
+    <h1 itemprop="name">Runtime Part13 TypeEncodings</h1>
+    
+     
+           <p itemprop="description">类型编码: 苹果会对每一种数据类型，统一按照特定的格式进行编码，得到一个格式化字符串，作用是可以加快消息分发
+对所有的开发者使用的数据类型，按照特定的格式进行编码
+
+系统按照特定的格式进行解码，找到最终要执行的方法、是被方法参数，类型、返回值类型…等等
+
+而如果不使用这种特定的格</p>
+        
+    
+    <time datetime="2016-09-26T07:25:28.000Z" itemprop="datePublished">2016-09-26</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/09/25/Runtime-Part12-Intercept/" title="Runtime Part12 Intercept" itemprop="url">
+  
+    <h1 itemprop="name">Runtime Part12 Intercept</h1>
+    
+     
+           <p itemprop="description">方法拦截的途径方法一、执行一个SEL不存在Method的消息
+然后不让方法继续执行，直接拦截掉 （resolve）转发给其他具有这个Method实例的Target （forward）方法二、使用runtime api，直接替换掉SEL指向的Method实例，让其找到一个假的函数实</p>
+        
+    
+    <time datetime="2016-09-25T12:49:50.000Z" itemprop="datePublished">2016-09-25</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/09/25/Runtime-Part11-NSInvocation/" title="Runtime Part11 NSInvocation" itemprop="url">
+  
+    <h1 itemprop="name">Runtime Part11 NSInvocation</h1>
+    
+     
+           <p itemprop="description">NSInvocation学习记录首先看一个简单的示例代码
+1234567891011121314151617181920212223242526//1. 创建要调用方法的SEL标识SEL myMethod = @selector(myLog:parm:parm:);//2. 设置</p>
+        
+    
+    <time datetime="2016-09-24T16:39:25.000Z" itemprop="datePublished">2016-09-25</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/09/24/Runtime-Part10-Forward/" title="Runtime Part10 Forward" itemprop="url">
+  
+    <h1 itemprop="name">Runtime Part10 Forward</h1>
+    
+     
+           <p itemprop="description">完整的消息转发阶段
+foward to a target 
+forward with NSInvocation
+
+
+当向对象或类发送一个没有对应方法实现的消息SEL时，由系统自动调用消息转发的几个系统函数。注意： 必须是执行一个不存在方法实现的SEL，才会调用如下的几个函数.
+
+</p>
+        
+    
+    <time datetime="2016-09-23T16:26:56.000Z" itemprop="datePublished">2016-09-24</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
     <a href="/2016/09/24/Runtime-Part9-Resolve/" title="Runtime Part9  Resolve" itemprop="url">
   
     <h1 itemprop="name">Runtime Part9  Resolve</h1>
@@ -203,150 +323,9 @@ Method本身就是一个指针类型，所以不要使用如下代码
 
 
 
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/09/22/Runtime-Part3-IMP/" title="Runtime Part3 IMP" itemprop="url">
-  
-    <h1 itemprop="name">Runtime Part3 IMP</h1>
-    
-     
-           <p itemprop="description">什么是IMP？
-IMP 就是一个指向任意一个 c函数的 函数指针
-
-IMP的原型
-12345#if !OBJC_OLD_DISPATCH_PROTOTYPEStypedef void (*IMP)(void /* id, SEL, ... */ ); #elsetypedef i</p>
-        
-    
-    <time datetime="2016-09-22T10:56:12.000Z" itemprop="datePublished">2016-09-22</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/09/22/Runtime-Part2-SEL/" title="Runtime Part2 SEL" itemprop="url">
-  
-    <h1 itemprop="name">Runtime Part2 SEL</h1>
-    
-     
-           <p itemprop="description">什么是消息选择器？
-(1) 消息选择器是一种文本字符串，用于消息传递的过程
-
-(2) 消息选择器是一种分为多段的文本字符串，每个段以冒号结尾且后面可以跟方法执行参数
-
-(3) 运行时系统根据消息选择器，找到对应的方法实现完成方法调用
-
-(4) 消息选择器主要是标识区别某个对象/某</p>
-        
-    
-    <time datetime="2016-09-22T10:04:03.000Z" itemprop="datePublished">2016-09-22</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/09/21/Runtime-Part1-认识/" title="Runtime Part1 认识" itemprop="url">
-  
-    <h1 itemprop="name">Runtime Part1 认识</h1>
-    
-     
-           <p itemprop="description">运行时系统组成部分: 编译器 和 运行时动态链接库
-编译器、做的事情
-
-
-(1) 在程序编译期间负责完成一些Objetive-C代码编译生成c代码
-(2) 而这些被编译的c代码不仅仅只是普通的c代码，而是使用了运行时系统库中api的代码
-
-
-运行时链接库、组成结构
-
-
-(1) 类</p>
-        
-    
-    <time datetime="2016-09-20T18:31:21.000Z" itemprop="datePublished">2016-09-21</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/08/05/iOS-common-crash-problem/" title="iOS common crash problem" itemprop="url">
-  
-    <h1 itemprop="name">iOS common crash problem</h1>
-    
-     
-           <p itemprop="description">常见问题整理
-Array的一些崩溃
-(1) 数组对象是id类型，并不清楚到底是可变还是不可变
-
-12id array = [NSArray new];[array addObject:@&#34;111&#34;];
-
-(2) 添加一个nil到数组对象
-
-12id array = [NSMuta</p>
-        
-    
-    <time datetime="2016-08-05T03:47:42.000Z" itemprop="datePublished">2016-08-05</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/08/01/APNS远程推送/" title="APNS远程推送" itemprop="url">
-  
-    <h1 itemprop="name">APNS远程推送</h1>
-    
-     
-           <p itemprop="description">###推送通知简介
-
-此通知不是NSNotificationCenter发出的通知NSNotification，而是推送通知。
-
-推送通知主要用途
-
-App 与 APNS苹果服务器 之间的交互
-确切的说让不在前台运行的App被动触发做一些事情
-
-推送通知的分类
-
-1) 远程推送通</p>
-        
-    
-    <time datetime="2016-08-01T14:58:52.000Z" itemprop="datePublished">2016-08-01</time>
-  </a>
-</section>
-
-
-
-
-
-
 
   <nav id="page-nav" class="clearfix unexpand">
-    <a class="extend prev" rel="prev" href="/"><span></span>Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/3/">Next<span></span></a>
+    <a class="extend prev" rel="prev" href="/"><span></span>Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/3/">Next<span></span></a>
   </nav>
 
 </div>

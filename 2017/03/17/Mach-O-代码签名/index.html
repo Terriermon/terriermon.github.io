@@ -1,0 +1,857 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>Mach-O 代码签名 | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="一直对iOS安全相关的东西接触的比较少，在有一些面试中也碰过几次，觉得安全相关的东西还是要会。 我们写的App程序，最后经过编译打包生成一个ipa文件 这个ipa文件其实就是一个压缩包  ipa解压文件夹/Payload/xxx.app包/存放了所有程序资源如下  主要的二进制可执行文件 Mach-O文件 各种资源文件（图片、数据、xib、bundle资源包） _CodeSignature记录所有">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mach-O 代码签名">
+<meta property="og:url" content="http://yoursite.com/2017/03/17/Mach-O-代码签名/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="一直对iOS安全相关的东西接触的比较少，在有一些面试中也碰过几次，觉得安全相关的东西还是要会。 我们写的App程序，最后经过编译打包生成一个ipa文件 这个ipa文件其实就是一个压缩包  ipa解压文件夹/Payload/xxx.app包/存放了所有程序资源如下  主要的二进制可执行文件 Mach-O文件 各种资源文件（图片、数据、xib、bundle资源包） _CodeSignature记录所有">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://i4.tietuku.cn/d63a2cea73b6189e.png">
+<meta property="og:image" content="http://i4.tietuku.cn/5d79c8857e14b512.png">
+<meta property="og:image" content="http://i13.tietuku.cn/cc9c6ad5ad0df35b.png">
+<meta property="og:image" content="http://ww3.sinaimg.cn/large/74311666jw1f20vp2tpevj211m0c0dgs.jpg">
+<meta property="og:image" content="http://img.ja.9xiqi.cn/2016/03/18/Snip20160318_7.md.png">
+<meta property="og:image" content="http://ww4.sinaimg.cn/large/74311666jw1f20xmp6hwsj21300f8gn8.jpg">
+<meta property="og:image" content="http://i12.tietuku.cn/504cbc3acfa7beff.png">
+<meta property="og:updated_time" content="2019-04-08T13:29:52.775Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Mach-O 代码签名">
+<meta name="twitter:description" content="一直对iOS安全相关的东西接触的比较少，在有一些面试中也碰过几次，觉得安全相关的东西还是要会。 我们写的App程序，最后经过编译打包生成一个ipa文件 这个ipa文件其实就是一个压缩包  ipa解压文件夹/Payload/xxx.app包/存放了所有程序资源如下  主要的二进制可执行文件 Mach-O文件 各种资源文件（图片、数据、xib、bundle资源包） _CodeSignature记录所有">
+<meta name="twitter:image" content="http://i4.tietuku.cn/d63a2cea73b6189e.png">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/03/17/Mach-O-代码签名/" title="Mach-O 代码签名" itemprop="url">Mach-O 代码签名</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2017-03-17T09:44:08.000Z" itemprop="datePublished"> Published 2017-03-17</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#一直对iOS安全相关的东西接触的比较少，在有一些面试中也碰过几次，觉得安全相关的东西还是要会。"><span class="toc-number">1.</span> <span class="toc-text">一直对iOS安全相关的东西接触的比较少，在有一些面试中也碰过几次，觉得安全相关的东西还是要会。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#我们写的App程序，最后经过编译打包生成一个ipa文件"><span class="toc-number">2.</span> <span class="toc-text">我们写的App程序，最后经过编译打包生成一个ipa文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#代码签名机制的核心-开发者证书，一个公钥，一个私钥"><span class="toc-number">3.</span> <span class="toc-text">代码签名机制的核心: 开发者证书，一个公钥，一个私钥</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#数字签名（digital-signature）"><span class="toc-number">4.</span> <span class="toc-text">数字签名（digital signature）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#证书到底是什么？"><span class="toc-number">5.</span> <span class="toc-text">证书到底是什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#图示证书组成结构的"><span class="toc-number">6.</span> <span class="toc-text">图示证书组成结构的</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#苹果官方对我们的开发者证书进行签名的过程"><span class="toc-number">7.</span> <span class="toc-text">苹果官方对我们的开发者证书进行签名的过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#向苹果申请一个开发者证书的过程"><span class="toc-number">8.</span> <span class="toc-text">向苹果申请一个开发者证书的过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#证书存在的意义"><span class="toc-number">9.</span> <span class="toc-text">证书存在的意义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Mac机器上安装的开发者证书会拷贝到手机上"><span class="toc-number">10.</span> <span class="toc-text">Mac机器上安装的开发者证书会拷贝到手机上</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#证书的校验的过程"><span class="toc-number">11.</span> <span class="toc-text">证书的校验的过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#对于在iOS中用到的证书，会分成两种"><span class="toc-number">12.</span> <span class="toc-text">对于在iOS中用到的证书，会分成两种:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#只有同时具备公钥与私钥的开发者证书才能完成对二进制文件进行代码签名（对App中任何文件签名）"><span class="toc-number">13.</span> <span class="toc-text">只有同时具备公钥与私钥的开发者证书才能完成对二进制文件进行代码签名（对App中任何文件签名）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#开发者证书的公钥与私钥"><span class="toc-number">13.1.</span> <span class="toc-text">开发者证书的公钥与私钥</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Xcode在打包ipa时，读取设置的Code-Signing指向的本地Mac系统安装的开发者证书"><span class="toc-number">14.</span> <span class="toc-text">Xcode在打包ipa时，读取设置的Code Signing指向的本地Mac系统安装的开发者证书</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#给没有设置过签名的App进行签名"><span class="toc-number">14.1.</span> <span class="toc-text">给没有设置过签名的App进行签名</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#重新设置签名，必须带上-f-参数，这样-codesign-会用你选择的签名替换掉已经存在的那一个"><span class="toc-number">14.2.</span> <span class="toc-text">重新设置签名，必须带上 -f 参数，这样 codesign 会用你选择的签名替换掉已经存在的那一个</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#对一个App进行签名，实际上是对编译生成的可执行二进制文件（Unix-excutable）以及App中所有的资源文件，使用Mac机器本地安装的开发者证书中的私钥进行签名"><span class="toc-number">15.</span> <span class="toc-text">对一个App进行签名，实际上是对编译生成的可执行二进制文件（Unix excutable）以及App中所有的资源文件，使用Mac机器本地安装的开发者证书中的私钥进行签名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用带有私钥的开发者证书，对二进制可执行文件签名后产生的信息，再次写入二进制文件中"><span class="toc-number">16.</span> <span class="toc-text">使用带有私钥的开发者证书，对二进制可执行文件签名后产生的信息，再次写入二进制文件中</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#用codesign能显示某个二进制文件的数字签名详细信息"><span class="toc-number">17.</span> <span class="toc-text">用codesign能显示某个二进制文件的数字签名详细信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#用codesign列出一些有关-Example-app-的签名信息"><span class="toc-number">18.</span> <span class="toc-text">用codesign列出一些有关 Example.app 的签名信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#对如上两个命令输出的信息中，优先查看的字段"><span class="toc-number">19.</span> <span class="toc-text">对如上两个命令输出的信息中，优先查看的字段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#对一个编译好的ipa检查其签名"><span class="toc-number">20.</span> <span class="toc-text">对一个编译好的ipa检查其签名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#app包内所有类型的文件都会被签名，以确保是iOS系统认可的合法文件"><span class="toc-number">21.</span> <span class="toc-text">.app包内所有类型的文件都会被签名，以确保是iOS系统认可的合法文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Mac-OS-X-10-9-5-之前与之后，文件签名的变化"><span class="toc-number">22.</span> <span class="toc-text">Mac OS X 10.9.5 之前与之后，文件签名的变化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#查看一个应用被授予的哪些权限"><span class="toc-number">23.</span> <span class="toc-text">查看一个应用被授予的哪些权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#查看-描述文件（provisioning-file）的内容"><span class="toc-number">24.</span> <span class="toc-text">查看 描述文件（provisioning file）的内容</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#小结"><span class="toc-number">25.</span> <span class="toc-text">小结:</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="一直对iOS安全相关的东西接触的比较少，在有一些面试中也碰过几次，觉得安全相关的东西还是要会。"><a href="#一直对iOS安全相关的东西接触的比较少，在有一些面试中也碰过几次，觉得安全相关的东西还是要会。" class="headerlink" title="一直对iOS安全相关的东西接触的比较少，在有一些面试中也碰过几次，觉得安全相关的东西还是要会。"></a>一直对iOS安全相关的东西接触的比较少，在有一些面试中也碰过几次，觉得安全相关的东西还是要会。</h3><hr>
+<h3 id="我们写的App程序，最后经过编译打包生成一个ipa文件"><a href="#我们写的App程序，最后经过编译打包生成一个ipa文件" class="headerlink" title="我们写的App程序，最后经过编译打包生成一个ipa文件"></a>我们写的App程序，最后经过编译打包生成一个ipa文件</h3><ul>
+<li><p>这个ipa文件其实就是一个压缩包</p>
+</li>
+<li><p>ipa解压文件夹/Payload/xxx.app包/存放了所有程序资源如下</p>
+</li>
+<li>主要的二进制可执行文件 Mach-O文件</li>
+<li>各种资源文件（图片、数据、xib、bundle资源包）</li>
+<li><p>_CodeSignature记录所有文件的签名</p>
+</li>
+<li><p>最最要的就是.app内的<code>可执行的Mach-O格式的文件</code></p>
+</li>
+<li><p>Mach-O的文件的结构组成可以参看前面一片记录</p>
+</li>
+<li><p>其Mach-O可执行二进制文件包含的内容:</p>
+</li>
+<li>App程序代码（.h与.m）编译后的 .o文件</li>
+<li><p>以及对Mach-O文件的<code>代码签名</code></p>
+</li>
+<li><p>所有类型的可执行二进制文件<strong>必须经过Apple的代码签名</strong>之后，才可以运行在iOS系统中</p>
+</li>
+<li><p><strong>所有的文件其实都需要签名之后，才能被iOS系统使用</strong></p>
+</li>
+<li>Mach-O格式的二进制文件</li>
+<li>.a / .framework 静态库二进制文件</li>
+<li><p>.dylib/.framework 动态库二进制文件</p>
+</li>
+<li><p>如果当iOS系统被<strong>越狱</strong>之后</p>
+</li>
+<li>可以运行没有通过代码签名的可执行文件</li>
+<li>突破沙盒的限制，可以随意访问其他App的沙盒下的数据</li>
+</ul>
+<p>所以这里引出一个问题</p>
+<blockquote>
+<p>对 可执行文件 进行 代码签名.</p>
+</blockquote>
+<hr>
+<h3 id="代码签名机制的核心-开发者证书，一个公钥，一个私钥"><a href="#代码签名机制的核心-开发者证书，一个公钥，一个私钥" class="headerlink" title="代码签名机制的核心: 开发者证书，一个公钥，一个私钥"></a>代码签名机制的核心: 开发者证书，一个公钥，一个私钥</h3><ul>
+<li><p>必须使用一个<code>开发者证书</code>来完成对文件的代码签名</p>
+</li>
+<li><p>但是这个证书有要求，就是你必须要有这个证书的<code>私钥</code></p>
+</li>
+<li><p>而所有你具有私钥的证书，都在<code>钥匙串访问</code>程序中的<code>我的证书</code>选项下</p>
+</li>
+</ul>
+<p><img src="http://i4.tietuku.cn/d63a2cea73b6189e.png" alt></p>
+<ul>
+<li>如果是要备份（导出）这个持有私钥的证书，注意要记得<code>展开</code>证书那一条<code>显示出私钥</code>并将<code>两行</code>都选中</li>
+</ul>
+<p><img src="http://i4.tietuku.cn/5d79c8857e14b512.png" alt></p>
+<ul>
+<li>快速地显示出你的系统中能用来对代码进行签名的认证的方法的命令如下:</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">security find-identity -v -p codesigning</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="数字签名（digital-signature）"><a href="#数字签名（digital-signature）" class="headerlink" title="数字签名（digital signature）"></a>数字签名（digital signature）</h3><ul>
+<li>对指定的数据内容使用<code>哈希算法</code>，得到一个<code>固定长度</code>的信息摘要</li>
+<li>然后再使用 <code>私钥</code> （注意必须是私钥）对该摘要加密</li>
+<li>得到的<code>加密数据</code>就是所谓的数字签名</li>
+</ul>
+<p>###App中所有文件签名流程</p>
+<ul>
+<li>首先是苹果自己持有的WWDR私钥，对我们申请得到的<code>开发者证书</code>进行签名</li>
+<li>防止开发者证书被篡改</li>
+<li>我们在打包ipa包时，使用我们自己的<code>开发者证书的私钥</code>对App进行签名</li>
+<li>过程中，苹果会验证开发者证书是否被篡改</li>
+<li>如果证书正常，那么苹果使用我们证书的私钥完成签名操作</li>
+</ul>
+<hr>
+<h3 id="证书到底是什么？"><a href="#证书到底是什么？" class="headerlink" title="证书到底是什么？"></a>证书到底是什么？</h3><ul>
+<li><p>一个证书是一个<code>公钥</code>加上许多<code>附加信息</code>.</p>
+</li>
+<li><p>一个证书的组成结构为如下:</p>
+</li>
+<li>证书包含的数据部分</li>
+<li><strong>开发者证书的 公钥</strong></li>
+<li><code>私钥</code>被安装到Mac机器的本地系统的钥匙串中</li>
+<li>以及其他数据信息</li>
+<li>用户个人信息</li>
+<li>证书颁发机构信息</li>
+<li><p>证书有效期等信息</p>
+</li>
+<li><p>证书自己被苹果进行的签名</p>
+</li>
+<li>这个签名，是被某个<code>认证机构</code>（Certificate Authority 简称 CA）进行签名认证过的，认证这个证书中的信息是准确无误的</li>
+<li>而对于iOS应用开发来说，这个认证机构，就是苹果的认证部门 Apple Worldwide Developer Relations CA.</li>
+<li>认证的签名，是有一个有效期的，且直接对比当前计算机设置的时间.</li>
+<li>这也是为什么将系统时间设定到过去会对 iOS 造成多方面破坏的原因之一.</li>
+</ul>
+<hr>
+<h3 id="图示证书组成结构的"><a href="#图示证书组成结构的" class="headerlink" title="图示证书组成结构的"></a>图示证书组成结构的</h3><p><img src="http://i13.tietuku.cn/cc9c6ad5ad0df35b.png" alt></p>
+<p>注意:上述WWDR机构 &gt;&gt;&gt; Apple Worldwide Developer Relations Certification Authority（苹果全球开发者证书认证机构）</p>
+<hr>
+<h3 id="苹果官方对我们的开发者证书进行签名的过程"><a href="#苹果官方对我们的开发者证书进行签名的过程" class="headerlink" title="苹果官方对我们的开发者证书进行签名的过程"></a>苹果官方对我们的开发者证书进行签名的过程</h3><ul>
+<li>WWDR将上述<code>证书本身内容</code>使用<code>哈希算法</code>得到一个<code>固定长度</code>的信息摘要</li>
+<li><p>hash(证书用户信息, 颁发机构信息, 证书有效期 … )</p>
+</li>
+<li><p>然后使用<code>WWDR自己的私钥</code>对该<code>信息摘要</code>加密生成<code>数字签名</code></p>
+</li>
+</ul>
+<p><img src="http://ww3.sinaimg.cn/large/74311666jw1f20vp2tpevj211m0c0dgs.jpg" alt></p>
+<hr>
+<h3 id="向苹果申请一个开发者证书的过程"><a href="#向苹果申请一个开发者证书的过程" class="headerlink" title="向苹果申请一个开发者证书的过程"></a>向苹果申请一个开发者证书的过程</h3><ul>
+<li><p>本地Mac机器上创建一个csr文件（Certificate Signing Request）</p>
+</li>
+<li><p>提交给苹果的 Apple Worldwide Developer Relations Certification Authority(WWDR)证书认证中心进行签名</p>
+</li>
+<li><p>最后从苹果开发者中心下载得到一个cer证书文件，并且双击安装到本地</p>
+</li>
+<li>该证书中包含一个公钥</li>
+<li><p>该公钥对应当前<code>开发者用户自己的 公钥</code></p>
+</li>
+<li><p>这个过程中还会产生一个对应<code>开发者用户自己的 私钥</code></p>
+</li>
+<li><strong>私钥不会保存在证书中</strong></li>
+<li><p>私钥而是直接安装到Mac机器系统上的钥匙串中</p>
+</li>
+<li><p><code>证书</code>存放在keychain中，而<code>私钥</code>在所属证书的扩展栏目下面所示</p>
+</li>
+</ul>
+<hr>
+<h3 id="证书存在的意义"><a href="#证书存在的意义" class="headerlink" title="证书存在的意义"></a>证书存在的意义</h3><ul>
+<li>证书本身只是一个中间媒介（容器），用来包含数据与数字签名</li>
+<li>数据内容</li>
+<li><strong>开发者证书的 公钥</strong></li>
+<li>等等数据</li>
+<li>数字签名</li>
+<li>用于校验当前证书是否合法</li>
+<li>如果证书中的数据内容（公钥）被篡改掉了</li>
+<li>那么如下两个摘要信息肯定是不相同的</li>
+<li>摘要信息A &gt;&gt;&gt; 证书内容，通过hash算法得到</li>
+<li>摘要信息B &gt;&gt;&gt; iOS系统采用内置的<code>WWDR公钥</code>，解密证书中的签名，得到的摘要</li>
+<li><code>证书中的数字签名</code>: 是在申请开发者证书时，由苹果官方使用WWDR私钥加密后得到的，并写入到证书文件中的</li>
+<li><p><strong>最终决定是否使用证书中包含 开发者自己的公钥</strong></p>
+</li>
+<li><p>iOS系统对证书文件本身，其实并不关心</p>
+</li>
+<li><p>最后关心的是，<code>是否应该使用</code>证书中包含的 <code>开发者自己的公钥</code></p>
+</li>
+<li><p><strong>iOS系统是如何得到开发者证书的了？</strong></p>
+</li>
+</ul>
+<hr>
+<h3 id="Mac机器上安装的开发者证书会拷贝到手机上"><a href="#Mac机器上安装的开发者证书会拷贝到手机上" class="headerlink" title="Mac机器上安装的开发者证书会拷贝到手机上"></a>Mac机器上安装的开发者证书会拷贝到手机上</h3><ul>
+<li><p>数字证书中只会带有<code>公钥</code></p>
+</li>
+<li><p>数字证书会被包含在 <code>Provisioning</code> 描述文件中</p>
+</li>
+<li><p>Provisioning文件，在打包ipa时，会由Xcode嵌入到ipa包中</p>
+</li>
+</ul>
+<p><a href="http://pic.9xiqi.cn/image/lfydG" target="_blank" rel="noopener"><img src="http://img.ja.9xiqi.cn/2016/03/18/Snip20160318_7.md.png" alt="Snip20160318_7.md.png"></a></p>
+<ul>
+<li><p>而当ipa包被iOS设备安装的时候，又会将Provisioning文件拷贝到iOS设备中</p>
+</li>
+<li><p>总之，最后iOS系统是能够得到<code>开发者证书的 公钥</code>，而<code>开发者证书的  私钥</code>始终是存放在<code>Mac机器中的钥匙串访问</code>中</p>
+</li>
+<li><p><strong>.app包内的所有文件，是根据 开发者证书的私钥 进行签名的</strong></p>
+</li>
+<li><p>那么只要有了<code>开发者证书的 公钥</code>，就可以验证（解密）签名是否合法</p>
+</li>
+</ul>
+<hr>
+<h3 id="证书的校验的过程"><a href="#证书的校验的过程" class="headerlink" title="证书的校验的过程"></a>证书的校验的过程</h3><p><img src="http://ww4.sinaimg.cn/large/74311666jw1f20xmp6hwsj21300f8gn8.jpg" alt></p>
+<ul>
+<li><strong>在iOS系统中已经内置了WWDR的的<code>公钥</code></strong></li>
+<li>先对证书内部的内容，按照上面的<code>哈希算法</code>得到一个<code>固定长度</code>的信息摘要A</li>
+<li>然后再使用<code>公钥</code>对证书中的数字签名进行<code>解密</code>，得到解密后的信息摘要B</li>
+<li>然后再比较 信息摘要A 与 信息摘要B，如果<code>内容</code>一致就说明该证书可信</li>
+<li>在验证了证书是可信的以后</li>
+<li>iOS系统就可以获取到证书中包含的<code>开发者自己的 公钥</code>（不是WWDR的公钥）</li>
+<li>并使用该<code>开发者公钥</code>来判断<code>代码签名</code>的可用性</li>
+</ul>
+<hr>
+<h3 id="对于在iOS中用到的证书，会分成两种"><a href="#对于在iOS中用到的证书，会分成两种" class="headerlink" title="对于在iOS中用到的证书，会分成两种:"></a>对于在iOS中用到的证书，会分成两种:</h3><ul>
+<li>一个带有前缀 iPhone <code>Developer</code> 的证书</li>
+<li><p>用于使应用可以在你的测试设备上运行，真机调试</p>
+</li>
+<li><p>另一个带有前缀 iPhone <code>Distribution</code> 的证书</p>
+</li>
+<li><p>用于将归档出来的ipa提交应用到 AppStore</p>
+</li>
+<li><p>一个证书的用途取决于它所包含的内部信息</p>
+</li>
+<li>Apple Developer Certificate (Submission) </li>
+<li><p>Apple Developer Certificate (Development)</p>
+</li>
+<li><p>iOS系统会利用这个信息来判断你的应用是运行模式</p>
+</li>
+<li>开发模式</li>
+<li>发布模式</li>
+<li>并据此判断以<code>切换</code>应用的<code>运行规则</code></li>
+</ul>
+<hr>
+<h3 id="只有同时具备公钥与私钥的开发者证书才能完成对二进制文件进行代码签名（对App中任何文件签名）"><a href="#只有同时具备公钥与私钥的开发者证书才能完成对二进制文件进行代码签名（对App中任何文件签名）" class="headerlink" title="只有同时具备公钥与私钥的开发者证书才能完成对二进制文件进行代码签名（对App中任何文件签名）"></a>只有同时具备<code>公钥与私钥</code>的开发者证书才能完成对二进制文件进行代码签名（对App中任何文件签名）</h3><p><img src="http://i12.tietuku.cn/504cbc3acfa7beff.png" alt></p>
+<h4 id="开发者证书的公钥与私钥"><a href="#开发者证书的公钥与私钥" class="headerlink" title="开发者证书的公钥与私钥"></a>开发者证书的公钥与私钥</h4><ul>
+<li>开发者证书的 私钥 &gt;&gt;&gt; 通过<code>加密</code>算法，给App内所有的文件进行代码签名</li>
+<li>开发者证书的 公钥 &gt;&gt;&gt; 通过<code>解密</code>算法，验证App内所有文件的签名是否合法，继而决定是否能在iOS系统中使用这个文件</li>
+</ul>
+<h3 id="Xcode在打包ipa时，读取设置的Code-Signing指向的本地Mac系统安装的开发者证书"><a href="#Xcode在打包ipa时，读取设置的Code-Signing指向的本地Mac系统安装的开发者证书" class="headerlink" title="Xcode在打包ipa时，读取设置的Code Signing指向的本地Mac系统安装的开发者证书"></a>Xcode在打包ipa时，读取设置的Code Signing指向的本地Mac系统安装的开发者证书</h3><ul>
+<li><p>通常我们在Xcode中真机测试或打包发布的时候，在Xcode中设置中选择使用哪一种签名</p>
+</li>
+<li><p>Xcode 只允许你在有限的选项中进行选择，这些选项都是你既拥有公钥也拥有私钥的证书</p>
+</li>
+<li>所以如果在选项中没有出现你想要的那一个，那么你需要检查的第一件事情就是你是否拥有这个证书的<code>私钥</code></li>
+<li>真机调试、测试，那么应该使用 <code>开发证书</code> 中的那一对秘钥来签名</li>
+<li>发布应用，那么应该使用 <code>发布证书</code> 中的那一对秘钥来签名</li>
+<li><strong>签名过程本身是由命令行工具 codesign命令 来完成的</strong></li>
+</ul>
+<h4 id="给没有设置过签名的App进行签名"><a href="#给没有设置过签名的App进行签名" class="headerlink" title="给没有设置过签名的App进行签名"></a>给没有设置过签名的App进行签名</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">codesign -s &apos;证书名&apos; Example.app</span><br></pre></td></tr></table></figure>
+<h4 id="重新设置签名，必须带上-f-参数，这样-codesign-会用你选择的签名替换掉已经存在的那一个"><a href="#重新设置签名，必须带上-f-参数，这样-codesign-会用你选择的签名替换掉已经存在的那一个" class="headerlink" title="重新设置签名，必须带上 -f 参数，这样 codesign 会用你选择的签名替换掉已经存在的那一个"></a>重新设置签名，必须带上 -f 参数，这样 codesign 会用你选择的签名替换掉已经存在的那一个</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">codesign -f -s &apos;证书名&apos; Example.app</span><br></pre></td></tr></table></figure>
+<p>如果在 Xcode 中编译一个应用，这个应用构建完成之后会自动调用 codesign 命令进行签名</p>
+<hr>
+<h3 id="对一个App进行签名，实际上是对编译生成的可执行二进制文件（Unix-excutable）以及App中所有的资源文件，使用Mac机器本地安装的开发者证书中的私钥进行签名"><a href="#对一个App进行签名，实际上是对编译生成的可执行二进制文件（Unix-excutable）以及App中所有的资源文件，使用Mac机器本地安装的开发者证书中的私钥进行签名" class="headerlink" title="对一个App进行签名，实际上是对编译生成的可执行二进制文件（Unix excutable）以及App中所有的资源文件，使用Mac机器本地安装的开发者证书中的私钥进行签名"></a>对一个App进行签名，实际上是对编译生成的<code>可执行二进制文件（Unix excutable）</code>以及App中所有的资源文件，使用Mac机器本地安装的开发者证书中的<code>私钥</code>进行签名</h3><blockquote>
+<p>对一个程序进行签名，会修改它的 主执行二进制文件（Mach-O格式文文件）.</p>
+</blockquote>
+<ul>
+<li>通过Apple认证合法的证书对二进制文件进行签名</li>
+<li>签名后的可执行二进制文件，iOS系统才能让其够执行的文件</li>
+<li><strong>iOS系统内核在调用二进制可执行文件之前，会检查其签名是否合法</strong></li>
+<li>通过检测可执行二进制文件中的<code>LC_CODE_SIGNATURE Segement段</code>是否有效和可信任</li>
+<li>越狱后的iOS系统，即禁止掉了检测如上的值，即可直接执行</li>
+<li>在iOS系统中可以正常合法放行让其执行</li>
+</ul>
+<hr>
+<h3 id="使用带有私钥的开发者证书，对二进制可执行文件签名后产生的信息，再次写入二进制文件中"><a href="#使用带有私钥的开发者证书，对二进制可执行文件签名后产生的信息，再次写入二进制文件中" class="headerlink" title="使用带有私钥的开发者证书，对二进制可执行文件签名后产生的信息，再次写入二进制文件中"></a>使用带有<code>私钥</code>的开发者证书，对二进制可执行文件签名后产生的信息，再次写入二进制文件中</h3><blockquote>
+<p>设置签名的过程实际上会 <code>改动</code> 可执行文件的文件内容，将签名数据<code>写入</code>二进制文件中.</p>
+</blockquote>
+<ul>
+<li>比如shell脚本进行签名后，对其签名的数据，存放在该脚本文件的<code>系统扩展属性</code>中</li>
+<li>Mach-O类型的二进制可执行文件进行签名后，对其签名的数据，会再次写入Mach-O格式文件中</li>
+<li>存放在 <code>LC_CODE_SIGNATURE</code> 这个 Segment段中</li>
+<li>所以，OS X 和 iOS 上的<code>任何类型的 可执行 二进制文件</code>都可以被设置签名</li>
+<li>动态库、静态库</li>
+<li>命令行工具、脚本</li>
+<li>.app 后缀的程序包</li>
+</ul>
+<hr>
+<h3 id="用codesign能显示某个二进制文件的数字签名详细信息"><a href="#用codesign能显示某个二进制文件的数字签名详细信息" class="headerlink" title="用codesign能显示某个二进制文件的数字签名详细信息"></a>用codesign能显示某个二进制文件的数字签名详细信息</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">codesign -dvvvv 二进制文件名</span><br></pre></td></tr></table></figure>
+<p>例子输出信息:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">chenxiaolindeMacBook-Pro:Ape.app chenxiaolin$ codesign -dvvvv Ape</span><br><span class="line"></span><br><span class="line">可执行二进制文件的路径</span><br><span class="line">Executable=/Users/chenxiaolin/Desktop/猿题库 5.9.0/Payload/Ape.app/Ape</span><br><span class="line"></span><br><span class="line">//App程序包名</span><br><span class="line">Identifier=com.fenbi.ape.gz</span><br><span class="line"></span><br><span class="line">//Mach-O格式文化，支持cpu的架构类型</span><br><span class="line">Format=bundle with Mach-O universal (armv7 arm64)</span><br><span class="line"></span><br><span class="line">//???</span><br><span class="line">CodeDirectory v=20200 size=34960 flags=0x0(none) hashes=1739+5 location=embedded</span><br><span class="line">Hash type=sha1 size=20</span><br><span class="line">CDHash=8ba02908da7084d25c3a6fd2d80ffb384411e7da</span><br><span class="line">Signature size=3487</span><br><span class="line"></span><br><span class="line">//首先检查这三行</span><br><span class="line">Authority=Apple iPhone OS Application Signing</span><br><span class="line">Authority=Apple iPhone Certification Authority</span><br><span class="line">Authority=Apple Root CA</span><br><span class="line">Info.plist entries=39</span><br><span class="line">TeamIdentifier=29QXUV376B</span><br><span class="line">Sealed Resources version=2 rules=14 files=43</span><br><span class="line">Internal requirements count=1 size=96</span><br></pre></td></tr></table></figure>
+<p>如上测试的二进制文件，就是Mach-O第一篇文章中的<code>Ape.app/Ape</code>文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/Users/chenxiaolin/Desktop/猿题库 5.9.0/Payload/Ape.app/Ape</span><br></pre></td></tr></table></figure>
+<h3 id="用codesign列出一些有关-Example-app-的签名信息"><a href="#用codesign列出一些有关-Example-app-的签名信息" class="headerlink" title="用codesign列出一些有关 Example.app 的签名信息"></a>用codesign列出一些有关 Example.app 的签名信息</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">codesign -vv -d Example.app</span><br></pre></td></tr></table></figure>
+<p>比如输出如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Executable=/Users/toto/Library/Developer/Xcode/DerivedData/Example-cfsbhbvmswdivqhekxfykvkpngkg/Build/Products/Debug-iphoneos/Example.app/Example  </span><br><span class="line">Identifier=ch.kollba.example  </span><br><span class="line">Format=bundle with Mach-O thin (arm64)  </span><br><span class="line">CodeDirectory v=20200 size=26663 flags=0x0(none) hashes=1324+5 location=embedded  </span><br><span class="line">Signature size=4336  </span><br><span class="line">Authority=iPhone Developer: Thomas Kollbach (7TPNXN7G6K)  </span><br><span class="line">Authority=Apple Worldwide Developer Relations Certification Authority  </span><br><span class="line">Authority=Apple Root CA  </span><br><span class="line">Signed Time=29.09.2014 22:29:07  </span><br><span class="line">Info.plist entries=33  </span><br><span class="line">TeamIdentifier=DZM8538E3E  </span><br><span class="line">Sealed Resources version=2 rules=4 files=120  </span><br><span class="line">Internal requirements count=1 size=184</span><br></pre></td></tr></table></figure>
+<p>注意:</p>
+<ul>
+<li>是对类似<code>/Users/chenxiaolin/Desktop/猿题库 5.9.0/Payload/Ape.app</code>执行如上命令</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">codesign -vv -d Ape.app</span><br></pre></td></tr></table></figure>
+<h3 id="对如上两个命令输出的信息中，优先查看的字段"><a href="#对如上两个命令输出的信息中，优先查看的字段" class="headerlink" title="对如上两个命令输出的信息中，优先查看的字段"></a>对如上两个命令输出的信息中，优先查看的字段</h3><ul>
+<li><p>第一件事是以 <code>Authority</code> 开头的 那三行</p>
+</li>
+<li><p>第一行，告诉你到底是 <code>哪一个证书</code> 为这个 app 设置了签名</p>
+</li>
+<li>第二行，我们使用给App签名的证书，又被<code>Apple Worldwide Developer Relations Certification Authority</code>这个证书签名</li>
+<li><p>第三行，<code>Apple Worldwide Developer Relations Certification Authority</code>这个证书，又最终被<code>Apple Root CA</code>设置了签名（苹果根证书）</p>
+</li>
+<li><p>第二件事，查看 <code>format</code> 行</p>
+</li>
+<li>Example.app 并<code>不单单</code>是一个可执行文件，它是一个<code>程序包（bundle）</code></li>
+<li>只支持arm64 cpu架构</li>
+<li><p>从 Executable 中的路径信息你可以看出，这是一个以测试为目的的打包，所以是一个 <code>Mach-O thin</code> 的二进制文件</p>
+</li>
+<li><p>第三件事，查看 <code>Identifier</code> 行</p>
+</li>
+<li><p>是我在 Xcode 中设置的 <code>bundle identifier</code> 程序包名</p>
+</li>
+<li><p>第四件事，查看 <code>TeamIdentifier</code>行</p>
+</li>
+<li>标识我的工作组（系统会用这个来判断应用是否是由<code>同一个开发者</code>发布)</li>
+<li>此外用于发布应用的证书中也包含这种标识，这种标识在<code>区分同一名称下 的 不同证书</code>时非常有用</li>
+</ul>
+<hr>
+<h3 id="对一个编译好的ipa检查其签名"><a href="#对一个编译好的ipa检查其签名" class="headerlink" title="对一个编译好的ipa检查其签名"></a>对一个编译好的ipa检查其签名</h3><blockquote>
+<p>依次找到 ipa/Payload/Ape.app</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">codesign --verify Example.app</span><br></pre></td></tr></table></figure>
+<p>执行后，如果没有任何输出，代表签名是完好的.</p>
+<hr>
+<p>###一旦.app/Mach-O可执行二进制文化的签名发生修改</p>
+<p>再执行上述检查命令时，就会输出如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Example.app: main executable failed strict validation</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="app包内所有类型的文件都会被签名，以确保是iOS系统认可的合法文件"><a href="#app包内所有类型的文件都会被签名，以确保是iOS系统认可的合法文件" class="headerlink" title=".app包内所有类型的文件都会被签名，以确保是iOS系统认可的合法文件"></a>.app包内所有类型的文件都会被签名，以确保是iOS系统认可的合法文件</h3><ul>
+<li>各种资源文件</li>
+<li>国际化语言文件</li>
+<li>XIB/NIB 文件</li>
+<li>存档文件(archives)</li>
+<li>SSL证书文件</li>
+<li>可执行二进制文件</li>
+<li>图片文件</li>
+<li>脚本文件</li>
+<li>Mach-O格式文件</li>
+</ul>
+<hr>
+<p>###如何达到为所有文件设置签名？</p>
+<blockquote>
+<p>执行签名操作的过程中，会在程序包（.app包下）中新建一个叫做 _CodeSignatue/CodeResources 的文件</p>
+</blockquote>
+<p>比如我将一个ipa拷贝到桌面后，依次获取得到上面目录的位置:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/Users/chenxiaolin/Desktop/猿题库 5.9.0/Payload/Ape.app/_CodeSignature/CodeResources文件</span><br></pre></td></tr></table></figure>
+<p>打开这个CodeResources文件看看里面的内容</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br><span class="line">317</span><br><span class="line">318</span><br><span class="line">319</span><br><span class="line">320</span><br><span class="line">321</span><br><span class="line">322</span><br><span class="line">323</span><br><span class="line">324</span><br><span class="line">325</span><br><span class="line">326</span><br><span class="line">327</span><br><span class="line">328</span><br><span class="line">329</span><br><span class="line">330</span><br><span class="line">331</span><br><span class="line">332</span><br><span class="line">333</span><br><span class="line">334</span><br><span class="line">335</span><br><span class="line">336</span><br><span class="line">337</span><br><span class="line">338</span><br><span class="line">339</span><br><span class="line">340</span><br><span class="line">341</span><br><span class="line">342</span><br><span class="line">343</span><br><span class="line">344</span><br><span class="line">345</span><br><span class="line">346</span><br><span class="line">347</span><br><span class="line">348</span><br><span class="line">349</span><br><span class="line">350</span><br><span class="line">351</span><br><span class="line">352</span><br><span class="line">353</span><br><span class="line">354</span><br><span class="line">355</span><br><span class="line">356</span><br><span class="line">357</span><br><span class="line">358</span><br><span class="line">359</span><br><span class="line">360</span><br><span class="line">361</span><br><span class="line">362</span><br><span class="line">363</span><br><span class="line">364</span><br><span class="line">365</span><br><span class="line">366</span><br><span class="line">367</span><br><span class="line">368</span><br><span class="line">369</span><br><span class="line">370</span><br><span class="line">371</span><br><span class="line">372</span><br><span class="line">373</span><br><span class="line">374</span><br><span class="line">375</span><br><span class="line">376</span><br><span class="line">377</span><br><span class="line">378</span><br><span class="line">379</span><br><span class="line">380</span><br><span class="line">381</span><br><span class="line">382</span><br><span class="line">383</span><br><span class="line">384</span><br><span class="line">385</span><br><span class="line">386</span><br><span class="line">387</span><br><span class="line">388</span><br><span class="line">389</span><br><span class="line">390</span><br><span class="line">391</span><br><span class="line">392</span><br><span class="line">393</span><br><span class="line">394</span><br><span class="line">395</span><br><span class="line">396</span><br><span class="line">397</span><br><span class="line">398</span><br><span class="line">399</span><br><span class="line">400</span><br><span class="line">401</span><br><span class="line">402</span><br><span class="line">403</span><br><span class="line">404</span><br><span class="line">405</span><br><span class="line">406</span><br><span class="line">407</span><br><span class="line">408</span><br><span class="line">409</span><br><span class="line">410</span><br><span class="line">411</span><br><span class="line">412</span><br><span class="line">413</span><br><span class="line">414</span><br><span class="line">415</span><br><span class="line">416</span><br><span class="line">417</span><br><span class="line">418</span><br><span class="line">419</span><br><span class="line">420</span><br><span class="line">421</span><br><span class="line">422</span><br><span class="line">423</span><br><span class="line">424</span><br><span class="line">425</span><br><span class="line">426</span><br><span class="line">427</span><br><span class="line">428</span><br><span class="line">429</span><br><span class="line">430</span><br><span class="line">431</span><br><span class="line">432</span><br><span class="line">433</span><br><span class="line">434</span><br><span class="line">435</span><br><span class="line">436</span><br><span class="line">437</span><br><span class="line">438</span><br><span class="line">439</span><br><span class="line">440</span><br><span class="line">441</span><br><span class="line">442</span><br><span class="line">443</span><br><span class="line">444</span><br><span class="line">445</span><br><span class="line">446</span><br><span class="line">447</span><br><span class="line">448</span><br><span class="line">449</span><br><span class="line">450</span><br><span class="line">451</span><br><span class="line">452</span><br><span class="line">453</span><br><span class="line">454</span><br><span class="line">455</span><br><span class="line">456</span><br><span class="line">457</span><br><span class="line">458</span><br><span class="line">459</span><br><span class="line">460</span><br><span class="line">461</span><br><span class="line">462</span><br><span class="line">463</span><br><span class="line">464</span><br><span class="line">465</span><br><span class="line">466</span><br><span class="line">467</span><br><span class="line">468</span><br><span class="line">469</span><br><span class="line">470</span><br><span class="line">471</span><br><span class="line">472</span><br><span class="line">473</span><br><span class="line">474</span><br><span class="line">475</span><br><span class="line">476</span><br><span class="line">477</span><br><span class="line">478</span><br><span class="line">479</span><br><span class="line">480</span><br><span class="line">481</span><br><span class="line">482</span><br><span class="line">483</span><br><span class="line">484</span><br><span class="line">485</span><br><span class="line">486</span><br><span class="line">487</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;!DOCTYPE plist PUBLIC &quot;-//Apple//DTD PLIST 1.0//EN&quot; &quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&quot;&gt;</span><br><span class="line">&lt;plist version=&quot;1.0&quot;&gt;</span><br><span class="line">&lt;dict&gt;</span><br><span class="line">&lt;key&gt;files&lt;/key&gt;</span><br><span class="line">&lt;dict&gt;</span><br><span class="line">&lt;key&gt;14767c52889c771@2x.jpg&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">vMGaaOS9Kth2/0CVZaYyfF3hMqg=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;14767c5a49daa27@2x.jpg&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">Hkuov4kJ5avSH2GcRvaMKpmYGg4=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;14767c5d992517c@2x.jpg&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">aGyhVr6PmKVu5hqONz/rh3wxdbg=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;14767c610e896ad@2x.jpg&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">9DeVQpnKQgbagn/KH57zqnnDPRw=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;14767c6425ed6b4@2x.jpg&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">zYLp1RkCKH4CA7Dmzp4JBsCgjLw=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;AccountInfoItem.nib&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">OicEumVrkzg4zhHnaNNJZyTq3aU=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;AppIcon60x60@2x.png&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">QAO44VmEUSWT6wnA6pVJinz93ns=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;AppIcon60x60@3x.png&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">ZOi2W9JGYReH1Vicq5ScG/mpM2w=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;AppIcon76x76@2x~ipad.png&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">+A8V09qcT1X6hFKPUQjqx/kocs4=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;AppIcon76x76~ipad.png&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">Ac2PB5XBHw46C3eGa61/11A2cdg=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;Assets.car&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">PGjsyRbSC3m4iQVp5Zt9eAwPTP8=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;CourseConfigDD.dat&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">mx9cfResHUe6YsbC4aDNRGEO0CE=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;DistrictChuzhong.dat&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">nhL5RFQ3qTCX5JgvNr+lNDLXy3A=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;DistrictGaozhong.dat&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">iJlDCMXStmZ7Enx1UxEI7DkYEDM=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;ExerciseReport.nib&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">IFZEb+gFZ6+HzQFZwdsv3jkj5+w=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;HelveticaLT35Thin.ttf&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">iBH+NaSBm9BpIwfcpO03F/pAxb0=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;Info.plist&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">2WSQ1NlJqWH40CkW/JbyqHC17rg=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;LaunchGuide.nib&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">JELArC4GW7iH5xpcZa53GpG5Fo0=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;LaunchImage-700-568h@2x.png&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">Z8BB0hssm+yitXG5CzauUbfFBHg=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;LaunchImage@2x.png&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">O++zOZb9yvP1MW9il8TQdMpnVc4=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;LaunchScreen.nib&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">qhkkvoXiJFJoTyLsnPbPRpsQJ2U=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;MajorKeypointTreeDD.dat&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">xd4SdFTvAmUx6vJApi0jewRCg8k=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;MockExerciseGuide.nib&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">pIWTtennvm80M7TUOdBi7BLuebI=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;MockItemView.nib&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">dsd5NJ/1aIWsz6Bwv+jK/y5RrU8=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;NimbusPhotos.bundle/gfx/default.png&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">yQdhJSSWjA5+vRfebmjyD0MK8+8=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;NimbusPhotos.bundle/gfx/next.png&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">vSy4Vr39udmaZKMJdU2zcezZRfA=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;NimbusPhotos.bundle/gfx/next@2x.png&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">u4Im8LjCWGcbsYrbUrs+GZnf+0k=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;NimbusPhotos.bundle/gfx/previous.png&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">qfkv/2uO2UoQcD2dynm9Umg6KA8=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;NimbusPhotos.bundle/gfx/previous@2x.png&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">k5/GmSz4Z9A3rV5pHskx5yNXf1g=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;PkgInfo&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">n57qDP4tZfLD1rCS43W0B4LQjzE=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;PromotionDD.dat&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">b30GWu/m5v5FBmr7vScb3KUcywQ=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;QuickExerciseGuide.nib&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">mNRIt55rQ06ux0xYfwsYSHqmCdk=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;SC_Info/Manifest.plist&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">5ncRuCR5wUbZMYk5yaXxEqiHHp0=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;SoupText.dat&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">UuFg44I39CG6XsumGpMtbmN8EIY=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;SubjectDD.dat&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">BZShljREWsl63QZZf+ESRh9Vjns=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;TencentOpenApi_IOS_Bundle.bundle/error.png&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">lE6HVRWTNcbl/H/551a0SJGgvDU=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;TencentOpenApi_IOS_Bundle.bundle/local.html&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">0qea+8Co8p/V0X2rKQGJo9/3B98=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;TencentOpenApi_IOS_Bundle.bundle/qqicon.png&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">bKCi641iRnJMix2uh9xNGwBODt4=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;TencentOpenApi_IOS_Bundle.bundle/success.png&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">HzVLiMbCKqmJewuPsHSehTjKXCY=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;UserReport.nib&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">vhxk1FZ1UZmGcUxrBcYHlgVb/FI=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;UserSubjectDD.dat&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">xsE2Sb2UUDGSXp8azQnXruuUZ/E=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;apetex-no-ch.zip&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">PIyxh3dkQ3RbuVq6Q+4j2QLs8+o=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;archived-expanded-entitlements.xcent&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">C6ZN6bCzPEqg7ZAHiq2MKYAJuPg=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;beep-beep.aiff&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">w9mTKEUfkR76cIpX+U3+bMki22E=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;fbw.dat&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">za0sGkUjo5AFoCu6rP36LRBgutM=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;/dict&gt;</span><br><span class="line">&lt;key&gt;files2&lt;/key&gt;</span><br><span class="line">&lt;dict&gt;</span><br><span class="line">&lt;key&gt;14767c52889c771@2x.jpg&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">vMGaaOS9Kth2/0CVZaYyfF3hMqg=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;14767c5a49daa27@2x.jpg&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">Hkuov4kJ5avSH2GcRvaMKpmYGg4=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;14767c5d992517c@2x.jpg&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">aGyhVr6PmKVu5hqONz/rh3wxdbg=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;14767c610e896ad@2x.jpg&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">9DeVQpnKQgbagn/KH57zqnnDPRw=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;14767c6425ed6b4@2x.jpg&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">zYLp1RkCKH4CA7Dmzp4JBsCgjLw=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;AccountInfoItem.nib&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">OicEumVrkzg4zhHnaNNJZyTq3aU=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;AppIcon60x60@2x.png&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">QAO44VmEUSWT6wnA6pVJinz93ns=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;AppIcon60x60@3x.png&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">ZOi2W9JGYReH1Vicq5ScG/mpM2w=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;AppIcon76x76@2x~ipad.png&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">+A8V09qcT1X6hFKPUQjqx/kocs4=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;AppIcon76x76~ipad.png&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">Ac2PB5XBHw46C3eGa61/11A2cdg=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;Assets.car&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">PGjsyRbSC3m4iQVp5Zt9eAwPTP8=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;CourseConfigDD.dat&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">mx9cfResHUe6YsbC4aDNRGEO0CE=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;DistrictChuzhong.dat&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">nhL5RFQ3qTCX5JgvNr+lNDLXy3A=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;DistrictGaozhong.dat&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">iJlDCMXStmZ7Enx1UxEI7DkYEDM=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;ExerciseReport.nib&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">IFZEb+gFZ6+HzQFZwdsv3jkj5+w=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;HelveticaLT35Thin.ttf&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">iBH+NaSBm9BpIwfcpO03F/pAxb0=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;LaunchGuide.nib&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">JELArC4GW7iH5xpcZa53GpG5Fo0=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;LaunchImage-700-568h@2x.png&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">Z8BB0hssm+yitXG5CzauUbfFBHg=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;LaunchImage@2x.png&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">O++zOZb9yvP1MW9il8TQdMpnVc4=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;LaunchScreen.nib&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">qhkkvoXiJFJoTyLsnPbPRpsQJ2U=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;MajorKeypointTreeDD.dat&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">xd4SdFTvAmUx6vJApi0jewRCg8k=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;MockExerciseGuide.nib&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">pIWTtennvm80M7TUOdBi7BLuebI=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;MockItemView.nib&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">dsd5NJ/1aIWsz6Bwv+jK/y5RrU8=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;NimbusPhotos.bundle/gfx/default.png&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">yQdhJSSWjA5+vRfebmjyD0MK8+8=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;NimbusPhotos.bundle/gfx/next.png&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">vSy4Vr39udmaZKMJdU2zcezZRfA=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;NimbusPhotos.bundle/gfx/next@2x.png&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">u4Im8LjCWGcbsYrbUrs+GZnf+0k=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;NimbusPhotos.bundle/gfx/previous.png&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">qfkv/2uO2UoQcD2dynm9Umg6KA8=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;NimbusPhotos.bundle/gfx/previous@2x.png&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">k5/GmSz4Z9A3rV5pHskx5yNXf1g=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;PromotionDD.dat&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">b30GWu/m5v5FBmr7vScb3KUcywQ=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;QuickExerciseGuide.nib&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">mNRIt55rQ06ux0xYfwsYSHqmCdk=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;SC_Info/Manifest.plist&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">5ncRuCR5wUbZMYk5yaXxEqiHHp0=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;SoupText.dat&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">UuFg44I39CG6XsumGpMtbmN8EIY=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;SubjectDD.dat&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">BZShljREWsl63QZZf+ESRh9Vjns=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;TencentOpenApi_IOS_Bundle.bundle/error.png&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">lE6HVRWTNcbl/H/551a0SJGgvDU=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;TencentOpenApi_IOS_Bundle.bundle/local.html&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">0qea+8Co8p/V0X2rKQGJo9/3B98=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;TencentOpenApi_IOS_Bundle.bundle/qqicon.png&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">bKCi641iRnJMix2uh9xNGwBODt4=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;TencentOpenApi_IOS_Bundle.bundle/success.png&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">HzVLiMbCKqmJewuPsHSehTjKXCY=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;UserReport.nib&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">vhxk1FZ1UZmGcUxrBcYHlgVb/FI=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;UserSubjectDD.dat&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">xsE2Sb2UUDGSXp8azQnXruuUZ/E=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;apetex-no-ch.zip&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">PIyxh3dkQ3RbuVq6Q+4j2QLs8+o=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;archived-expanded-entitlements.xcent&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">C6ZN6bCzPEqg7ZAHiq2MKYAJuPg=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;beep-beep.aiff&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">w9mTKEUfkR76cIpX+U3+bMki22E=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;key&gt;fbw.dat&lt;/key&gt;</span><br><span class="line">&lt;data&gt;</span><br><span class="line">za0sGkUjo5AFoCu6rP36LRBgutM=</span><br><span class="line">&lt;/data&gt;</span><br><span class="line">&lt;/dict&gt;</span><br><span class="line">&lt;key&gt;rules&lt;/key&gt;</span><br><span class="line">&lt;dict&gt;</span><br><span class="line">&lt;key&gt;^&lt;/key&gt;</span><br><span class="line">&lt;true/&gt;</span><br><span class="line">&lt;key&gt;^(Frameworks/[^/]+\.framework/|PlugIns/[^/]+\.appex/|PlugIns/[^/]+\.appex/Frameworks/[^/]+\.framework/|())SC_Info/[^/]+\.(sinf|supf|supp)$&lt;/key&gt;</span><br><span class="line">&lt;dict&gt;</span><br><span class="line">&lt;key&gt;omit&lt;/key&gt;</span><br><span class="line">&lt;true/&gt;</span><br><span class="line">&lt;key&gt;weight&lt;/key&gt;</span><br><span class="line">&lt;integer&gt;10000&lt;/integer&gt;</span><br><span class="line">&lt;/dict&gt;</span><br><span class="line">&lt;key&gt;^.*\.lproj/&lt;/key&gt;</span><br><span class="line">&lt;dict&gt;</span><br><span class="line">&lt;key&gt;optional&lt;/key&gt;</span><br><span class="line">&lt;true/&gt;</span><br><span class="line">&lt;key&gt;weight&lt;/key&gt;</span><br><span class="line">&lt;real&gt;1000&lt;/real&gt;</span><br><span class="line">&lt;/dict&gt;</span><br><span class="line">&lt;key&gt;^.*\.lproj/locversion.plist$&lt;/key&gt;</span><br><span class="line">&lt;dict&gt;</span><br><span class="line">&lt;key&gt;omit&lt;/key&gt;</span><br><span class="line">&lt;true/&gt;</span><br><span class="line">&lt;key&gt;weight&lt;/key&gt;</span><br><span class="line">&lt;real&gt;1100&lt;/real&gt;</span><br><span class="line">&lt;/dict&gt;</span><br><span class="line">&lt;key&gt;^Watch/[^/]+\.app/(Frameworks/[^/]+\.framework/|PlugIns/[^/]+\.appex/|PlugIns/[^/]+\.appex/Frameworks/[^/]+\.framework/)SC_Info/[^/]+\.(sinf|supf|supp)$&lt;/key&gt;</span><br><span class="line">&lt;dict&gt;</span><br><span class="line">&lt;key&gt;omit&lt;/key&gt;</span><br><span class="line">&lt;true/&gt;</span><br><span class="line">&lt;key&gt;weight&lt;/key&gt;</span><br><span class="line">&lt;integer&gt;10000&lt;/integer&gt;</span><br><span class="line">&lt;/dict&gt;</span><br><span class="line">&lt;key&gt;^version.plist$&lt;/key&gt;</span><br><span class="line">&lt;true/&gt;</span><br><span class="line">&lt;/dict&gt;</span><br><span class="line">&lt;key&gt;rules2&lt;/key&gt;</span><br><span class="line">&lt;dict&gt;</span><br><span class="line">&lt;key&gt;.*\.dSYM($|/)&lt;/key&gt;</span><br><span class="line">&lt;dict&gt;</span><br><span class="line">&lt;key&gt;weight&lt;/key&gt;</span><br><span class="line">&lt;real&gt;11&lt;/real&gt;</span><br><span class="line">&lt;/dict&gt;</span><br><span class="line">&lt;key&gt;^&lt;/key&gt;</span><br><span class="line">&lt;dict&gt;</span><br><span class="line">&lt;key&gt;weight&lt;/key&gt;</span><br><span class="line">&lt;real&gt;20&lt;/real&gt;</span><br><span class="line">&lt;/dict&gt;</span><br><span class="line">&lt;key&gt;^(.*/)?\.DS_Store$&lt;/key&gt;</span><br><span class="line">&lt;dict&gt;</span><br><span class="line">&lt;key&gt;omit&lt;/key&gt;</span><br><span class="line">&lt;true/&gt;</span><br><span class="line">&lt;key&gt;weight&lt;/key&gt;</span><br><span class="line">&lt;real&gt;2000&lt;/real&gt;</span><br><span class="line">&lt;/dict&gt;</span><br><span class="line">&lt;key&gt;^(Frameworks/[^/]+\.framework/|PlugIns/[^/]+\.appex/|PlugIns/[^/]+\.appex/Frameworks/[^/]+\.framework/|())SC_Info/[^/]+\.(sinf|supf|supp)$&lt;/key&gt;</span><br><span class="line">&lt;dict&gt;</span><br><span class="line">&lt;key&gt;omit&lt;/key&gt;</span><br><span class="line">&lt;true/&gt;</span><br><span class="line">&lt;key&gt;weight&lt;/key&gt;</span><br><span class="line">&lt;integer&gt;10000&lt;/integer&gt;</span><br><span class="line">&lt;/dict&gt;</span><br><span class="line">&lt;key&gt;^(Frameworks|SharedFrameworks|PlugIns|Plug-ins|XPCServices|Helpers|MacOS|Library/(Automator|Spotlight|LoginItems))/&lt;/key&gt;</span><br><span class="line">&lt;dict&gt;</span><br><span class="line">&lt;key&gt;nested&lt;/key&gt;</span><br><span class="line">&lt;true/&gt;</span><br><span class="line">&lt;key&gt;weight&lt;/key&gt;</span><br><span class="line">&lt;real&gt;10&lt;/real&gt;</span><br><span class="line">&lt;/dict&gt;</span><br><span class="line">&lt;key&gt;^.*&lt;/key&gt;</span><br><span class="line">&lt;true/&gt;</span><br><span class="line">&lt;key&gt;^.*\.lproj/&lt;/key&gt;</span><br><span class="line">&lt;dict&gt;</span><br><span class="line">&lt;key&gt;optional&lt;/key&gt;</span><br><span class="line">&lt;true/&gt;</span><br><span class="line">&lt;key&gt;weight&lt;/key&gt;</span><br><span class="line">&lt;real&gt;1000&lt;/real&gt;</span><br><span class="line">&lt;/dict&gt;</span><br><span class="line">&lt;key&gt;^.*\.lproj/locversion.plist$&lt;/key&gt;</span><br><span class="line">&lt;dict&gt;</span><br><span class="line">&lt;key&gt;omit&lt;/key&gt;</span><br><span class="line">&lt;true/&gt;</span><br><span class="line">&lt;key&gt;weight&lt;/key&gt;</span><br><span class="line">&lt;real&gt;1100&lt;/real&gt;</span><br><span class="line">&lt;/dict&gt;</span><br><span class="line">&lt;key&gt;^Info\.plist$&lt;/key&gt;</span><br><span class="line">&lt;dict&gt;</span><br><span class="line">&lt;key&gt;omit&lt;/key&gt;</span><br><span class="line">&lt;true/&gt;</span><br><span class="line">&lt;key&gt;weight&lt;/key&gt;</span><br><span class="line">&lt;real&gt;20&lt;/real&gt;</span><br><span class="line">&lt;/dict&gt;</span><br><span class="line">&lt;key&gt;^PkgInfo$&lt;/key&gt;</span><br><span class="line">&lt;dict&gt;</span><br><span class="line">&lt;key&gt;omit&lt;/key&gt;</span><br><span class="line">&lt;true/&gt;</span><br><span class="line">&lt;key&gt;weight&lt;/key&gt;</span><br><span class="line">&lt;real&gt;20&lt;/real&gt;</span><br><span class="line">&lt;/dict&gt;</span><br><span class="line">&lt;key&gt;^Watch/[^/]+\.app/(Frameworks/[^/]+\.framework/|PlugIns/[^/]+\.appex/|PlugIns/[^/]+\.appex/Frameworks/[^/]+\.framework/)SC_Info/[^/]+\.(sinf|supf|supp)$&lt;/key&gt;</span><br><span class="line">&lt;dict&gt;</span><br><span class="line">&lt;key&gt;omit&lt;/key&gt;</span><br><span class="line">&lt;true/&gt;</span><br><span class="line">&lt;key&gt;weight&lt;/key&gt;</span><br><span class="line">&lt;integer&gt;10000&lt;/integer&gt;</span><br><span class="line">&lt;/dict&gt;</span><br><span class="line">&lt;key&gt;^[^/]+$&lt;/key&gt;</span><br><span class="line">&lt;dict&gt;</span><br><span class="line">&lt;key&gt;nested&lt;/key&gt;</span><br><span class="line">&lt;true/&gt;</span><br><span class="line">&lt;key&gt;weight&lt;/key&gt;</span><br><span class="line">&lt;real&gt;10&lt;/real&gt;</span><br><span class="line">&lt;/dict&gt;</span><br><span class="line">&lt;key&gt;^embedded\.provisionprofile$&lt;/key&gt;</span><br><span class="line">&lt;dict&gt;</span><br><span class="line">&lt;key&gt;weight&lt;/key&gt;</span><br><span class="line">&lt;real&gt;20&lt;/real&gt;</span><br><span class="line">&lt;/dict&gt;</span><br><span class="line">&lt;key&gt;^version\.plist$&lt;/key&gt;</span><br><span class="line">&lt;dict&gt;</span><br><span class="line">&lt;key&gt;weight&lt;/key&gt;</span><br><span class="line">&lt;real&gt;20&lt;/real&gt;</span><br><span class="line">&lt;/dict&gt;</span><br><span class="line">&lt;/dict&gt;</span><br><span class="line">&lt;/dict&gt;</span><br><span class="line">&lt;/plist&gt;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>这个文件中，是一个 plist 格式文件，其组成结构如下</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">key</th>
+<th style="text-align:center">type</th>
+<th style="text-align:center">value</th>
+<th style="text-align:center">用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Root</td>
+<td style="text-align:center">Dictionary</td>
+<td style="text-align:center">4 items</td>
+<td style="text-align:center">plist文件根节点</td>
+</tr>
+<tr>
+<td style="text-align:center">files</td>
+<td style="text-align:center">Dictionary</td>
+<td style="text-align:center">45 items</td>
+<td style="text-align:center">Mac os X 10.9.5之<code>前</code>，保存被签名文件的字典</td>
+</tr>
+<tr>
+<td style="text-align:center">files2</td>
+<td style="text-align:center">Dictionary</td>
+<td style="text-align:center">43 items</td>
+<td style="text-align:center">Mac os X 10.9.5之<code>后</code>，保存被签名文件的字典</td>
+</tr>
+<tr>
+<td style="text-align:center">rules</td>
+<td style="text-align:center">Dictionary</td>
+<td style="text-align:center">6 items</td>
+<td style="text-align:center">Mac os X 10.9.5之<code>前</code>，签名文件的规则</td>
+</tr>
+<tr>
+<td style="text-align:center">rules2</td>
+<td style="text-align:center">Dictionary</td>
+<td style="text-align:center">14 items</td>
+<td style="text-align:center">Mac os X 10.9.5之<code>后</code>，签名文件的规则</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><p>该plist文件包含的两种数据:</p>
+</li>
+<li><p>files/files2字典、存储了被签名的程序包内，所有文件对应的签名数值</p>
+</li>
+<li>key: 文件名</li>
+<li>data: 签名数值</li>
+<li>rules/rules2字典、还包含了一系列<code>规则</code></li>
+<li>决定了哪些资源文件应当被设置签名</li>
+</ul>
+<hr>
+<h3 id="Mac-OS-X-10-9-5-之前与之后，文件签名的变化"><a href="#Mac-OS-X-10-9-5-之前与之后，文件签名的变化" class="headerlink" title="Mac OS X 10.9.5 之前与之后，文件签名的变化"></a>Mac OS X 10.9.5 之前与之后，文件签名的变化</h3><ul>
+<li>rules 和 files 是为老版本准备</li>
+<li>通过在<code>被设置签名的程序包</code>中添加一个名为 <code>ResourceRules.plist</code> 的文件</li>
+<li>这个plist文件，会规定<code>哪些资源文件</code>在<code>检查代码签名</code>是否完好时应该被<code>忽略</code></li>
+<li>files2 和 rules2是为新的<code>第二版</code>的代码签名准备的</li>
+<li>新版本中你无法再将某些资源文件<code>排除</code>在代码签名之外</li>
+<li>新版本的代码签名中，所有的文件都必须设置签名，不再可以有例外</li>
+<li>代码文件</li>
+<li>资源文件</li>
+<li>脚本文件</li>
+</ul>
+<hr>
+<h3 id="查看一个应用被授予的哪些权限"><a href="#查看一个应用被授予的哪些权限" class="headerlink" title="查看一个应用被授予的哪些权限"></a>查看一个应用被授予的哪些权限</h3><blockquote>
+<p>授权文件（entitlements）</p>
+</blockquote>
+<p>举例，进入到 <code>/Users/chenxiaolin/Desktop/猿题库 5.9.0/Payload/</code></p>
+<p>执行如下命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">codesign -d --entitlements - Ape.app</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="查看-描述文件（provisioning-file）的内容"><a href="#查看-描述文件（provisioning-file）的内容" class="headerlink" title="查看 描述文件（provisioning file）的内容"></a>查看 描述文件（provisioning file）的内容</h3><ul>
+<li>Xcode 将从开发者中心下载的全部配置文件都放在了这里</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">~/Library/MobileDevice/Provisioning Profiles</span><br></pre></td></tr></table></figure>
+<ul>
+<li>以XML格式查看某一个 provisioning文件内容</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">security cms -D -i example.mobileprovisio</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结:"></a>小结:</h3><ul>
+<li><p>Mac机器本地安装的开发者证书中的<code>私钥</code>用来在本地对打包后的ipa包内的 .app 进行代码签名</p>
+</li>
+<li><p>在打包ipa包时，Xcode默认会将 开发者证书（只包含<code>公钥</code>）打包到 provisioning描述文件中，而最后provisioning描述文件又会被嵌入到ipa包中</p>
+</li>
+<li>在App安装时，provisioning描述文件又会被拷贝到iOS设备中</li>
+<li><p>便于后期读取开发者证书中的公钥，进行代码验证签名</p>
+</li>
+<li><p>iOS系统如何确认读取的开发者证书是否合法了？（可能会被篡改过）</p>
+</li>
+<li>证书中包含一个数字签名，这个数字签名是由 WWDR（苹果认证中心）使用自己的 <code>私钥</code>加密过的</li>
+<li><strong>WWDR私钥，只有苹果官方自己持有</strong></li>
+<li>WWDR公钥，默认内置在iOS系统中</li>
+<li>iOS系统通过使用内置的<code>WWDR公钥</code>对证书中被<code>WWDR私钥</code>加密后的数字签名，进行解密得到一个解密后的消息摘要A</li>
+<li>然后又对证书内部的数据内容，使用同样的哈希算法得到一个固定长度的消息摘要B</li>
+<li><p>然后对比这两个消息摘要，如果内容完全一致，就说明该证书是合法的、完整的</p>
+</li>
+<li><p>然后取出证书内部的<code>公钥</code>，用于对 .app包内所有被签名过的文件，进行签名的验证（解密）</p>
+</li>
+</ul>
+<p>所以说，当iOS设备非越狱的情况下，只有通过苹果官方认可的开发者证书私钥进行签名后的App，才能运行在iOS设备上的系统中，即便证书的公钥被篡改，也没任何作用，因为最终的WWDR私钥只存放在苹果官方服务器上，不会对外开放.</p>
+<hr>
+<p>学习来源: </p>
+<ul>
+<li><a href="http://objccn.io/issue-17-2/" target="_blank" rel="noopener">http://objccn.io/issue-17-2/</a></li>
+<li><a href="http://www.cocoachina.com/ios/20141017/9949.html" target="_blank" rel="noopener">http://www.cocoachina.com/ios/20141017/9949.html</a></li>
+<li>《iOS安全攻防与实战》</li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2017/03/17/Mach-O-代码签名/" data-title="Mach-O 代码签名 | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2017/02/15/NSDictionary/" title="NSDictionary">
+ <strong>下一篇：</strong><br> 
+ <span>NSDictionary
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/03/17/Mach-O-代码签名/" data-title="Mach-O 代码签名" data-url="http://yoursite.com/2017/03/17/Mach-O-代码签名/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#一直对iOS安全相关的东西接触的比较少，在有一些面试中也碰过几次，觉得安全相关的东西还是要会。"><span class="toc-number">1.</span> <span class="toc-text">一直对iOS安全相关的东西接触的比较少，在有一些面试中也碰过几次，觉得安全相关的东西还是要会。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#我们写的App程序，最后经过编译打包生成一个ipa文件"><span class="toc-number">2.</span> <span class="toc-text">我们写的App程序，最后经过编译打包生成一个ipa文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#代码签名机制的核心-开发者证书，一个公钥，一个私钥"><span class="toc-number">3.</span> <span class="toc-text">代码签名机制的核心: 开发者证书，一个公钥，一个私钥</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#数字签名（digital-signature）"><span class="toc-number">4.</span> <span class="toc-text">数字签名（digital signature）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#证书到底是什么？"><span class="toc-number">5.</span> <span class="toc-text">证书到底是什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#图示证书组成结构的"><span class="toc-number">6.</span> <span class="toc-text">图示证书组成结构的</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#苹果官方对我们的开发者证书进行签名的过程"><span class="toc-number">7.</span> <span class="toc-text">苹果官方对我们的开发者证书进行签名的过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#向苹果申请一个开发者证书的过程"><span class="toc-number">8.</span> <span class="toc-text">向苹果申请一个开发者证书的过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#证书存在的意义"><span class="toc-number">9.</span> <span class="toc-text">证书存在的意义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Mac机器上安装的开发者证书会拷贝到手机上"><span class="toc-number">10.</span> <span class="toc-text">Mac机器上安装的开发者证书会拷贝到手机上</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#证书的校验的过程"><span class="toc-number">11.</span> <span class="toc-text">证书的校验的过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#对于在iOS中用到的证书，会分成两种"><span class="toc-number">12.</span> <span class="toc-text">对于在iOS中用到的证书，会分成两种:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#只有同时具备公钥与私钥的开发者证书才能完成对二进制文件进行代码签名（对App中任何文件签名）"><span class="toc-number">13.</span> <span class="toc-text">只有同时具备公钥与私钥的开发者证书才能完成对二进制文件进行代码签名（对App中任何文件签名）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#开发者证书的公钥与私钥"><span class="toc-number">13.1.</span> <span class="toc-text">开发者证书的公钥与私钥</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Xcode在打包ipa时，读取设置的Code-Signing指向的本地Mac系统安装的开发者证书"><span class="toc-number">14.</span> <span class="toc-text">Xcode在打包ipa时，读取设置的Code Signing指向的本地Mac系统安装的开发者证书</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#给没有设置过签名的App进行签名"><span class="toc-number">14.1.</span> <span class="toc-text">给没有设置过签名的App进行签名</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#重新设置签名，必须带上-f-参数，这样-codesign-会用你选择的签名替换掉已经存在的那一个"><span class="toc-number">14.2.</span> <span class="toc-text">重新设置签名，必须带上 -f 参数，这样 codesign 会用你选择的签名替换掉已经存在的那一个</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#对一个App进行签名，实际上是对编译生成的可执行二进制文件（Unix-excutable）以及App中所有的资源文件，使用Mac机器本地安装的开发者证书中的私钥进行签名"><span class="toc-number">15.</span> <span class="toc-text">对一个App进行签名，实际上是对编译生成的可执行二进制文件（Unix excutable）以及App中所有的资源文件，使用Mac机器本地安装的开发者证书中的私钥进行签名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用带有私钥的开发者证书，对二进制可执行文件签名后产生的信息，再次写入二进制文件中"><span class="toc-number">16.</span> <span class="toc-text">使用带有私钥的开发者证书，对二进制可执行文件签名后产生的信息，再次写入二进制文件中</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#用codesign能显示某个二进制文件的数字签名详细信息"><span class="toc-number">17.</span> <span class="toc-text">用codesign能显示某个二进制文件的数字签名详细信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#用codesign列出一些有关-Example-app-的签名信息"><span class="toc-number">18.</span> <span class="toc-text">用codesign列出一些有关 Example.app 的签名信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#对如上两个命令输出的信息中，优先查看的字段"><span class="toc-number">19.</span> <span class="toc-text">对如上两个命令输出的信息中，优先查看的字段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#对一个编译好的ipa检查其签名"><span class="toc-number">20.</span> <span class="toc-text">对一个编译好的ipa检查其签名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#app包内所有类型的文件都会被签名，以确保是iOS系统认可的合法文件"><span class="toc-number">21.</span> <span class="toc-text">.app包内所有类型的文件都会被签名，以确保是iOS系统认可的合法文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Mac-OS-X-10-9-5-之前与之后，文件签名的变化"><span class="toc-number">22.</span> <span class="toc-text">Mac OS X 10.9.5 之前与之后，文件签名的变化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#查看一个应用被授予的哪些权限"><span class="toc-number">23.</span> <span class="toc-text">查看一个应用被授予的哪些权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#查看-描述文件（provisioning-file）的内容"><span class="toc-number">24.</span> <span class="toc-text">查看 描述文件（provisioning file）的内容</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#小结"><span class="toc-number">25.</span> <span class="toc-text">小结:</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

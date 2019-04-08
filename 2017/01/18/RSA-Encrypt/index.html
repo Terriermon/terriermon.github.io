@@ -1,0 +1,506 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>RSA Encrypt | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="iOS中使用RSA非对称加密  先查看当前Mac系统安装的OpenSSL版本1openssl version 默认Mac系统安装的是OpenSSL 0.9.8zh 14 Jan 2016。版本已经很老了，需要更新下OpenSSL程序。  更新OpenSSL (1) 使用brew更新  1brew install openssl  (2) link 安装更新的 openssl  1brew link">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RSA Encrypt">
+<meta property="og:url" content="http://yoursite.com/2017/01/18/RSA-Encrypt/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="iOS中使用RSA非对称加密  先查看当前Mac系统安装的OpenSSL版本1openssl version 默认Mac系统安装的是OpenSSL 0.9.8zh 14 Jan 2016。版本已经很老了，需要更新下OpenSSL程序。  更新OpenSSL (1) 使用brew更新  1brew install openssl  (2) link 安装更新的 openssl  1brew link">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-08T13:21:23.324Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RSA Encrypt">
+<meta name="twitter:description" content="iOS中使用RSA非对称加密  先查看当前Mac系统安装的OpenSSL版本1openssl version 默认Mac系统安装的是OpenSSL 0.9.8zh 14 Jan 2016。版本已经很老了，需要更新下OpenSSL程序。  更新OpenSSL (1) 使用brew更新  1brew install openssl  (2) link 安装更新的 openssl  1brew link">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/01/18/RSA-Encrypt/" title="RSA Encrypt" itemprop="url">RSA Encrypt</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2017-01-18T03:07:46.000Z" itemprop="datePublished"> Published 2017-01-18</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#先查看当前Mac系统安装的OpenSSL版本"><span class="toc-number">1.</span> <span class="toc-text">先查看当前Mac系统安装的OpenSSL版本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#更新OpenSSL"><span class="toc-number">2.</span> <span class="toc-text">更新OpenSSL</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RSA加解密算法原理"><span class="toc-number">3.</span> <span class="toc-text">RSA加解密算法原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#生成秘钥文件"><span class="toc-number">4.</span> <span class="toc-text">生成秘钥文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#创建证书请求"><span class="toc-number">5.</span> <span class="toc-text">创建证书请求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#转换格式-将-CRT-格式文件-转换成-DER-格式"><span class="toc-number">6.</span> <span class="toc-text">转换格式 将 CRT 格式文件 转换成 DER 格式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#导出-私钥PEM文件的-P12文件"><span class="toc-number">7.</span> <span class="toc-text">导出 私钥PEM文件的 P12文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#执行完上面的这些步骤，总共可以生成如下五个文件"><span class="toc-number">8.</span> <span class="toc-text">执行完上面的这些步骤，总共可以生成如下五个文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Demo工程中测试生成的公钥与秘钥进行加解密"><span class="toc-number">9.</span> <span class="toc-text">Demo工程中测试生成的公钥与秘钥进行加解密</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用OpenSSL-for-iOS提供的shell脚本自动集成OpenSSL库代码，并生成对应的静态库-a或-framework"><span class="toc-number">10.</span> <span class="toc-text">使用OpenSSL-for-iOS提供的shell脚本自动集成OpenSSL库代码，并生成对应的静态库.a或.framework</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#最后就是用一个封装了RSA操作的开源库来完成加解密"><span class="toc-number">11.</span> <span class="toc-text">最后就是用一个封装了RSA操作的开源库来完成加解密</span></a></li></ol>
+		
+		</div>
+		
+		<p>iOS中使用RSA非对称加密</p>
+<hr>
+<h3 id="先查看当前Mac系统安装的OpenSSL版本"><a href="#先查看当前Mac系统安装的OpenSSL版本" class="headerlink" title="先查看当前Mac系统安装的OpenSSL版本"></a>先查看当前Mac系统安装的OpenSSL版本</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl version</span><br></pre></td></tr></table></figure>
+<p>默认Mac系统安装的是OpenSSL 0.9.8zh 14 Jan 2016。版本已经很老了，需要更新下OpenSSL程序。</p>
+<hr>
+<h3 id="更新OpenSSL"><a href="#更新OpenSSL" class="headerlink" title="更新OpenSSL"></a>更新OpenSSL</h3><ul>
+<li>(1) 使用brew更新</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew install openssl</span><br></pre></td></tr></table></figure>
+<ul>
+<li>(2) link 安装更新的 openssl</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew link openssl --force</span><br></pre></td></tr></table></figure>
+<ul>
+<li>(3) 设置环境变量</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">fenqiledeiMac:~ fenqile$ echo $SHELL</span><br><span class="line">/bin/bash</span><br><span class="line">fenqiledeiMac:~ fenqile$ vim ~/.bash_profile</span><br><span class="line">fenqiledeiMac:~ fenqile$ source ~/.bash_profile</span><br><span class="line">fenqiledeiMac:~ fenqile$ openssl version</span><br><span class="line">OpenSSL 1.0.2h  3 May 2016</span><br></pre></td></tr></table></figure>
+<p>在<code>~/.bash_profile</code>文件中加入如下环境变量</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export PATH=/usr/local/bin:$PATH</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="RSA加解密算法原理"><a href="#RSA加解密算法原理" class="headerlink" title="RSA加解密算法原理"></a>RSA加解密算法原理</h3><ul>
+<li>(1) RSA算法是一种非对称加密算法,常被用于加密数据传输</li>
+<li>(2) 在加密解密数据前,需要先生成公钥(public key)和私钥(private key)</li>
+<li>(3) 公钥(public key): 用于加密数据. 用于公开, 一般存放在数据提供方, 例如iOS客户端</li>
+<li>(4) 私钥(private key): 用于解密数据. 必须保密, 私钥泄露会造成安全问题，一般只存放在Server端</li>
+</ul>
+<hr>
+<h3 id="生成秘钥文件"><a href="#生成秘钥文件" class="headerlink" title="生成秘钥文件"></a>生成秘钥文件</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl genrsa -out private.pem 1024</span><br></pre></td></tr></table></figure>
+<ul>
+<li>(1) openssl:是一个自由的软件组织,专注做加密和解密的框架</li>
+<li>(2) genrsa:指定了生成了算法使用RSA</li>
+<li>(3) -out:后面的参数表示生成的key的输入文件</li>
+<li>(4) 1024:表示的是生成key的长度,单位字节(bits)</li>
+</ul>
+<p>在当前目录下生成一个private.pem文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">fenqiledeiMac:~ fenqile$ ls -l</span><br><span class="line">total 8</span><br><span class="line">drwx------+ 27 fenqile  staff   918  7 18 11:17 Desktop</span><br><span class="line">drwx------+  7 fenqile  staff   238  7  8 16:16 Documents</span><br><span class="line">drwx------+ 78 fenqile  staff  2652  7 18 12:42 Downloads</span><br><span class="line">drwx------@ 58 fenqile  staff  1972  7 18 10:38 Library</span><br><span class="line">drwx------+  3 fenqile  staff   102  6  6 09:56 Movies</span><br><span class="line">drwx------+  4 fenqile  staff   136  6  7 20:32 Music</span><br><span class="line">drwx------+  5 fenqile  staff   170  7 14 13:03 Pictures</span><br><span class="line">drwxr-xr-x+  5 fenqile  staff   170  6  6 09:56 Public</span><br><span class="line">drwxr-xr-x  37 fenqile  staff  1258  6  7 13:14 Reader</span><br><span class="line">drwxr-xr-x  15 fenqile  staff   510  6  7 11:23 YTKNetwork</span><br><span class="line">drwxr-xr-x   3 fenqile  staff   102  6 28 11:22 bin</span><br><span class="line">drwxr-xr-x  14 fenqile  staff   476  7 18 10:23 fenqile</span><br><span class="line">-rw-r--r--   1 fenqile  staff   891  7 18 12:49 private.pem</span><br><span class="line">drwxr-xr-x   6 fenqile  staff   204  7 12 15:33 tiqianle</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="创建证书请求"><a href="#创建证书请求" class="headerlink" title="创建证书请求"></a>创建证书请求</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl req -new -key private.pem -out rsacert.csr</span><br></pre></td></tr></table></figure>
+<p>输入命令后，会依次叫你输入很多配置项目，依次按照提示填写完毕即可，有一项<code>A challenge password</code>就需要记住了，这个是设置证书的密码。</p>
+<p>所有输入完毕之后，当前目录下会多出一个文件<code>rsacert.csr</code>。</p>
+<p>还可以拿着这个文件去数字证书颁发机构（即CA）申请一个数字证书。CA会给你一个新的文件cacert.pem,那才是你的数字证书。(要收费的)</p>
+<hr>
+<p>###生成证书并签名，有效期10年</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">fenqiledeiMac:~ fenqile$ openssl x509 -req -days 3650 -in rsacert.csr -signkey private.pem -out rsacert.crt</span><br><span class="line">Signature ok</span><br><span class="line">subject=/C=cn/ST=ShenZhen/L=ShenZhen/O=Fenqile/OU=Fenqile/CN=Fenqile/emailAddress=zain@fenqile.com</span><br><span class="line">Getting Private key</span><br></pre></td></tr></table></figure>
+<ul>
+<li>(1) 509是一种非常通用的证书格式</li>
+<li>(2) 将用上面生成的密钥privkey.pem和rsacert.csr证书请求文件生成一个数字证书rsacert.crt（公钥）</li>
+</ul>
+<p>当前目录下会多出一个文件<code>rsacert.crt</code>，就是公钥。</p>
+<hr>
+<h3 id="转换格式-将-CRT-格式文件-转换成-DER-格式"><a href="#转换格式-将-CRT-格式文件-转换成-DER-格式" class="headerlink" title="转换格式 将 CRT 格式文件 转换成 DER 格式"></a>转换格式 将 CRT 格式文件 转换成 DER 格式</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl x509 -outform der -in rsacert.crt -out rsacert.der</span><br></pre></td></tr></table></figure>
+<p>当前目录下会多出一个文件<code>rsacert.der</code>，转换文件格式后的公钥。</p>
+<p>为什么要转换成DER格式了？</p>
+<p>因为在iOS开发中,公钥是不能使用base64编码的。上面的命令是将公钥的base64编码字符串转换成二进制数据。</p>
+<hr>
+<h3 id="导出-私钥PEM文件的-P12文件"><a href="#导出-私钥PEM文件的-P12文件" class="headerlink" title="导出 私钥PEM文件的 P12文件"></a>导出 私钥PEM文件的 P12文件</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl pkcs12 -export -out p.p12 -inkey private.pem -in rsacert.crt</span><br></pre></td></tr></table></figure>
+<p>在iOS中，不能直接使用私钥PEM文件，所以需要导出一个p12文件。<br>执行完命令后，会多出一个名字<code>p.p12</code>的p12格式文件，这个就是PEM私钥。</p>
+<hr>
+<h3 id="执行完上面的这些步骤，总共可以生成如下五个文件"><a href="#执行完上面的这些步骤，总共可以生成如下五个文件" class="headerlink" title="执行完上面的这些步骤，总共可以生成如下五个文件"></a>执行完上面的这些步骤，总共可以生成如下五个文件</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">private.pem        PEM格式私钥</span><br><span class="line">rsacert.csr        证书请求文件</span><br><span class="line">rsacert.crt        CRT格式公钥</span><br><span class="line">rsacert.der        DER格式公钥</span><br><span class="line">p.p12            p12格式私钥</span><br></pre></td></tr></table></figure>
+<p>真正在加解密中起作用的只有两个文件:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rsacert.der        DER格式公钥</span><br><span class="line">p.p12            p12格式私钥</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="Demo工程中测试生成的公钥与秘钥进行加解密"><a href="#Demo工程中测试生成的公钥与秘钥进行加解密" class="headerlink" title="Demo工程中测试生成的公钥与秘钥进行加解密"></a>Demo工程中测试生成的公钥与秘钥进行加解密</h3><hr>
+<h3 id="使用OpenSSL-for-iOS提供的shell脚本自动集成OpenSSL库代码，并生成对应的静态库-a或-framework"><a href="#使用OpenSSL-for-iOS提供的shell脚本自动集成OpenSSL库代码，并生成对应的静态库-a或-framework" class="headerlink" title="使用OpenSSL-for-iOS提供的shell脚本自动集成OpenSSL库代码，并生成对应的静态库.a或.framework"></a>使用OpenSSL-for-iOS提供的shell脚本自动集成OpenSSL库代码，并生成对应的静态库.a或.framework</h3><p>下载shell脚本，然后执行脚本，等待下载完所有的openssl库代码然后编译完毕就可以了，自动生成.a还可以生成.framework。</p>
+<hr>
+<h3 id="最后就是用一个封装了RSA操作的开源库来完成加解密"><a href="#最后就是用一个封装了RSA操作的开源库来完成加解密" class="headerlink" title="最后就是用一个封装了RSA操作的开源库来完成加解密"></a>最后就是用一个封装了RSA操作的开源库来完成加解密</h3><p><a href="https://github.com/ideawu/Objective-C-RSA" target="_blank" rel="noopener">https://github.com/ideawu/Objective-C-RSA</a></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2017/01/18/RSA-Encrypt/" data-title="RSA Encrypt | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2017/02/15/NSDictionary/" title="NSDictionary">
+  <strong>上一篇：</strong><br>
+  <span>
+  NSDictionary</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/01/12/objection/" title="objection">
+ <strong>下一篇：</strong><br> 
+ <span>objection
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/01/18/RSA-Encrypt/" data-title="RSA Encrypt" data-url="http://yoursite.com/2017/01/18/RSA-Encrypt/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#先查看当前Mac系统安装的OpenSSL版本"><span class="toc-number">1.</span> <span class="toc-text">先查看当前Mac系统安装的OpenSSL版本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#更新OpenSSL"><span class="toc-number">2.</span> <span class="toc-text">更新OpenSSL</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RSA加解密算法原理"><span class="toc-number">3.</span> <span class="toc-text">RSA加解密算法原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#生成秘钥文件"><span class="toc-number">4.</span> <span class="toc-text">生成秘钥文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#创建证书请求"><span class="toc-number">5.</span> <span class="toc-text">创建证书请求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#转换格式-将-CRT-格式文件-转换成-DER-格式"><span class="toc-number">6.</span> <span class="toc-text">转换格式 将 CRT 格式文件 转换成 DER 格式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#导出-私钥PEM文件的-P12文件"><span class="toc-number">7.</span> <span class="toc-text">导出 私钥PEM文件的 P12文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#执行完上面的这些步骤，总共可以生成如下五个文件"><span class="toc-number">8.</span> <span class="toc-text">执行完上面的这些步骤，总共可以生成如下五个文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Demo工程中测试生成的公钥与秘钥进行加解密"><span class="toc-number">9.</span> <span class="toc-text">Demo工程中测试生成的公钥与秘钥进行加解密</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用OpenSSL-for-iOS提供的shell脚本自动集成OpenSSL库代码，并生成对应的静态库-a或-framework"><span class="toc-number">10.</span> <span class="toc-text">使用OpenSSL-for-iOS提供的shell脚本自动集成OpenSSL库代码，并生成对应的静态库.a或.framework</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#最后就是用一个封装了RSA操作的开源库来完成加解密"><span class="toc-number">11.</span> <span class="toc-text">最后就是用一个封装了RSA操作的开源库来完成加解密</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

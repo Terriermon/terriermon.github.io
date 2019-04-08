@@ -1,0 +1,518 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>LaunchImage和LaunchScreen.xib的作用 | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="这两个东西都都是用来设置App的启动图。  在iOS7与iOS8以上，LaunchImage和LaunchScreen.xib设置的问题 二者存在的问题 问题1) 在iOS8中，如果同时设置LaunchImage和LaunchScreen.xib的启动图，那么只调用LaunchScreen.xib，而不会调用LaunchImage。  问题2) 在iOS8中，如果只设置LaunchImage，而不">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LaunchImage和LaunchScreen.xib的作用">
+<meta property="og:url" content="http://yoursite.com/2017/01/10/LaunchImage和LaunchScreen-xib的作用/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="这两个东西都都是用来设置App的启动图。  在iOS7与iOS8以上，LaunchImage和LaunchScreen.xib设置的问题 二者存在的问题 问题1) 在iOS8中，如果同时设置LaunchImage和LaunchScreen.xib的启动图，那么只调用LaunchScreen.xib，而不会调用LaunchImage。  问题2) 在iOS8中，如果只设置LaunchImage，而不">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://i12.tietuku.com/7c3aaa9fcdf937b0.png">
+<meta property="og:image" content="http://i12.tietuku.com/e4ba442dbb0db940.png">
+<meta property="og:image" content="http://i13.tietuku.com/8338dc811ae3ac60.png">
+<meta property="og:updated_time" content="2019-04-08T13:17:43.580Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="LaunchImage和LaunchScreen.xib的作用">
+<meta name="twitter:description" content="这两个东西都都是用来设置App的启动图。  在iOS7与iOS8以上，LaunchImage和LaunchScreen.xib设置的问题 二者存在的问题 问题1) 在iOS8中，如果同时设置LaunchImage和LaunchScreen.xib的启动图，那么只调用LaunchScreen.xib，而不会调用LaunchImage。  问题2) 在iOS8中，如果只设置LaunchImage，而不">
+<meta name="twitter:image" content="http://i12.tietuku.com/7c3aaa9fcdf937b0.png">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/01/10/LaunchImage和LaunchScreen-xib的作用/" title="LaunchImage和LaunchScreen.xib的作用" itemprop="url">LaunchImage和LaunchScreen.xib的作用</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2017-01-10T12:08:45.000Z" itemprop="datePublished"> Published 2017-01-10</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#这两个东西都都是用来设置App的启动图。"><span class="toc-number">1.</span> <span class="toc-text">这两个东西都都是用来设置App的启动图。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#在iOS7与iOS8以上，LaunchImage和LaunchScreen-xib设置的问题"><span class="toc-number">2.</span> <span class="toc-text">在iOS7与iOS8以上，LaunchImage和LaunchScreen.xib设置的问题</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#二者存在的问题"><span class="toc-number">2.1.</span> <span class="toc-text">二者存在的问题</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#小结"><span class="toc-number">3.</span> <span class="toc-text">小结:</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="这两个东西都都是用来设置App的启动图。"><a href="#这两个东西都都是用来设置App的启动图。" class="headerlink" title="这两个东西都都是用来设置App的启动图。"></a>这两个东西都都是用来设置<code>App的启动图</code>。</h3><p><img src="http://i12.tietuku.com/7c3aaa9fcdf937b0.png" alt></p>
+<hr>
+<h3 id="在iOS7与iOS8以上，LaunchImage和LaunchScreen-xib设置的问题"><a href="#在iOS7与iOS8以上，LaunchImage和LaunchScreen-xib设置的问题" class="headerlink" title="在iOS7与iOS8以上，LaunchImage和LaunchScreen.xib设置的问题"></a>在iOS7与iOS8以上，LaunchImage和LaunchScreen.xib设置的问题</h3><ul>
+<li><h4 id="二者存在的问题"><a href="#二者存在的问题" class="headerlink" title="二者存在的问题"></a>二者存在的问题</h4></li>
+<li><p>问题1) 在iOS8中，如果同时设置LaunchImage和LaunchScreen.xib的启动图，那么只调用<code>LaunchScreen.xib</code>，而不会调用<code>LaunchImage</code>。</p>
+</li>
+<li><p>问题2) 在iOS8中，如果只设置<code>LaunchImage</code>，而不设置<code>LaunchScreen.xib</code>，那么在<code>App Store上展示app时不会有 &quot;已针对iPhone 6、iPhone 6 Plus 优化&quot;</code>.</p>
+</li>
+<li><p>问题3) 在iOS7中，启动图只支持<code>LaunchImage</code></p>
+</li>
+<li><p>####所以鉴于如上问题，想<code>同时支持iOS7与iOS8以上</code>的系统版本</p>
+</li>
+<li>就必须同时设置LaunchImage和LaunchScreen.xib的对应的尺寸图片</li>
+</ul>
+<hr>
+<ul>
+<li><p><code>LaunchImage</code> 的图片设置</p>
+</li>
+<li><p>未过滤不同设备、不同方向时的设置项</p>
+</li>
+</ul>
+<p><img src="http://i12.tietuku.com/e4ba442dbb0db940.png" alt></p>
+<ul>
+<li>手动过滤掉iphone或ipad、横向或竖向、iOS系统版本</li>
+</ul>
+<p><img src="http://i13.tietuku.com/8338dc811ae3ac60.png" alt></p>
+<ul>
+<li><p>针对<code>竖屏</code>启动模式下</p>
+</li>
+<li><p>iPhone竖屏需要的尺寸图</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1242*2208 (iPhone6 plus 启用高分辨率模式)</span><br><span class="line">750*1334  (iPhone6 启用高分辨率模式)</span><br><span class="line">640*1136</span><br><span class="line">640*960</span><br><span class="line">320*480</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">iPhone Portrait iOS 8-Retina HD 5.5 （1242×2208） @3x</span><br><span class="line">iPhone Portrait iOS 8-Retina HD 4.7 （750×1334） @2x</span><br><span class="line"></span><br><span class="line">iPhone Portrait iOS 7,8-2x （640×960） @2x</span><br><span class="line">iPhone Portrait iOS 7,8-Retina 4 （640×1136） @2x</span><br><span class="line"></span><br><span class="line">iPhone Portrait iOS 5,6-1x （320×480） @1x</span><br><span class="line">iPhone Portrait iOS 5,6-2x （640×960） @2x</span><br><span class="line">iPhone Portrait iOS 5,6-Retina4 （640×1136） @2x</span><br></pre></td></tr></table></figure>
+<ul>
+<li>ipad竖屏需要的尺寸图:</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">768*1004</span><br><span class="line">768*1024</span><br><span class="line">1536*2008</span><br><span class="line">1536*2048</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>针对<code>横屏</code>启动模式下</p>
+</li>
+<li><p>iPhone横屏需要的尺寸图</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2208*1242  (iPhone6 plus)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>ipad横横屏需要的尺寸图</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1024*748</span><br><span class="line">1024*768</span><br><span class="line">2048*1496</span><br><span class="line">2048*1536</span><br></pre></td></tr></table></figure>
+<hr>
+<ul>
+<li><p><code>LaunchScreen.xib</code> 的图片设置</p>
+</li>
+<li><p>只需要提供一张可以拉伸的图片</p>
+</li>
+<li><p>在<code>LaunchScreen.xib</code>中，拖入一个<code>UIImageView</code>，然后设置图片</p>
+</li>
+<li><p>最后给拖入的<code>UIImageView</code>，设置上下左右贴到superView的约束即可</p>
+</li>
+<li><p>并且还可以在<code>LaunchScreen.xib</code>中拖入更多的UI控件</p>
+</li>
+<li><p>所以，使用<code>LaunchScreen.xib</code>来设置<code>App启动图</code>更加方便、更加灵活</p>
+</li>
+</ul>
+<hr>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结:"></a>小结:</h3><ul>
+<li>iOS7之前，使用<code>LaunchImage</code>提供不同尺寸的png图像，来设置不同尺寸设备的启动图.</li>
+<li><p>需要提供不同尺寸的启动图</p>
+</li>
+<li><p>iOS8+之后，使用<code>LaunchScreen.xib</code>可以自己在里面添加一个<code>UIImageView</code>，然后再设置一张可以拉伸的图片即可，完成各个不同尺寸设备的启动图.</p>
+</li>
+<li>只需要提供一张启动图</li>
+<li>并且还可以在xib上添加更多的UIView</li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2017/01/10/LaunchImage和LaunchScreen-xib的作用/" data-title="LaunchImage和LaunchScreen.xib的作用 | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2017/01/12/objection/" title="objection">
+  <strong>上一篇：</strong><br>
+  <span>
+  objection</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/01/08/CFSocket底层网络请求/" title="CFSocket底层网络请求">
+ <strong>下一篇：</strong><br> 
+ <span>CFSocket底层网络请求
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/01/10/LaunchImage和LaunchScreen-xib的作用/" data-title="LaunchImage和LaunchScreen.xib的作用" data-url="http://yoursite.com/2017/01/10/LaunchImage和LaunchScreen-xib的作用/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#这两个东西都都是用来设置App的启动图。"><span class="toc-number">1.</span> <span class="toc-text">这两个东西都都是用来设置App的启动图。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#在iOS7与iOS8以上，LaunchImage和LaunchScreen-xib设置的问题"><span class="toc-number">2.</span> <span class="toc-text">在iOS7与iOS8以上，LaunchImage和LaunchScreen.xib设置的问题</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#二者存在的问题"><span class="toc-number">2.1.</span> <span class="toc-text">二者存在的问题</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#小结"><span class="toc-number">3.</span> <span class="toc-text">小结:</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

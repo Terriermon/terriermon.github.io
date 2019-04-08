@@ -1,0 +1,655 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>NSDictionary | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="在YYModel中，看到 NSDictionary 使用 数组 作为key 进行存取 -[NSObject hash] -[NSObject description] NSDictionary 是按照 key的值，而不是 key的地址 进行运算  作为字典key的要求1NSMutableDictionary *mdict = [@&amp;#123;&amp;#125; mutableCopy]; 1[mdict">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NSDictionary">
+<meta property="og:url" content="http://yoursite.com/2017/02/15/NSDictionary/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="在YYModel中，看到 NSDictionary 使用 数组 作为key 进行存取 -[NSObject hash] -[NSObject description] NSDictionary 是按照 key的值，而不是 key的地址 进行运算  作为字典key的要求1NSMutableDictionary *mdict = [@&amp;#123;&amp;#125; mutableCopy]; 1[mdict">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-08T13:24:14.996Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="NSDictionary">
+<meta name="twitter:description" content="在YYModel中，看到 NSDictionary 使用 数组 作为key 进行存取 -[NSObject hash] -[NSObject description] NSDictionary 是按照 key的值，而不是 key的地址 进行运算  作为字典key的要求1NSMutableDictionary *mdict = [@&amp;#123;&amp;#125; mutableCopy]; 1[mdict">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/02/15/NSDictionary/" title="NSDictionary" itemprop="url">NSDictionary</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2017-02-15T05:39:54.000Z" itemprop="datePublished"> Published 2017-02-15</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#在YYModel中，看到-NSDictionary-使用-数组-作为key-进行存取"><span class="toc-number">1.</span> <span class="toc-text">在YYModel中，看到 NSDictionary 使用 数组 作为key 进行存取</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#作为字典key的要求"><span class="toc-number">2.</span> <span class="toc-text">作为字典key的要求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#一个字符串-的-内存地址-是唯一-的"><span class="toc-number">3.</span> <span class="toc-text">一个字符串 的 内存地址 是唯一 的</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#数组的内存地址是不一样的，尽管数组内元素长度、内容、顺序都一致"><span class="toc-number">4.</span> <span class="toc-text">数组的内存地址是不一样的，尽管数组内元素长度、内容、顺序都一致</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#字典同数组"><span class="toc-number">5.</span> <span class="toc-text">字典同数组</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#可以得到-数组、字典、字符串的区别"><span class="toc-number">6.</span> <span class="toc-text">可以得到 数组、字典、字符串的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#看下使用数组作为字典key的代码示例"><span class="toc-number">7.</span> <span class="toc-text">看下使用数组作为字典key的代码示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#验证-字典-是根据-key所指对象-的-值内容，而不是-地址"><span class="toc-number">8.</span> <span class="toc-text">验证 字典 是根据 key所指对象 的 值内容，而不是 地址</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#所以说，字典key-是根据-值内容-来进行存取"><span class="toc-number">8.1.</span> <span class="toc-text">所以说，字典key 是根据 值内容 来进行存取</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#猜测一、上面说的值内容-是借助-对象的hash值-来表示"><span class="toc-number">9.</span> <span class="toc-text">猜测一、上面说的值内容 是借助 对象的hash值 来表示</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#hash值属性定义在-协议NSObject"><span class="toc-number">9.1.</span> <span class="toc-text">hash值属性定义在 协议NSObject</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#NSObject类-实现了-NSObject协议，自然就实现了属性的-setter方法与getter方法"><span class="toc-number">9.2.</span> <span class="toc-text">NSObject类 实现了 NSObject协议，自然就实现了属性的 setter方法与getter方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#以NSArray的hash值为例"><span class="toc-number">9.3.</span> <span class="toc-text">以NSArray的hash值为例</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#猜测二、上面说的值内容-是借助-descriptions值-来表示"><span class="toc-number">10.</span> <span class="toc-text">猜测二、上面说的值内容 是借助 descriptions值 来表示</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#再看一个嵌套类型类，重写description方法的小例子"><span class="toc-number">11.</span> <span class="toc-text">再看一个嵌套类型类，重写description方法的小例子</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#字典崩溃"><span class="toc-number">12.</span> <span class="toc-text">字典崩溃</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="在YYModel中，看到-NSDictionary-使用-数组-作为key-进行存取"><a href="#在YYModel中，看到-NSDictionary-使用-数组-作为key-进行存取" class="headerlink" title="在YYModel中，看到 NSDictionary 使用 数组 作为key 进行存取"></a>在YYModel中，看到 NSDictionary 使用 <code>数组</code> 作为key 进行存取</h3><ul>
+<li>-[NSObject hash]</li>
+<li>-[NSObject description]</li>
+<li>NSDictionary 是按照 <code>key的值</code>，而不是 <code>key的地址</code> 进行运算</li>
+</ul>
+<h3 id="作为字典key的要求"><a href="#作为字典key的要求" class="headerlink" title="作为字典key的要求"></a>作为字典key的要求</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">NSMutableDictionary *mdict = [@&#123;&#125; mutableCopy];</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[mdict setObject:(nonnull id) forKey:(nonnull id&lt;NSCopying&gt;)];</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">id value = [mdict objectForKey:(nonnull id)];</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>可以看到能够作为 <code>字典Key</code>实例，必须实现<code>NSCopying 协议</code>的类对象.</p>
+</li>
+<li><p>那么常见实现了<code>NSCopying</code>协议的类</p>
+</li>
+<li>NSString、NSMutableString</li>
+<li>NSArray、NSMutableArray</li>
+<li>NSDictionary、NSMutableDictionary</li>
+<li>NSSet、NSMutableSet</li>
+<li><strong>NSObject没有实现NSCopying协议的</strong></li>
+</ul>
+<p>那么如上的数据结构类型的对象，都可以作为 <code>字典key</code>.</p>
+<hr>
+<h3 id="一个字符串-的-内存地址-是唯一-的"><a href="#一个字符串-的-内存地址-是唯一-的" class="headerlink" title="一个字符串 的 内存地址 是唯一 的"></a>一个字符串 的 <code>内存地址 是唯一</code> 的</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">NSString *STR1 = @&quot;111&quot;;</span><br><span class="line">NSString *STR2 = @&quot;111&quot;;</span><br><span class="line">NSString *STR3 = @&quot;111&quot;;</span><br><span class="line">NSString *STR4 = @&quot;112&quot;;</span><br></pre></td></tr></table></figure>
+<p>断点后输出结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(__NSCFConstantString *) STR1 = 0x0000000105d742e0 @&quot;111&quot;</span><br><span class="line">(__NSCFConstantString *) STR2 = 0x0000000105d742e0 @&quot;111&quot;</span><br><span class="line">(__NSCFConstantString *) STR3 = 0x0000000105d742e0 @&quot;111&quot;</span><br><span class="line">(__NSCFConstantString *) STR4 = 0x0000000105d74300 @&quot;112&quot;</span><br></pre></td></tr></table></figure>
+<p>可以得到如下:</p>
+<ul>
+<li><p><code>字符串 @&quot;111&quot;</code> 只开辟了 <code>一块内存块</code> 地址为: 0x0000000105d74<code>2e0</code></p>
+</li>
+<li><p><code>字符串 @&quot;112&quot;</code> 开辟了 另一块不同的内存块 0x0000000105d74<code>300</code></p>
+</li>
+<li><p>指针STR1、STR2、STR3，只是指向起始地址 <code>0x0000000105d742e0</code> 这一个内存块中的 内容 <code>@&quot;111&quot;</code>，并不是指向不同的内存块</p>
+</li>
+</ul>
+<h3 id="数组的内存地址是不一样的，尽管数组内元素长度、内容、顺序都一致"><a href="#数组的内存地址是不一样的，尽管数组内元素长度、内容、顺序都一致" class="headerlink" title="数组的内存地址是不一样的，尽管数组内元素长度、内容、顺序都一致"></a>数组的内存地址是不一样的，尽管数组内元素长度、内容、顺序都一致</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">NSArray *array1 = @[@&quot;111&quot;, @&quot;122&quot;, @&quot;133&quot;];</span><br><span class="line">NSArray *array2 = @[@&quot;111&quot;, @&quot;122&quot;, @&quot;133&quot;];</span><br></pre></td></tr></table></figure>
+<p>断点后输出结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(__NSArrayI *) array1 = 0x00007ff442c276d0 @&quot;3 objects&quot;</span><br><span class="line">(__NSArrayI *) array2 = 0x00007ff442c12310 @&quot;3 objects&quot;</span><br></pre></td></tr></table></figure>
+<h3 id="字典同数组"><a href="#字典同数组" class="headerlink" title="字典同数组"></a>字典同数组</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">NSDictionary *dict1 = @&#123;</span><br><span class="line">@&quot;name&quot; : @&quot;name&quot;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">NSDictionary *dict2 = @&#123;</span><br><span class="line">@&quot;name&quot; : @&quot;name&quot;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>断点后输出结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(__NSDictionaryI *) dict1 = 0x00007ff442c297c0 1 key/value pair</span><br><span class="line">(__NSDictionaryI *) dict2 = 0x00007ff442c29800 1 key/value pair</span><br></pre></td></tr></table></figure>
+<h3 id="可以得到-数组、字典、字符串的区别"><a href="#可以得到-数组、字典、字符串的区别" class="headerlink" title="可以得到 数组、字典、字符串的区别"></a>可以得到 数组、字典、字符串的区别</h3><ul>
+<li>NSArray和NSDictionary 不像 <code>NSString只要内容一致只会开辟一块内存</code></li>
+<li><p>NSArray和NSDictionary 即使 <code>内部元素内容一致</code>，也会 开辟 <code>不同</code> 的内存块</p>
+</li>
+<li><p>复杂 类型都是如此（如: 自定义类的对象）</p>
+</li>
+</ul>
+<hr>
+<h3 id="看下使用数组作为字典key的代码示例"><a href="#看下使用数组作为字典key的代码示例" class="headerlink" title="看下使用数组作为字典key的代码示例"></a>看下使用<code>数组</code>作为字典key的代码示例</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">//数组 1</span><br><span class="line">NSArray *array1 = @[@&quot;111&quot;, @&quot;222&quot;, @&quot;333&quot;];</span><br><span class="line"></span><br><span class="line">//数组 2</span><br><span class="line">NSArray *array2 = @[@&quot;111&quot;, @&quot;222&quot;, @&quot;333&quot;];</span><br><span class="line"></span><br><span class="line">NSMutableDictionary *mdict = [@&#123;&#125; mutableCopy];</span><br><span class="line"></span><br><span class="line">//使用 数组1 作为 key 存取</span><br><span class="line">mdict[array1] = @&quot;name&quot;;</span><br><span class="line"></span><br><span class="line">//使用 数组2 作为key 取值</span><br><span class="line">id value = mdict[array2];</span><br></pre></td></tr></table></figure>
+<p>输出结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(__NSArrayI *) array1 = 0x00007f87a1c9a4f0 @&quot;3 objects&quot;</span><br><span class="line">(__NSArrayI *) array2 = 0x00007f87a1c9a520 @&quot;3 objects&quot;</span><br><span class="line">(__NSDictionaryM *) mdict = 0x00007f87a1c9a550 1 key/value pair</span><br><span class="line">(__NSCFConstantString *) value = 0x000000010ff1f900 @&quot;name&quot;</span><br></pre></td></tr></table></figure>
+<p>可以看到 </p>
+<ul>
+<li><code>array 1</code> 与 <code>array 2</code> 的内存地址 是不一样的</li>
+<li>用<code>array 1</code>做为key存值</li>
+<li>用<code>array 2</code>做为key也能够取到值.</li>
+<li>所以猜测 字典key 是根据 <code>对象的 值内容</code>，而不是 <code>对象的 地址</code></li>
+<li><strong>因为array1与array2数组元素<code>值（内容）、长度、顺序</code>都一致</strong></li>
+</ul>
+<hr>
+<h3 id="验证-字典-是根据-key所指对象-的-值内容，而不是-地址"><a href="#验证-字典-是根据-key所指对象-的-值内容，而不是-地址" class="headerlink" title="验证 字典 是根据 key所指对象 的 值内容，而不是 地址"></a>验证 <code>字典</code> 是根据 <code>key所指对象</code> 的 <code>值内容</code>，而不是 <code>地址</code></h3><ul>
+<li>对如下正常代码做三种情况的修改</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">//数组 1</span><br><span class="line">NSArray *array1 = @[@&quot;111&quot;, @&quot;222&quot;, @&quot;333&quot;];</span><br><span class="line"></span><br><span class="line">//数组 2</span><br><span class="line">NSArray *array2 = @[@&quot;111&quot;, @&quot;222&quot;, @&quot;333&quot;];</span><br><span class="line"></span><br><span class="line">NSMutableDictionary *mdict = [@&#123;&#125; mutableCopy];</span><br><span class="line"></span><br><span class="line">//使用 数组1 作为 key 存取</span><br><span class="line">mdict[array1] = @&quot;name&quot;;</span><br><span class="line"></span><br><span class="line">//使用 数组2 作为key 取值</span><br><span class="line">id value = mdict[array2];</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(__NSArrayI *) array1 = 0x00007f99a850dce0 @&quot;3 objects&quot;</span><br><span class="line">(__NSArrayI *) array2 = 0x00007f99a85675d0 @&quot;3 objects&quot;</span><br><span class="line">(__NSDictionaryM *) mdict = 0x00007f99a8568460 1 key/value pair</span><br><span class="line">(__NSCFConstantString *) value = 0x0000000103d64900 @&quot;name&quot;</span><br></pre></td></tr></table></figure>
+<p>能取到值</p>
+<ul>
+<li>是array1与array2数组 <code>长度不一致</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">//数组 1</span><br><span class="line">NSArray *array1 = @[@&quot;111&quot;, @&quot;222&quot;, @&quot;333&quot;, @&quot;444&quot;];</span><br><span class="line"></span><br><span class="line">//数组 2</span><br><span class="line">NSArray *array2 = @[@&quot;111&quot;, @&quot;222&quot;, @&quot;333&quot;];</span><br><span class="line"></span><br><span class="line">NSMutableDictionary *mdict = [@&#123;&#125; mutableCopy];</span><br><span class="line"></span><br><span class="line">//使用 数组1 作为 key 存取</span><br><span class="line">mdict[array1] = @&quot;name&quot;;</span><br><span class="line"></span><br><span class="line">//使用 数组2 作为key 取值</span><br><span class="line">id value = mdict[array2];</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(__NSArrayI *) array1 = 0x00007f92b84ac460 @&quot;4 objects&quot;</span><br><span class="line">(__NSArrayI *) array2 = 0x00007f92b840a900 @&quot;3 objects&quot;</span><br><span class="line">(__NSDictionaryM *) mdict = 0x00007f92b84bcb90 1 key/value pair</span><br><span class="line">(id) value = nil</span><br></pre></td></tr></table></figure>
+<p>不能取到值</p>
+<ul>
+<li>是array1与array2数组 <code>循序不一致</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">//数组 1</span><br><span class="line">NSArray *array1 = @[@&quot;333&quot;, @&quot;222&quot;, @&quot;111&quot;];</span><br><span class="line"></span><br><span class="line">//数组 2</span><br><span class="line">NSArray *array2 = @[@&quot;111&quot;, @&quot;222&quot;, @&quot;333&quot;];</span><br><span class="line"></span><br><span class="line">NSMutableDictionary *mdict = [@&#123;&#125; mutableCopy];</span><br><span class="line"></span><br><span class="line">//使用 数组1 作为 key 存取</span><br><span class="line">mdict[array1] = @&quot;name&quot;;</span><br><span class="line"></span><br><span class="line">//使用 数组2 作为key 取值</span><br><span class="line">id value = mdict[array2];</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(__NSArrayI *) array1 = 0x00007ffc815acf70 @&quot;3 objects&quot;</span><br><span class="line">(__NSArrayI *) array2 = 0x00007ffc815b0850 @&quot;3 objects&quot;</span><br><span class="line">(__NSDictionaryM *) mdict = 0x00007ffc815aa220 1 key/value pair</span><br><span class="line">(id) value = nil</span><br></pre></td></tr></table></figure>
+<p>不能取到值</p>
+<ul>
+<li>是array1与array2数组 <code>内容不一致</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">//数组 1</span><br><span class="line">NSArray *array1 = @[@&quot;222&quot;, @&quot;333&quot;, @&quot;444&quot;];</span><br><span class="line"></span><br><span class="line">//数组 2</span><br><span class="line">NSArray *array2 = @[@&quot;111&quot;, @&quot;222&quot;, @&quot;333&quot;];</span><br><span class="line"></span><br><span class="line">NSMutableDictionary *mdict = [@&#123;&#125; mutableCopy];</span><br><span class="line"></span><br><span class="line">//使用 数组1 作为 key 存取</span><br><span class="line">mdict[array1] = @&quot;name&quot;;</span><br><span class="line"></span><br><span class="line">//使用 数组2 作为key 取值</span><br><span class="line">id value = mdict[array2];</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(__NSArrayI *) array1 = 0x00007f9c50769e10 @&quot;3 objects&quot;</span><br><span class="line">(__NSArrayI *) array2 = 0x00007f9c50769e40 @&quot;3 objects&quot;</span><br><span class="line">(__NSDictionaryM *) mdict = 0x00007f9c50769e70 1 key/value pair</span><br><span class="line">(id) value = nil</span><br></pre></td></tr></table></figure>
+<p>不能取到值</p>
+<h4 id="所以说，字典key-是根据-值内容-来进行存取"><a href="#所以说，字典key-是根据-值内容-来进行存取" class="headerlink" title="所以说，字典key 是根据 值内容 来进行存取"></a>所以说，字典key 是根据 <code>值内容</code> 来进行存取</h4><hr>
+<h3 id="猜测一、上面说的值内容-是借助-对象的hash值-来表示"><a href="#猜测一、上面说的值内容-是借助-对象的hash值-来表示" class="headerlink" title="猜测一、上面说的值内容 是借助 对象的hash值 来表示"></a>猜测一、上面说的<code>值内容</code> 是借助 <code>对象的hash值</code> 来表示</h3><h4 id="hash值属性定义在-协议NSObject"><a href="#hash值属性定义在-协议NSObject" class="headerlink" title="hash值属性定义在 协议NSObject"></a>hash值属性定义在 <code>协议NSObject</code></h4><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">NSObject</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="built_in">BOOL</span>)isEqual:(<span class="keyword">id</span>)object;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">对象的hash值属性</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">readonly</span>) <span class="built_in">NSUInteger</span> hash;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">readonly</span>) Class superclass;</span><br><span class="line">- (Class)<span class="keyword">class</span> OBJC_SWIFT_UNAVAILABLE(<span class="string">"use 'anObject.dynamicType' instead"</span>);</span><br><span class="line">- (<span class="keyword">instancetype</span>)<span class="keyword">self</span>;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">id</span>)performSelector:(SEL)aSelector;</span><br><span class="line">- (<span class="keyword">id</span>)performSelector:(SEL)aSelector withObject:(<span class="keyword">id</span>)object;</span><br><span class="line">- (<span class="keyword">id</span>)performSelector:(SEL)aSelector withObject:(<span class="keyword">id</span>)object1 withObject:(<span class="keyword">id</span>)object2;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">BOOL</span>)isProxy;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">BOOL</span>)isKindOfClass:(Class)aClass;</span><br><span class="line">- (<span class="built_in">BOOL</span>)isMemberOfClass:(Class)aClass;</span><br><span class="line">- (<span class="built_in">BOOL</span>)conformsToProtocol:(Protocol *)aProtocol;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">BOOL</span>)respondsToSelector:(SEL)aSelector;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">instancetype</span>)<span class="keyword">retain</span> OBJC_ARC_UNAVAILABLE;</span><br><span class="line">- (<span class="keyword">oneway</span> <span class="keyword">void</span>)release OBJC_ARC_UNAVAILABLE;</span><br><span class="line">- (<span class="keyword">instancetype</span>)autorelease OBJC_ARC_UNAVAILABLE;</span><br><span class="line">- (<span class="built_in">NSUInteger</span>)retainCount OBJC_ARC_UNAVAILABLE;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">struct</span> _NSZone *)zone OBJC_ARC_UNAVAILABLE;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">对象的描述值属性</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">readonly</span>, <span class="keyword">copy</span>) <span class="built_in">NSString</span> *description;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">@optional</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">readonly</span>, <span class="keyword">copy</span>) <span class="built_in">NSString</span> *debugDescription;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>比较有用的两个属性</p>
+<ul>
+<li>hash</li>
+<li>description</li>
+</ul>
+<p>可以用来 <code>区分两个不同对象</code> 的 唯一标识符</p>
+<h4 id="NSObject类-实现了-NSObject协议，自然就实现了属性的-setter方法与getter方法"><a href="#NSObject类-实现了-NSObject协议，自然就实现了属性的-setter方法与getter方法" class="headerlink" title="NSObject类 实现了 NSObject协议，自然就实现了属性的 setter方法与getter方法"></a>NSObject类 实现了 NSObject协议，自然就实现了属性的 <code>setter方法与getter方法</code></h4><ul>
+<li>NSString 继承自 NSObject</li>
+<li>NSArray 继承自 NSObject</li>
+<li>NSDictionary 继承自 NSObject</li>
+<li>…等等其他常用类</li>
+</ul>
+<p>所以基本我们日常用到的所有类，都有获取如下值的方法</p>
+<ul>
+<li>hash值</li>
+<li>description值</li>
+</ul>
+<h4 id="以NSArray的hash值为例"><a href="#以NSArray的hash值为例" class="headerlink" title="以NSArray的hash值为例"></a>以NSArray的hash值为例</h4><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//数组 1</span></span><br><span class="line"><span class="built_in">NSArray</span> *array1 = @[<span class="string">@"111"</span>, <span class="string">@"222"</span>, <span class="string">@"333"</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">//数组 2</span></span><br><span class="line"><span class="built_in">NSArray</span> *array2 = @[<span class="string">@"111"</span>, <span class="string">@"222"</span>, <span class="string">@"333"</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">//数组1 的hash值</span></span><br><span class="line"><span class="built_in">NSUInteger</span> hash1 = [array1 hash];</span><br><span class="line"></span><br><span class="line"><span class="comment">//数组2 的hash值</span></span><br><span class="line"><span class="built_in">NSUInteger</span> hash2 = [array2 hash];</span><br></pre></td></tr></table></figure>
+<p>输出结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(objc_property_t) property = 0x0000000103bc72f8</span><br><span class="line">(__NSArrayI *) array1 = 0x00007fe431d22440 @&quot;3 objects&quot;</span><br><span class="line">(__NSArrayI *) array2 = 0x00007fe431d2b4f0 @&quot;3 objects&quot;</span><br><span class="line">(NSUInteger) hash1 = 3</span><br><span class="line">(NSUInteger) hash2 = 3</span><br></pre></td></tr></table></figure>
+<p>然后让两个数组稍加修改再看看</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//数组 1</span></span><br><span class="line"><span class="built_in">NSArray</span> *array1 = @[<span class="string">@"dawdwd"</span>, <span class="string">@"dawdawd"</span>, <span class="string">@"dawdawd"</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">//数组 2</span></span><br><span class="line"><span class="built_in">NSArray</span> *array2 = @[<span class="string">@"111"</span>, <span class="string">@"222"</span>, <span class="string">@"333"</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">//数组1 的hash值</span></span><br><span class="line"><span class="built_in">NSUInteger</span> hash1 = [array1 hash];</span><br><span class="line"></span><br><span class="line"><span class="comment">//数组2 的hash值</span></span><br><span class="line"><span class="built_in">NSUInteger</span> hash2 = [array2 hash];</span><br></pre></td></tr></table></figure>
+<p>输出结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(__NSArrayI *) array1 = 0x00007fb78a416150 @&quot;3 objects&quot;</span><br><span class="line">(__NSArrayI *) array2 = 0x00007fb78a404f90 @&quot;3 objects&quot;</span><br><span class="line">(NSUInteger) hash1 = 3</span><br><span class="line">(NSUInteger) hash2 = 3</span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//数组 1</span></span><br><span class="line"><span class="built_in">NSArray</span> *array1 = @[<span class="string">@"dawdwd"</span>, <span class="string">@"dawdawd"</span>, <span class="string">@"dawdawd"</span>, <span class="string">@"dawdawd"</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">//数组 2</span></span><br><span class="line"><span class="built_in">NSArray</span> *array2 = @[<span class="string">@"111"</span>, <span class="string">@"222"</span>, <span class="string">@"333"</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">//数组1 的hash值</span></span><br><span class="line"><span class="built_in">NSUInteger</span> hash1 = [array1 hash];</span><br><span class="line"></span><br><span class="line"><span class="comment">//数组2 的hash值</span></span><br><span class="line"><span class="built_in">NSUInteger</span> hash2 = [array2 hash];</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(__NSArrayI *) array1 = 0x00007fb95b6089c0 @&quot;4 objects&quot;</span><br><span class="line">(__NSArrayI *) array2 = 0x00007fb95b66f310 @&quot;3 objects&quot;</span><br><span class="line">(NSUInteger) hash1 = 4</span><br><span class="line">(NSUInteger) hash2 = 3</span><br></pre></td></tr></table></figure>
+<p>可以得到</p>
+<ul>
+<li>NSArray的 <code>hash属性的getter方法</code> 只是简单的</li>
+<li>统计 数组的长度</li>
+<li>将 长度数字 转换为 数值</li>
+<li><p>然后返回</p>
+</li>
+<li><p>但是两个 <code>长度一致，但是 内容不一致 数组</code> 的 <code>hash值</code> 确是一样的</p>
+</li>
+<li>所以肯定不可能按照 数组的hash值 <code>来区分数组 内容 是否相同</code></li>
+</ul>
+<hr>
+<h3 id="猜测二、上面说的值内容-是借助-descriptions值-来表示"><a href="#猜测二、上面说的值内容-是借助-descriptions值-来表示" class="headerlink" title="猜测二、上面说的值内容 是借助 descriptions值 来表示"></a>猜测二、上面说的<code>值内容</code> 是借助 <code>descriptions值</code> 来表示</h3><ul>
+<li>eg1. </li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">//数组 1</span><br><span class="line">NSArray *array1 = @[@&quot;dawdwd&quot;, @&quot;dawdawd&quot;, @&quot;dawdawd&quot;, @&quot;dawdawd&quot;];</span><br><span class="line"></span><br><span class="line">//数组 2</span><br><span class="line">NSArray *array2 = @[@&quot;111&quot;, @&quot;222&quot;, @&quot;333&quot;];</span><br><span class="line"></span><br><span class="line">NSString *des1 = [array1 description];</span><br><span class="line">NSString *des2 = [array2 description];</span><br><span class="line"></span><br><span class="line">BOOL res = [des1 isEqualToString:des2];</span><br></pre></td></tr></table></figure>
+<p>输出</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(__NSArrayI *) array1 = 0x00007fe4cad04df0 @&quot;4 objects&quot;</span><br><span class="line">(__NSArrayI *) array2 = 0x00007fe4cad7a370 @&quot;3 objects&quot;</span><br><span class="line">(__NSCFString *) des1 = 0x00007fe4cad0d3d0 @&quot;(\n    dawdwd,\n    dawdawd,\n    dawdawd,\n    dawdawd\n)&quot;</span><br><span class="line">(__NSCFString *) des2 = 0x00007fe4cad016d0 @&quot;(\n    111,\n    222,\n    333\n)&quot;</span><br><span class="line">(BOOL) res = NO</span><br></pre></td></tr></table></figure>
+<ul>
+<li>eg2.</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">//数组 1</span><br><span class="line">NSArray *array1 = @[@&quot;dawdwd&quot;, @&quot;dawdawd&quot;, @&quot;dawdawd&quot;];</span><br><span class="line"></span><br><span class="line">//数组 2</span><br><span class="line">NSArray *array2 = @[@&quot;111&quot;, @&quot;222&quot;, @&quot;333&quot;];</span><br><span class="line"></span><br><span class="line">NSString *des1 = [array1 description];</span><br><span class="line">NSString *des2 = [array2 description];</span><br><span class="line"></span><br><span class="line">BOOL res = [des1 isEqualToString:des2];</span><br><span class="line">```</span><br></pre></td></tr></table></figure>
+<p>(<strong>NSArrayI *) array1 = 0x00007ff90bf196e0 @”3 objects”<br>(</strong>NSArrayI <em>) array2 = 0x00007ff90bf18950 @”3 objects”<br>(__NSCFString </em>) des1 = 0x00007ff90bf1f5d0 @”(\n    dawdwd,\n    dawdawd,\n    dawdawd\n)”<br>(__NSCFString *) des2 = 0x00007ff90bf1f610 @”(\n    111,\n    222,\n    333\n)”<br>(BOOL) res = NO<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line">- eg3.</span><br></pre></td></tr></table></figure></p>
+<p>//数组 1<br>NSArray *array1 = @[@”111”, @”222”, @”dawdawd”];</p>
+<p>//数组 2<br>NSArray *array2 = @[@”111”, @”222”, @”333”];</p>
+<p>NSString <em>des1 = [array1 description];<br>NSString </em>des2 = [array2 description];</p>
+<p>BOOL res = [des1 isEqualToString:des2];<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
+<p>(<strong>NSArrayI *) array1 = 0x00007f838251dd90 @”3 objects”<br>(</strong>NSArrayI <em>) array2 = 0x00007f838250f000 @”3 objects”<br>(__NSCFString </em>) des1 = 0x00007f838250f060 @”(\n    111,\n    222,\n    dawdawd\n)”<br>(__NSCFString *) des2 = 0x00007f838258f090 @”(\n    111,\n    222,\n    333\n)”<br>(BOOL) res = NO<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- eg4.</span><br></pre></td></tr></table></figure></p>
+<p>//数组 1<br>NSArray *array1 = @[@”111”, @”222”, @”333”];</p>
+<p>//数组 2<br>NSArray *array2 = @[@”111”, @”222”, @”333”];</p>
+<p>NSString <em>des1 = [array1 description];<br>NSString </em>des2 = [array2 description];</p>
+<p>BOOL res = [des1 isEqualToString:des2];<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
+<p>(<strong>NSArrayI *) array1 = 0x00007ff8e9714940 @”3 objects”<br>(</strong>NSArrayI <em>) array2 = 0x00007ff8e97100a0 @”3 objects”<br>(__NSCFString </em>) des1 = 0x00007ff8e973c460 @”(\n    111,\n    222,\n    333\n)”<br>(__NSCFString *) des2 = 0x00007ff8e973c4a0 @”(\n    111,\n    222,\n    333\n)”<br>(BOOL) res = YES<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- description值，最终返回的是一个字符串，且能够识别 数据一致内存地址不一致的两个对象</span><br><span class="line">- 所以猜测，字典可能是根据 `NSArray的description值`，进行存取数据</span><br><span class="line"></span><br><span class="line">#### 当数组包含复杂对象类型是否还是能通过description值来区分</span><br><span class="line"></span><br><span class="line">- Person类</span><br></pre></td></tr></table></figure></p>
+<p>#import &lt;Foundation/Foundation.h&gt;</p>
+<p>#import “User.h”</p>
+<p>@interface Person : NSObject</p>
+<p>@property (nonatomic, copy) NSString *name;</p>
+<p>@property (nonatomic, strong) NSArray *users;</p>
+<p>@property (nonatomic, strong) User *user;</p>
+<p>@end<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
+<p>#import “Person.h”</p>
+<p>@implementation Person</p>
+<p>@end<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
+<p>#import &lt;Foundation/Foundation.h&gt;</p>
+<p>@interface User : NSObject</p>
+<p>@property (nonatomic, copy) NSString *name;</p>
+<p>@property (nonatomic, copy) NSString *address;</p>
+<p>@end<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- User类</span><br></pre></td></tr></table></figure></p>
+<p>#import “User.h”</p>
+<p>@implementation User</p>
+<p>@end<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 全部内容一致的情况</span><br></pre></td></tr></table></figure></p>
+<p>Person <em>p1 = [Person new];<br>Person </em>p2 = [Person new];<br>Person *p3 = [Person new];</p>
+<p>NSArray <em>array1 = @[p1, p2, p3];<br>NSArray </em>array2 = @[p1, p2, p3];</p>
+<p>NSString <em>des1 = [array1 description];<br>NSString </em>des2 = [array2 description];</p>
+<p>BOOL res = [des1 isEqualToString:des2];<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
+<p>(Person <em>) p1 = 0x00007faaa3fe57e0<br>(Person </em>) p2 = 0x00007faaa3fe5850<br>(Person <em>) p3 = 0x00007faaa3fe5870<br>(__NSArrayI </em>) array1 = 0x00007faaa3fe5890 @”3 objects”<br>(<strong>NSArrayI *) array2 = 0x00007faaa3fe58c0 @”3 objects”<br>(</strong>NSCFString <em>) des1 = 0x00007faaa3fe5a50 @”(\n    \”&lt;Person: 0x7faaa3fe57e0&gt;\”,\n    \”&lt;Person: 0x7faaa3fe5850&gt;\”,\n    \”&lt;Person: 0x7faaa3fe5870&gt;\”\n)”<br>(__NSCFString </em>) des2 = 0x00007faaa3fe5c60 @”(\n    \”&lt;Person: 0x7faaa3fe57e0&gt;\”,\n    \”&lt;Person: 0x7faaa3fe5850&gt;\”,\n    \”&lt;Person: 0x7faaa3fe5870&gt;\”\n)”<br>(BOOL) res = YES<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 数据内容 长度不一致</span><br></pre></td></tr></table></figure></p>
+<p>Person <em>p1 = [Person new];<br>Person </em>p2 = [Person new];<br>Person *p3 = [Person new];</p>
+<p>NSArray <em>array1 = @[p1, p2];<br>NSArray </em>array2 = @[p1, p2, p3];</p>
+<p>NSString <em>des1 = [array1 description];<br>NSString </em>des2 = [array2 description];</p>
+<p>BOOL res = [des1 isEqualToString:des2];<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
+<p>(<strong>NSArrayI *) array1 = 0x00007fe9e1f26660 @”2 objects”<br>(</strong>NSArrayI <em>) array2 = 0x00007fe9e1f24200 @”3 objects”<br>(__NSCFString </em>) des1 = 0x00007fe9e1f22e60 @”(\n    \”&lt;Person: 0x7fe9e1f03130&gt;\”,\n    \”&lt;Person: 0x7fe9e1f26a80&gt;\”\n)”<br>(__NSCFString *) des2 = 0x00007fe9e1f01d40 @”(\n    \”&lt;Person: 0x7fe9e1f03130&gt;\”,\n    \”&lt;Person: 0x7fe9e1f26a80&gt;\”,\n    \”&lt;Person: 0x7fe9e1f2dc40&gt;\”\n)”<br>(BOOL) res = NO<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 长度一致，顺序不一致</span><br></pre></td></tr></table></figure></p>
+<p>Person <em>p1 = [Person new];<br>Person </em>p2 = [Person new];<br>Person *p3 = [Person new];</p>
+<p>NSArray <em>array1 = @[p1, p3, p2];<br>NSArray </em>array2 = @[p1, p2, p3];</p>
+<p>NSString <em>des1 = [array1 description];<br>NSString </em>des2 = [array2 description];</p>
+<p>BOOL res = [des1 isEqualToString:des2];<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
+<p>(<strong>NSArrayI *) array1 = 0x00007fdcc94203f0 @”3 objects”<br>(</strong>NSArrayI <em>) array2 = 0x00007fdcc9481a40 @”3 objects”<br>(__NSCFString </em>) des1 = 0x00007fdcc941b990 @”(\n    \”&lt;Person: 0x7fdcc942e4c0&gt;\”,\n    \”&lt;Person: 0x7fdcc942e190&gt;\”,\n    \”&lt;Person: 0x7fdcc9431650&gt;\”\n)”<br>(__NSCFString *) des2 = 0x00007fdcc94804c0 @”(\n    \”&lt;Person: 0x7fdcc942e4c0&gt;\”,\n    \”&lt;Person: 0x7fdcc9431650&gt;\”,\n    \”&lt;Person: 0x7fdcc942e190&gt;\”\n)”<br>(BOOL) res = NO<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 观察 `数组对象的description值` 组织形式:</span><br><span class="line">- 首先是一个字符串</span><br><span class="line">- 由数组中 三个 `Person对象的description值` 拼接而成</span><br></pre></td></tr></table></figure></p>
+<p>@”(\n    \”&lt;Person: 0x7fdcc942e4c0&gt;\”,\n    \”&lt;Person: 0x7fdcc942e190&gt;\”,\n    \”&lt;Person: 0x7fdcc9431650&gt;\”\n)”<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 单独输出一个Person对象desceiption值</span><br></pre></td></tr></table></figure></p>
+<p>&lt;Person: 0x7fad80c10020&gt;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">就是这样两边尖角的字符串，右侧的对象地址是唯一的.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#### 总之，数组Array 能通过 description值 来区分，`不同数组` 只需要</span><br><span class="line"></span><br><span class="line">- 数组长度一致</span><br><span class="line">- 数组中的每一个index对应的对象都 `是同一个对象`</span><br><span class="line">- index对应的对象的description值，才能对上号</span><br><span class="line"></span><br><span class="line">那么此时 不同数组对象的description值 就会相同，也就能根据`数组的值内容`来区分是否一样.</span><br><span class="line"></span><br><span class="line">****</span><br><span class="line"></span><br><span class="line">### 但通常我们自定义的类型中，成员变量类型不仅仅只有字符串，希望使用 `hash值` 或 `description值`，来更好的区分地址不同但是内容数据一样的两个对象.</span><br><span class="line"></span><br><span class="line">#### 先看看字符串的hash值</span><br><span class="line"></span><br><span class="line">- 两个不同字符串的hash值</span><br></pre></td></tr></table></figure></p>
+<p>NSString <em>str1 = @”1111”;<br>NSString </em>str2 = @”dawdawdhawjdaw8d78dawddawdawdhawjdaw8d”;</p>
+<p>NSUInteger hash1 = [str1 hash];<br>NSUInteger hash2 = [str2 hash];<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
+<p>(<strong>NSCFConstantString *) str1 = 0x000000010d1772e0 @”1111”<br>(</strong>NSCFConstantString *) str2 = 0x000000010d177300 @”dawdawdhawjdaw8d78dawddawdawdhawjdaw8d78dawddawdawdhawjdaw8d78dawddawdawdhawjdaw8d78dawd”<br>(NSUInteger) hash1 = 18785280840<br>(NSUInteger) hash2 = 1191690051463814668<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 两个相同字符串的hash值</span><br></pre></td></tr></table></figure></p>
+<p>NSString <em>str1 = @”1111”;<br>NSString </em>str2 = @”1111”;</p>
+<p>NSUInteger hash1 = [str1 hash];<br>NSUInteger hash2 = [str2 hash];<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
+<p>(<strong>NSCFConstantString *) str1 = 0x000000010ff9d2e0 @”1111”<br>(</strong>NSCFConstantString *) str2 = 0x000000010ff9d2e0 @”1111”<br>(NSUInteger) hash1 = 18785280840<br>(NSUInteger) hash2 = 18785280840<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">#### 举例，在网络请求类库中，需要将一个`Request url` 对应的 `responseJSON`缓存到`磁盘文件`</span><br><span class="line"></span><br><span class="line">- 就必须要保证 磁盘文件的名字必须是唯一的</span><br><span class="line">- 且需要多次重复计算，得到是同样的标识（如: MD5算法）</span><br><span class="line">- 那么就可以重写NSObject实例的 hash方法，来获得一个YTKRequest对象的唯一hash值，作为文件名</span><br><span class="line"></span><br><span class="line">#### YTKRequest来生成请求对应的磁盘缓存文件名的方法</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>(NSString *)cacheFileName {</li>
+</ul>
+<p>//1.<br>NSString *requestUrl = [self requestUrl];</p>
+<p>//2.<br>NSString *baseUrl = [YTKNetworkConfig sharedInstance].baseUrl;</p>
+<p>//3.<br>id argument = [self cacheFileNameFilterForRequestArgument:[self requestArgument]];</p>
+<p>//4.<br>NSString *requestInfo = [NSString stringWithFormat:@”Method:%ld Host:%@ Url:%@ Argument:%@ AppVersion:%@ Sensitive:%@”,<br>(long)[self requestMethod], baseUrl, requestUrl,<br>argument, [YTKNetworkPrivate appVersionString], [self cacheSensitiveData]];</p>
+<p>//5. 对字符串使用MD5算法，得到文件名<br>NSString *cacheFileName = [YTKNetworkPrivate md5StringFromString:requestInfo];<br>return cacheFileName;<br>}<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">#### 如果使用重写YTKRequest实例的hash方法，来生成请求对应的磁盘缓存文件名</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">- 第一步、重写hash值属性getter方法</span><br><span class="line"></span><br><span class="line">```objc</span><br><span class="line">//获取对象的hash值</span><br><span class="line">- (NSUInteger)hash &#123;</span><br><span class="line"></span><br><span class="line">//1. 请求路径path</span><br><span class="line">NSString *requestUrl = [self requestUrl];</span><br><span class="line"></span><br><span class="line">//2. 请求Host</span><br><span class="line">NSString *baseUrl = [YTKNetworkConfig sharedInstance].baseUrl;</span><br><span class="line"></span><br><span class="line">//3. 请求参数</span><br><span class="line">id argument = [self cacheFileNameFilterForRequestArgument:[self requestArgument]];</span><br><span class="line"></span><br><span class="line">//4. 根据前面三个数据得到一个字符串内容</span><br><span class="line">NSString *requestInfo = [NSString stringWithFormat:@&quot;Method:%ld Host:%@ Url:%@ Argument:%@ AppVersion:%@ Sensitive:%@&quot;,</span><br><span class="line">(long)[self requestMethod], baseUrl, requestUrl,</span><br><span class="line">argument, [YTKNetworkPrivate appVersionString], [self cacheSensitiveData]];</span><br><span class="line"></span><br><span class="line">//6. 对字符串进行hash运算</span><br><span class="line">NSUInteger hashValue = [requestInfo hash];</span><br><span class="line"></span><br><span class="line">return hashValue;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>第二步、使用hash值得到缓存文件名</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">- (NSString *)cacheFileName &#123;</span><br><span class="line"></span><br><span class="line">//1. 得到当前对象的hash值（唯一的）</span><br><span class="line">NSUInteger hashValue = [self hash];</span><br><span class="line"></span><br><span class="line">//2. 将hash整数值转换为字符串值，就是文件名</span><br><span class="line">NSString *cacheFileName = [NSString stringWithFormat:@&quot;%lu&quot;, hashValue];</span><br><span class="line"></span><br><span class="line">return cacheFileName;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>相同字符串的hash值一定相同，且永远固定一致</li>
+<li>不同字符串的hash值，一定不相同</li>
+</ul>
+<hr>
+<h3 id="再看一个嵌套类型类，重写description方法的小例子"><a href="#再看一个嵌套类型类，重写description方法的小例子" class="headerlink" title="再看一个嵌套类型类，重写description方法的小例子"></a>再看一个嵌套类型类，重写description方法的小例子</h3><ul>
+<li>Person类</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;Foundation/Foundation.h&gt;</span><br><span class="line">#import &quot;User.h&quot;</span><br><span class="line"></span><br><span class="line">@interface Person : NSObject</span><br><span class="line">@property (nonatomic, copy) NSString *name;</span><br><span class="line"></span><br><span class="line">@property (nonatomic, assign) NSInteger age;</span><br><span class="line"></span><br><span class="line">@property (nonatomic, strong) User *user;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;Person.h&quot;</span><br><span class="line"></span><br><span class="line">@implementation Person</span><br><span class="line"></span><br><span class="line">- (NSString *)description &#123;</span><br><span class="line">NSString *msg = [NSString stringWithFormat:@&quot;%@%@&quot;, @&quot;基础属性&quot;,[self.user description]];</span><br><span class="line">return msg;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<ul>
+<li>User类</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;Foundation/Foundation.h&gt;</span><br><span class="line"></span><br><span class="line">@interface User : NSObject</span><br><span class="line"></span><br><span class="line">@property (nonatomic, copy) NSString *name;</span><br><span class="line"></span><br><span class="line">@property (nonatomic, copy) NSString *address;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;User.h&quot;</span><br><span class="line"></span><br><span class="line">@implementation User</span><br><span class="line"></span><br><span class="line">- (NSString *)description &#123;</span><br><span class="line">NSString *msg = [NSString stringWithFormat:@&quot;%@.%@&quot;, self.name, self.address];</span><br><span class="line">return msg;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="字典崩溃"><a href="#字典崩溃" class="headerlink" title="字典崩溃"></a>字典崩溃</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">NSMutableDictionary *dict = [NSMutableDictionary new];</span><br><span class="line"></span><br><span class="line">//会崩溃一</span><br><span class="line">NSString *key = nil;</span><br><span class="line">[dict setObject:[NSObject new] forKey:key];</span><br><span class="line"></span><br><span class="line">//会崩溃二</span><br><span class="line">[dict setObject:nil forKey:@&quot;key&quot;];</span><br><span class="line"></span><br><span class="line">//会崩溃三</span><br><span class="line">[dict setObject:NULL forKey:@&quot;key&quot;];</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//不会崩溃</span><br><span class="line">[dict setObject:(id)kCFNull forKey:@&quot;dawd&quot;];</span><br></pre></td></tr></table></figure>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2017/02/15/NSDictionary/" data-title="NSDictionary | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2017/03/17/Mach-O-代码签名/" title="Mach-O 代码签名">
+  <strong>上一篇：</strong><br>
+  <span>
+  Mach-O 代码签名</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/01/18/RSA-Encrypt/" title="RSA Encrypt">
+ <strong>下一篇：</strong><br> 
+ <span>RSA Encrypt
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/02/15/NSDictionary/" data-title="NSDictionary" data-url="http://yoursite.com/2017/02/15/NSDictionary/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#在YYModel中，看到-NSDictionary-使用-数组-作为key-进行存取"><span class="toc-number">1.</span> <span class="toc-text">在YYModel中，看到 NSDictionary 使用 数组 作为key 进行存取</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#作为字典key的要求"><span class="toc-number">2.</span> <span class="toc-text">作为字典key的要求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#一个字符串-的-内存地址-是唯一-的"><span class="toc-number">3.</span> <span class="toc-text">一个字符串 的 内存地址 是唯一 的</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#数组的内存地址是不一样的，尽管数组内元素长度、内容、顺序都一致"><span class="toc-number">4.</span> <span class="toc-text">数组的内存地址是不一样的，尽管数组内元素长度、内容、顺序都一致</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#字典同数组"><span class="toc-number">5.</span> <span class="toc-text">字典同数组</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#可以得到-数组、字典、字符串的区别"><span class="toc-number">6.</span> <span class="toc-text">可以得到 数组、字典、字符串的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#看下使用数组作为字典key的代码示例"><span class="toc-number">7.</span> <span class="toc-text">看下使用数组作为字典key的代码示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#验证-字典-是根据-key所指对象-的-值内容，而不是-地址"><span class="toc-number">8.</span> <span class="toc-text">验证 字典 是根据 key所指对象 的 值内容，而不是 地址</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#所以说，字典key-是根据-值内容-来进行存取"><span class="toc-number">8.1.</span> <span class="toc-text">所以说，字典key 是根据 值内容 来进行存取</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#猜测一、上面说的值内容-是借助-对象的hash值-来表示"><span class="toc-number">9.</span> <span class="toc-text">猜测一、上面说的值内容 是借助 对象的hash值 来表示</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#hash值属性定义在-协议NSObject"><span class="toc-number">9.1.</span> <span class="toc-text">hash值属性定义在 协议NSObject</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#NSObject类-实现了-NSObject协议，自然就实现了属性的-setter方法与getter方法"><span class="toc-number">9.2.</span> <span class="toc-text">NSObject类 实现了 NSObject协议，自然就实现了属性的 setter方法与getter方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#以NSArray的hash值为例"><span class="toc-number">9.3.</span> <span class="toc-text">以NSArray的hash值为例</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#猜测二、上面说的值内容-是借助-descriptions值-来表示"><span class="toc-number">10.</span> <span class="toc-text">猜测二、上面说的值内容 是借助 descriptions值 来表示</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#再看一个嵌套类型类，重写description方法的小例子"><span class="toc-number">11.</span> <span class="toc-text">再看一个嵌套类型类，重写description方法的小例子</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#字典崩溃"><span class="toc-number">12.</span> <span class="toc-text">字典崩溃</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

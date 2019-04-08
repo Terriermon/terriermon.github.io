@@ -74,6 +74,147 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
+    <a href="/2016/09/22/Runtime-Part3-IMP/" title="Runtime Part3 IMP" itemprop="url">
+  
+    <h1 itemprop="name">Runtime Part3 IMP</h1>
+    
+     
+           <p itemprop="description">什么是IMP？
+IMP 就是一个指向任意一个 c函数的 函数指针
+
+IMP的原型
+12345#if !OBJC_OLD_DISPATCH_PROTOTYPEStypedef void (*IMP)(void /* id, SEL, ... */ ); #elsetypedef i</p>
+        
+    
+    <time datetime="2016-09-22T10:56:12.000Z" itemprop="datePublished">2016-09-22</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/09/22/Runtime-Part2-SEL/" title="Runtime Part2 SEL" itemprop="url">
+  
+    <h1 itemprop="name">Runtime Part2 SEL</h1>
+    
+     
+           <p itemprop="description">什么是消息选择器？
+(1) 消息选择器是一种文本字符串，用于消息传递的过程
+
+(2) 消息选择器是一种分为多段的文本字符串，每个段以冒号结尾且后面可以跟方法执行参数
+
+(3) 运行时系统根据消息选择器，找到对应的方法实现完成方法调用
+
+(4) 消息选择器主要是标识区别某个对象/某</p>
+        
+    
+    <time datetime="2016-09-22T10:04:03.000Z" itemprop="datePublished">2016-09-22</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/09/21/Runtime-Part1-认识/" title="Runtime Part1 认识" itemprop="url">
+  
+    <h1 itemprop="name">Runtime Part1 认识</h1>
+    
+     
+           <p itemprop="description">运行时系统组成部分: 编译器 和 运行时动态链接库
+编译器、做的事情
+
+
+(1) 在程序编译期间负责完成一些Objetive-C代码编译生成c代码
+(2) 而这些被编译的c代码不仅仅只是普通的c代码，而是使用了运行时系统库中api的代码
+
+
+运行时链接库、组成结构
+
+
+(1) 类</p>
+        
+    
+    <time datetime="2016-09-20T18:31:21.000Z" itemprop="datePublished">2016-09-21</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/08/05/iOS-common-crash-problem/" title="iOS common crash problem" itemprop="url">
+  
+    <h1 itemprop="name">iOS common crash problem</h1>
+    
+     
+           <p itemprop="description">常见问题整理
+Array的一些崩溃
+(1) 数组对象是id类型，并不清楚到底是可变还是不可变
+
+12id array = [NSArray new];[array addObject:@&#34;111&#34;];
+
+(2) 添加一个nil到数组对象
+
+12id array = [NSMuta</p>
+        
+    
+    <time datetime="2016-08-05T03:47:42.000Z" itemprop="datePublished">2016-08-05</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/08/01/APNS远程推送/" title="APNS远程推送" itemprop="url">
+  
+    <h1 itemprop="name">APNS远程推送</h1>
+    
+     
+           <p itemprop="description">###推送通知简介
+
+此通知不是NSNotificationCenter发出的通知NSNotification，而是推送通知。
+
+推送通知主要用途
+
+App 与 APNS苹果服务器 之间的交互
+确切的说让不在前台运行的App被动触发做一些事情
+
+推送通知的分类
+
+1) 远程推送通</p>
+        
+    
+    <time datetime="2016-08-01T14:58:52.000Z" itemprop="datePublished">2016-08-01</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
     <a href="/2016/06/03/UITableViewCell的一些优化/" title="UITableViewCell的一些优化" itemprop="url">
   
     <h1 itemprop="name">UITableViewCell的一些优化</h1>
@@ -193,130 +334,9 @@ Nil
 
 
 
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/01/18/设计模式-访问者模式/" title="设计模式-访问者模式" itemprop="url">
-  
-    <h1 itemprop="name">设计模式-访问者模式</h1>
-    
-     
-           <p itemprop="description">访问者、将对一个实体类的业务逻辑，封装到一个Visitor中.
-假设有两个实体
-书
-
-水果
-
-
-
-各自有各自的业务逻辑
-书本需要计算最终的价格 &amp;gt;&amp;gt;&amp;gt; float返回值类型
-
-水果需要计算最终的价格 &amp;gt;&amp;gt;&amp;gt; float返回值类型
-
-
-可以看到是</p>
-        
-    
-    <time datetime="2016-01-18T15:29:02.000Z" itemprop="datePublished">2016-01-18</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/01/17/设计模式-策略模式/" title="设计模式-策略模式" itemprop="url">
-  
-    <h1 itemprop="name">设计模式-策略模式</h1>
-    
-     
-           <p itemprop="description">策略、将多种条件路径if-elseif中的业务逻辑，封装成一个单独的策略实现类.123456789101112131415if (满足条件1) &amp;#123;执行逻辑1&amp;#125; else if (满足条件2) &amp;#123;执行逻辑2&amp;#125; else if (满足条件3) </p>
-        
-    
-    <time datetime="2016-01-17T08:21:54.000Z" itemprop="datePublished">2016-01-17</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/01/16/设计模式-状态模式/" title="设计模式-状态模式" itemprop="url">
-  
-    <h1 itemprop="name">设计模式-状态模式</h1>
-    
-     
-           <p itemprop="description">状态机、将一个事物的不同的状态执行的业务逻辑，单独封装到一个对应状态实现类中去.
-抽象状态12345678910111213141516171819202122////  State.h//  demos//#import &amp;lt;Foundation/Foundation.h&amp;</p>
-        
-    
-    <time datetime="2016-01-16T08:11:54.000Z" itemprop="datePublished">2016-01-16</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/01/15/设计模式-观察者模式/" title="设计模式-观察者模式" itemprop="url">
-  
-    <h1 itemprop="name">设计模式-观察者模式</h1>
-    
-     
-           <p itemprop="description">观察者、某个对象的值改变时，通知所有注册过的对象做出处理，类似响应式.
-假设某个页面获取了钱包的最新钱数量，那么返回到其他页面同样也需要保持这个最新钱数量，要不然就造成钱数量不统一。
-那么在多个页面同步最新网络数据办法:
-每个页面都发一次请求，获取最新数据
-
-一个页面触发请求，获</p>
-        
-    
-    <time datetime="2016-01-15T07:42:40.000Z" itemprop="datePublished">2016-01-15</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/01/14/设计模式-中介者模式/" title="设计模式-中介者模式" itemprop="url">
-  
-    <h1 itemprop="name">设计模式-中介者模式</h1>
-    
-     
-           <p itemprop="description">中介者、通过中间者解耦 消息发送者与消息接收者 之间的强耦合.
-消息发送者和消息接受者都需要实现的协议1234567891011121314151617181920212223242526////  MediaContact.h//  demos////  Created by </p>
-        
-    
-    <time datetime="2016-01-14T07:01:51.000Z" itemprop="datePublished">2016-01-14</time>
-  </a>
-</section>
-
-
-
-
-
-
 
   <nav id="page-nav" class="clearfix unexpand">
-    <a class="extend prev" rel="prev" href="/page/2/"><span></span>Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/4/">Next<span></span></a>
+    <a class="extend prev" rel="prev" href="/page/2/"><span></span>Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/4/">Next<span></span></a>
   </nav>
 
 </div>

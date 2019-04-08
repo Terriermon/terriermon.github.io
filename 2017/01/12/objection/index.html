@@ -1,0 +1,563 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>objection | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="Objection能干什么？ objection 是一个轻量级的依赖注入的实现框架.  依赖注入的概念  角色1、接口，即抽象方法集合.  角色2、接口的实现，定义一个具体类，具体实现接口中定义的所有的抽象方法  角色3、注入器或工厂，负责完成如下几件事  事情1、管理一系列的接口，向外暴露我能做哪些业务功能  事情2、管理一些列接口的具体实现，一个接口不同版本的具体实现类 事情3、管理接口与实">
+<meta property="og:type" content="article">
+<meta property="og:title" content="objection">
+<meta property="og:url" content="http://yoursite.com/2017/01/12/objection/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="Objection能干什么？ objection 是一个轻量级的依赖注入的实现框架.  依赖注入的概念  角色1、接口，即抽象方法集合.  角色2、接口的实现，定义一个具体类，具体实现接口中定义的所有的抽象方法  角色3、注入器或工厂，负责完成如下几件事  事情1、管理一系列的接口，向外暴露我能做哪些业务功能  事情2、管理一些列接口的具体实现，一个接口不同版本的具体实现类 事情3、管理接口与实">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-08T13:19:15.374Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="objection">
+<meta name="twitter:description" content="Objection能干什么？ objection 是一个轻量级的依赖注入的实现框架.  依赖注入的概念  角色1、接口，即抽象方法集合.  角色2、接口的实现，定义一个具体类，具体实现接口中定义的所有的抽象方法  角色3、注入器或工厂，负责完成如下几件事  事情1、管理一系列的接口，向外暴露我能做哪些业务功能  事情2、管理一些列接口的具体实现，一个接口不同版本的具体实现类 事情3、管理接口与实">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/01/12/objection/" title="objection" itemprop="url">objection</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2017-01-11T16:37:19.000Z" itemprop="datePublished"> Published 2017-01-12</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Objection能干什么？"><span class="toc-number">1.</span> <span class="toc-text">Objection能干什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#JSObjectionModule，管理一个业务模块的所有相关接口与实现的映射关系"><span class="toc-number">2.</span> <span class="toc-text">JSObjectionModule，管理一个业务模块的所有相关接口与实现的映射关系</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#首先，可以抽一个公共的BaseModule，提供一些公共代码"><span class="toc-number">2.1.</span> <span class="toc-text">首先，可以抽一个公共的BaseModule，提供一些公共代码</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#提供一个所有的Module的统一管理的Manager单例类"><span class="toc-number">3.</span> <span class="toc-text">提供一个所有的Module的统一管理的Manager单例类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第一个JSObjectionModule-ApplicationModule，来负责一些依赖对象之间的注入"><span class="toc-number">4.</span> <span class="toc-text">第一个JSObjectionModule: ApplicationModule，来负责一些依赖对象之间的注入</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#ApplicationModule代码"><span class="toc-number">4.1.</span> <span class="toc-text">ApplicationModule代码</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ApplicationModule使用，负责一些基础的依赖对象之间的注入"><span class="toc-number">4.2.</span> <span class="toc-text">ApplicationModule使用，负责一些基础的依赖对象之间的注入</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第二个JSObjectionModule-ViewControllerModule，来降低ViewController之间的耦合关系"><span class="toc-number">5.</span> <span class="toc-text">第二个JSObjectionModule: ViewControllerModule，来降低ViewController之间的耦合关系</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#这么做的好处"><span class="toc-number">5.1.</span> <span class="toc-text">这么做的好处:</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第三个JSObjectionModule-LoginHandleModule，管理登陆业务模块的接口与实现映射关系"><span class="toc-number">6.</span> <span class="toc-text">第三个JSObjectionModule: LoginHandleModule，管理登陆业务模块的接口与实现映射关系</span></a></li></ol>
+		
+		</div>
+		
+		<hr>
+<h3 id="Objection能干什么？"><a href="#Objection能干什么？" class="headerlink" title="Objection能干什么？"></a>Objection能干什么？</h3><ul>
+<li><p>objection 是一个轻量级的<code>依赖注入</code>的实现框架.</p>
+</li>
+<li><p><code>依赖注入</code>的概念</p>
+</li>
+<li><p>角色1、<code>接口</code>，即抽象方法集合.</p>
+</li>
+<li><p>角色2、<code>接口的实现</code>，定义一个具体类，具体实现接口中定义的所有的抽象方法</p>
+</li>
+<li><p>角色3、<code>注入器或工厂</code>，负责完成如下几件事</p>
+</li>
+<li><p>事情1、管理一系列的<code>接口</code>，向外暴露我能做哪些业务功能</p>
+</li>
+<li>事情2、管理一些列<code>接口的具体实现</code>，一个接口不同版本的具体实现类</li>
+<li>事情3、管理<code>接口</code>与<code>实现</code>的对应关系</li>
+<li>事情4、接收外界传入的一个<code>接口</code>来查询到对应的<code>具体实现类</code>的一个实例.</li>
+</ul>
+<hr>
+<h3 id="JSObjectionModule，管理一个业务模块的所有相关接口与实现的映射关系"><a href="#JSObjectionModule，管理一个业务模块的所有相关接口与实现的映射关系" class="headerlink" title="JSObjectionModule，管理一个业务模块的所有相关接口与实现的映射关系"></a>JSObjectionModule，管理一个业务模块的所有相关接口与实现的映射关系</h3><h4 id="首先，可以抽一个公共的BaseModule，提供一些公共代码"><a href="#首先，可以抽一个公共的BaseModule，提供一些公共代码" class="headerlink" title="首先，可以抽一个公共的BaseModule，提供一些公共代码"></a>首先，可以抽一个公共的<code>BaseModule</code>，提供一些公共代码</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;Foundation/Foundation.h&gt;</span><br><span class="line"></span><br><span class="line">//导入Objection类库</span><br><span class="line">#import &lt;JSObjection.h&gt;</span><br><span class="line"></span><br><span class="line">@interface BaseModule : JSObjectionModule</span><br><span class="line"></span><br><span class="line">//接口与实现绑定器</span><br><span class="line">@property (strong, nonatomic) JSObjectionInjector *injector;</span><br><span class="line"></span><br><span class="line">//单例方法</span><br><span class="line">+ (instancetype)module;</span><br><span class="line"></span><br><span class="line">//子类Module重写，完成对应的接口与实现的绑定</span><br><span class="line">- (void)bindConfig;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;BaseModule.h&quot;</span><br><span class="line"></span><br><span class="line">@implementation BaseModule</span><br><span class="line"></span><br><span class="line">+ (instancetype)module &#123;</span><br><span class="line">static id module  = nil;</span><br><span class="line">static dispatch_once_t onceToken;</span><br><span class="line">dispatch_once(&amp;onceToken, ^&#123;</span><br><span class="line">module = [[[self class] alloc] init];</span><br><span class="line">&#125;);</span><br><span class="line">return module;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (instancetype)init &#123;</span><br><span class="line">self = [super init];</span><br><span class="line">if (self) &#123;</span><br><span class="line">[self bindConfig];</span><br><span class="line">&#125;</span><br><span class="line">return self;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)bindConfig</span><br><span class="line">&#123;</span><br><span class="line">//子类覆写</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="提供一个所有的Module的统一管理的Manager单例类"><a href="#提供一个所有的Module的统一管理的Manager单例类" class="headerlink" title="提供一个所有的Module的统一管理的Manager单例类"></a>提供一个所有的Module的统一管理的Manager单例类</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;Foundation/Foundation.h&gt;</span><br><span class="line">#import &lt;JSObjection.h&gt;</span><br><span class="line">#import &lt;JSObjectFactory.h&gt;</span><br><span class="line"></span><br><span class="line">@interface ObjectInjectorManager : NSObject</span><br><span class="line"></span><br><span class="line">/* 对象依赖注入器 */</span><br><span class="line">@property (strong, nonatomic) JSObjectionInjector *injector;</span><br><span class="line"></span><br><span class="line">/* 对象工厂 */</span><br><span class="line">@property (strong, nonatomic) JSObjectFactory *factory;</span><br><span class="line"></span><br><span class="line">+ (instancetype)manager;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;ObjectInjectorManager.h&quot;</span><br><span class="line"></span><br><span class="line">//1. 全局App都使用的公告模块</span><br><span class="line">#import &quot;ApplicationModule.h&quot;</span><br><span class="line"></span><br><span class="line">//2. ViewController模块</span><br><span class="line">#import &quot;ViewControllerModule.h&quot;</span><br><span class="line"></span><br><span class="line">//3. Login模块</span><br><span class="line">#import &quot;LoginHandleModule.h&quot;</span><br><span class="line"></span><br><span class="line">@implementation ObjectInjectorManager</span><br><span class="line"></span><br><span class="line">+ (instancetype)manager &#123;</span><br><span class="line">static ObjectInjectorManager *injector = nil;</span><br><span class="line">static dispatch_once_t onceToken;</span><br><span class="line">dispatch_once(&amp;onceToken, ^&#123;</span><br><span class="line">injector = [[ObjectInjectorManager alloc] init];</span><br><span class="line">&#125;);</span><br><span class="line">return injector;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (instancetype)init &#123;</span><br><span class="line">self = [super init];</span><br><span class="line">if (self) &#123;</span><br><span class="line"></span><br><span class="line">[self initInjector];</span><br><span class="line">[self initFactory];</span><br><span class="line">&#125;</span><br><span class="line">return self;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)initInjector &#123;</span><br><span class="line"></span><br><span class="line">//1. 创建对象注入器</span><br><span class="line">_injector = [JSObjection defaultInjector];</span><br><span class="line">_injector = _injector ? : [JSObjection createInjector];</span><br><span class="line"></span><br><span class="line">//2. 创建所有模块对象的Module</span><br><span class="line">ApplicationModule *appModule = [ApplicationModule module];</span><br><span class="line">ViewControllerModule *controllerModule = [[ViewControllerModule alloc] init];</span><br><span class="line">LoginHandleModule *loginModule = [[LoginHandleModule alloc] init];</span><br><span class="line"></span><br><span class="line">//3. 将所有Module注册到Injector</span><br><span class="line">_injector = [_injector withModules:appModule, controllerModule, loginModule, nil];</span><br><span class="line"></span><br><span class="line">//3. 设置全局对象注入器</span><br><span class="line">[JSObjection setDefaultInjector:_injector];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)initFactory &#123;</span><br><span class="line"></span><br><span class="line">//4. 工厂是使用对象注入器完成创建的</span><br><span class="line">_factory = [[JSObjectFactory alloc] initWithInjector:_injector];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="第一个JSObjectionModule-ApplicationModule，来负责一些依赖对象之间的注入"><a href="#第一个JSObjectionModule-ApplicationModule，来负责一些依赖对象之间的注入" class="headerlink" title="第一个JSObjectionModule: ApplicationModule，来负责一些依赖对象之间的注入"></a>第一个JSObjectionModule: <code>ApplicationModule</code>，来负责一些<code>依赖对象之间的注入</code></h3><h4 id="ApplicationModule代码"><a href="#ApplicationModule代码" class="headerlink" title="ApplicationModule代码"></a>ApplicationModule代码</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;Foundation/Foundation.h&gt;</span><br><span class="line">#import &quot;BaseModule.h&quot;</span><br><span class="line"></span><br><span class="line">@interface ApplicationModule : BaseModule</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;ApplicationModule.h&quot;</span><br><span class="line">#import &quot;Car.h&quot;</span><br><span class="line"></span><br><span class="line">@implementation ApplicationModule</span><br><span class="line"></span><br><span class="line">- (void)bindConfig</span><br><span class="line">&#123;</span><br><span class="line">//1. 管理一个多实例（普通）的类对象</span><br><span class="line">[self bindClass:[Car class] inScope:JSObjectionScopeNormal];</span><br><span class="line"></span><br><span class="line">//2. 管理一个单例类对象</span><br><span class="line">[self bindClass:[Car class] inScope:JSObjectionScopeSingleton];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<h4 id="ApplicationModule使用，负责一些基础的依赖对象之间的注入"><a href="#ApplicationModule使用，负责一些基础的依赖对象之间的注入" class="headerlink" title="ApplicationModule使用，负责一些基础的依赖对象之间的注入"></a>ApplicationModule使用，负责一些基础的依赖对象之间的注入</h4><blockquote>
+<p>场景: Car汽车需要Engine引擎与Brake轮胎才能工作.</p>
+</blockquote>
+<ul>
+<li>Engine实体类</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;Foundation/Foundation.h&gt;</span><br><span class="line"></span><br><span class="line">@interface Engine : NSObject</span><br><span class="line"></span><br><span class="line">- (void)doSomething;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;Engine.h&quot;</span><br><span class="line"></span><br><span class="line">@implementation Engine</span><br><span class="line"></span><br><span class="line">- (void)doSomething &#123;</span><br><span class="line">NSLog(@&quot;Engine ....\n&quot;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Brakes实体类</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;Foundation/Foundation.h&gt;</span><br><span class="line"></span><br><span class="line">@interface Brakes : NSObject</span><br><span class="line"></span><br><span class="line">- (void)doSomething;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;Brakes.h&quot;</span><br><span class="line"></span><br><span class="line">@implementation Brakes</span><br><span class="line"></span><br><span class="line">- (void)doSomething &#123;</span><br><span class="line">NSLog(@&quot;Brakes ....\n&quot;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Car实体类</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;Foundation/Foundation.h&gt;</span><br><span class="line"></span><br><span class="line">#import &quot;Engine.h&quot;</span><br><span class="line">#import &quot;Brakes.h&quot;</span><br><span class="line"></span><br><span class="line">@interface Car : NSObject</span><br><span class="line"></span><br><span class="line">//下面两个指针引用的对象由注入器创建 </span><br><span class="line">@property(nonatomic, strong) Engine *engine;</span><br><span class="line">@property(nonatomic, strong) Brakes *brakes;</span><br><span class="line"></span><br><span class="line">//标志当前对象是否被容器创建完毕</span><br><span class="line">@property(nonatomic) BOOL awake;</span><br><span class="line"></span><br><span class="line">//指定的构造器</span><br><span class="line">- (id)initWithName:(NSString *)name Num:(NSNumber *)num;</span><br><span class="line"></span><br><span class="line">- (void)doSomething;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;Car.h&quot;</span><br><span class="line"></span><br><span class="line">#import &lt;Objection.h&gt;</span><br><span class="line"></span><br><span class="line">@interface Car () &#123;</span><br><span class="line">NSString *_name;</span><br><span class="line">NSInteger _num;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@implementation Car</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@synthesize engine, brakes, awake;</span><br><span class="line"></span><br><span class="line">//依赖注入对象</span><br><span class="line">objection_requires(@&quot;engine&quot;, @&quot;brakes&quot;)</span><br><span class="line"></span><br><span class="line">//指定执行init函数</span><br><span class="line">objection_initializer(initWithName:Num:)</span><br><span class="line"></span><br><span class="line">- (id)initWithName:(NSString *)name Num:(NSNumber *)num &#123;</span><br><span class="line"></span><br><span class="line">NSLog(@&quot;这个构造器由容器调用..\n&quot;);</span><br><span class="line"></span><br><span class="line">self = [super init];</span><br><span class="line">if (self) &#123;</span><br><span class="line">_name = name;</span><br><span class="line">_num = num;</span><br><span class="line">&#125;</span><br><span class="line">return self;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/* 该对象是否被Objection创建完毕 */</span><br><span class="line">- (void)awakeFromObjection &#123;</span><br><span class="line"></span><br><span class="line">NSLog(@&quot;Car类被容器创建完毕..\n&quot;);</span><br><span class="line"></span><br><span class="line">awake = YES;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)doSomething &#123;</span><br><span class="line"></span><br><span class="line">NSLog(@&quot;【Car】name = %@ , num = %ld\n&quot;, _name, _num);</span><br><span class="line"></span><br><span class="line">[engine doSomething];</span><br><span class="line">[brakes doSomething];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<ul>
+<li>ViewController测试</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">@implementation Controller0</span><br><span class="line"></span><br><span class="line">- (void)viewDidLoad &#123;</span><br><span class="line">[super viewDidLoad];</span><br><span class="line"></span><br><span class="line">self.title = @&quot;依赖对象的注入&quot;;</span><br><span class="line">self.view.backgroundColor = [UIColor whiteColor];</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[self test1];</span><br><span class="line">[self test2];</span><br><span class="line">[self test3];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">*  通过Injector获取容器管理的对象</span><br><span class="line">*  并由容器填充这个对象的其他依赖的对象属性</span><br><span class="line">*/</span><br><span class="line">- (void)test1 &#123;</span><br><span class="line"></span><br><span class="line">//1. 获取Manager单例</span><br><span class="line">ObjectInjectorManager *manager = [ObjectInjectorManager manager];</span><br><span class="line"></span><br><span class="line">//2. 从对象注入器中，根据一个Class，查询得到对应的对象</span><br><span class="line">Car *car = [manager.injector getObject:[Car class]];</span><br><span class="line"></span><br><span class="line">//3. 测试</span><br><span class="line">[car doSomething];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">*  通过Factory获取依赖对象</span><br><span class="line">*  有一点类似test1</span><br><span class="line">*/</span><br><span class="line">- (void)test2 &#123;</span><br><span class="line"></span><br><span class="line">//1.</span><br><span class="line">ObjectInjectorManager *manager = [ObjectInjectorManager manager];</span><br><span class="line"></span><br><span class="line">//2.</span><br><span class="line">Car *car = [manager.factory getObject:[Car class]];</span><br><span class="line"></span><br><span class="line">[car doSomething];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">*  通Factory获取依赖对象</span><br><span class="line">*  并执行指定的初始化构造器函数</span><br><span class="line">*/</span><br><span class="line">- (void)test3 &#123;</span><br><span class="line"></span><br><span class="line">//1.</span><br><span class="line">ObjectInjectorManager *manager = [ObjectInjectorManager manager];</span><br><span class="line"></span><br><span class="line">//2. 执行指定的初始化构造器函数，并传入初始化参数</span><br><span class="line">Car *car = [manager.factory getObjectWithArgs:[Car class], @&quot;Car&quot;, @19, nil];</span><br><span class="line"></span><br><span class="line">//3.</span><br><span class="line">[car doSomething];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="第二个JSObjectionModule-ViewControllerModule，来降低ViewController之间的耦合关系"><a href="#第二个JSObjectionModule-ViewControllerModule，来降低ViewController之间的耦合关系" class="headerlink" title="第二个JSObjectionModule: ViewControllerModule，来降低ViewController之间的耦合关系"></a>第二个JSObjectionModule: <code>ViewControllerModule</code>，来降低ViewController之间的耦合关系</h3><blockquote>
+<p>场景: 当前UIViewController某个按钮点击之后，想要跳转到一个显示最新书籍列表的UIViewController2显示数据，但是不想直接<code>#import &quot;UIViewController2.h&quot;</code>的方式导入.</p>
+</blockquote>
+<ul>
+<li>首先定义一个接口，表示<code>完成指定类型数据加载</code>的功能</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line">*  定义能够完成显示最新书籍列表数据的UIViewController</span><br><span class="line">*/</span><br><span class="line">- (void)loadNewBooks;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<ul>
+<li>接口实现类1，<code>Controller2</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;UIKit/UIKit.h&gt;</span><br><span class="line"></span><br><span class="line">#import &quot;ControllerPushProtocol.h&quot;</span><br><span class="line"></span><br><span class="line">//实现接口</span><br><span class="line">@interface Controller2 : UIViewController &lt;ControllerPushProtocol&gt;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;Controller2.h&quot;</span><br><span class="line"></span><br><span class="line">@implementation Controller2</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#pragma mark- 接口实现</span><br><span class="line"></span><br><span class="line">- (void)loadNewBooks &#123;</span><br><span class="line">NSLog(@&quot;Controller2 ....\n&quot;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)viewWillAppear:(BOOL)animated &#123;</span><br><span class="line">[super viewWillAppear:animated];</span><br><span class="line"></span><br><span class="line">//加载数据，然后显示在列表</span><br><span class="line">[self loadNewBooks];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<ul>
+<li>接口实现类2，<code>Controller3</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;UIKit/UIKit.h&gt;</span><br><span class="line"></span><br><span class="line">#import &quot;ControllerPushProtocol.h&quot;</span><br><span class="line"></span><br><span class="line">@interface Controller3 : UIViewController &lt;ControllerPushProtocol&gt;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;Controller3.h&quot;</span><br><span class="line"></span><br><span class="line">@implementation Controller3</span><br><span class="line"></span><br><span class="line">#pragma mark- 接口实现</span><br><span class="line"></span><br><span class="line">- (void)loadNewBooks &#123;</span><br><span class="line">NSLog(@&quot;Controller3 ....\n&quot;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)viewWillAppear:(BOOL)animated &#123;</span><br><span class="line">[super viewWillAppear:animated];</span><br><span class="line"></span><br><span class="line">//加载数据，然后显示在列表</span><br><span class="line">[self loadNewBooks];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>ViewControllerModule</code>管理接口与实现的映射关系</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;BaseModule.h&quot;</span><br><span class="line"></span><br><span class="line">//接口</span><br><span class="line">#import &quot;ControllerPushProtocol.h&quot;</span><br><span class="line"></span><br><span class="line">/* 管理控制器对象的管理 */</span><br><span class="line">@interface ViewControllerModule : BaseModule</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;ViewControllerModule.h&quot;</span><br><span class="line"></span><br><span class="line">//接口实现类1</span><br><span class="line">#import &quot;Controller2.h&quot;</span><br><span class="line"></span><br><span class="line">//接口实现类2</span><br><span class="line">#import &quot;Controller3.h&quot;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@implementation ViewControllerModule</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">- (void)bindConfig &#123;</span><br><span class="line"></span><br><span class="line">//如下可以灵活切换成另一种接口的实现类对象</span><br><span class="line">//来提供最新书籍列表数据显示的方式</span><br><span class="line"></span><br><span class="line">//1. 接口实现类1</span><br><span class="line">//[self bindClass:[Controller2 class] toProtocol:@protocol(ControllerPushProtocol)];</span><br><span class="line"></span><br><span class="line">//2. 接口实现类2</span><br><span class="line">[self bindClass:[Controller3 class] toProtocol:@protocol(ControllerPushProtocol)];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<ul>
+<li>当前控制器ViewController1，通过一个接口向容器查询到一个<code>能够显示最新书籍列表的ViewController对象</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;Controller1.h&quot;</span><br><span class="line"></span><br><span class="line">//容器管理类</span><br><span class="line">#import &quot;ObjectInjectorManager.h&quot;</span><br><span class="line"></span><br><span class="line">//最新书籍列表的接口</span><br><span class="line">#import &quot;ControllerPushProtocol.h&quot;</span><br><span class="line"></span><br><span class="line">@implementation Controller1</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">- (void)click &#123;</span><br><span class="line"></span><br><span class="line">//1. 获取全局Injector</span><br><span class="line">ObjectInjectorManager *manager = [ObjectInjectorManager manager];</span><br><span class="line"></span><br><span class="line">//2. 使用id&lt;接口&gt; 来声明指针，避免直接依赖其他具体类名</span><br><span class="line">id&lt;ControllerPushProtocol&gt; vc = [manager.injector getObject:@protocol(ControllerPushProtocol)];</span><br><span class="line"></span><br><span class="line">//3. 跳转到这个显示最新书籍列表的控制器</span><br><span class="line">[self.navigationController pushViewController:(UIViewController *)vc animated:YES];</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<h4 id="这么做的好处"><a href="#这么做的好处" class="headerlink" title="这么做的好处:"></a>这么做的好处:</h4><ul>
+<li><p>ViewConroller1根本不知道显示最新书籍列表的是<code>ViewController2</code> 还是 <code>ViewController3</code></p>
+</li>
+<li><p>随时可以从<code>ViewController2</code> 切换到 <code>ViewController3</code></p>
+</li>
+</ul>
+<hr>
+<h3 id="第三个JSObjectionModule-LoginHandleModule，管理登陆业务模块的接口与实现映射关系"><a href="#第三个JSObjectionModule-LoginHandleModule，管理登陆业务模块的接口与实现映射关系" class="headerlink" title="第三个JSObjectionModule: LoginHandleModule，管理登陆业务模块的接口与实现映射关系"></a>第三个JSObjectionModule: <code>LoginHandleModule</code>，管理登陆业务模块的接口与实现映射关系</h3><blockquote>
+<p>场景: 登陆有三种登陆方式: 1)输入账号与密码登陆 2)手势密码登陆 3)电话号码登陆</p>
+</blockquote>
+<ul>
+<li>定义业务方法的抽象方法集合（接口）</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;Foundation/Foundation.h&gt;</span><br><span class="line"></span><br><span class="line">FOUNDATION_EXPORT NSString *const UserNameLoginKey;</span><br><span class="line">FOUNDATION_EXPORT NSString *const GestureLoginKey;</span><br><span class="line">FOUNDATION_EXPORT NSString *const PhonumLoginKey;</span><br><span class="line"></span><br><span class="line">#pragma mark - 接口</span><br><span class="line"></span><br><span class="line">@protocol LoginProtocol &lt;NSObject&gt;</span><br><span class="line"></span><br><span class="line">- (void)handleLogin;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<ul>
+<li>写一个接口默认实现类，作为其他具体类型实现的<code>父类</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@interface LoginHandlebase : NSObject &lt;LoginProtocol&gt;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;Loginlization.h&quot;</span><br><span class="line"></span><br><span class="line">NSString *const UserNameLoginKey = @&quot;UserNameLoginKey&quot;;</span><br><span class="line">NSString *const GestureLoginKey = @&quot;GestureLoginKey&quot;;</span><br><span class="line">NSString *const PhonumLoginKey = @&quot;PhonumLoginKey&quot;;</span><br><span class="line"></span><br><span class="line">@implementation LoginHandlebase</span><br><span class="line"></span><br><span class="line">- (void)handleLogin &#123;//空实现，由子类具体完成自己的实现&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<ul>
+<li>具体子类实现1、<code>UserNameLogin</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;Loginlization.h&quot;</span><br><span class="line"></span><br><span class="line">//继承自接口默认实现类</span><br><span class="line">@interface UserNameLogin : LoginHandlebase</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;UserNameLogin.h&quot;</span><br><span class="line"></span><br><span class="line">@implementation UserNameLogin</span><br><span class="line"></span><br><span class="line">- (void)handleLogin &#123;</span><br><span class="line">NSLog(@&quot;用户名密码登陆...\n&quot;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<ul>
+<li>具体子类实现2、<code>GestureLogin</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;Loginlization.h&quot;</span><br><span class="line"></span><br><span class="line">//继承自接口默认实现类</span><br><span class="line">@interface GestureLogin : LoginHandlebase</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;GestureLogin.h&quot;</span><br><span class="line"></span><br><span class="line">@implementation GestureLogin</span><br><span class="line"></span><br><span class="line">- (void)handleLogin &#123;</span><br><span class="line">NSLog(@&quot;手势登陆...\n&quot;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<ul>
+<li>具体子类实现3、<code>PhonumLogin</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;Loginlization.h&quot;</span><br><span class="line"></span><br><span class="line">//继承自接口默认实现类</span><br><span class="line">@interface PhonumLogin : LoginHandlebase</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;PhonumLogin.h&quot;</span><br><span class="line"></span><br><span class="line">@implementation PhonumLogin</span><br><span class="line"></span><br><span class="line">- (void)handleLogin &#123;</span><br><span class="line">NSLog(@&quot;手机号码登陆...\n&quot;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>LoginHandleModule</code>完成对接口与n个具体实现类，使用<code>不同的name</code>进行映射，获取接口实现时也通过不同的name获取到不同的实现类对象.</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;BaseModule.h&quot;</span><br><span class="line"></span><br><span class="line">//继承自BaseModule</span><br><span class="line">@interface LoginHandleModule : BaseModule</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;LoginHandleModule.h&quot;</span><br><span class="line"></span><br><span class="line">//业务接口</span><br><span class="line">#import &quot;Loginlization.h&quot;</span><br><span class="line"></span><br><span class="line">//业务接口实现类1</span><br><span class="line">#import &quot;UserNameLogin.h&quot;</span><br><span class="line"></span><br><span class="line">//业务接口实现类2</span><br><span class="line">#import &quot;GestureLogin.h&quot;</span><br><span class="line"></span><br><span class="line">//业务接口实现类3</span><br><span class="line">#import &quot;PhonumLogin.h&quot;</span><br><span class="line"></span><br><span class="line">@implementation LoginHandleModule</span><br><span class="line"></span><br><span class="line">- (void)bindConfig &#123;</span><br><span class="line"></span><br><span class="line">//一个接口可以同时绑定多个不同的实现类对象</span><br><span class="line">//使用不同的name值来区分</span><br><span class="line"></span><br><span class="line">[self bindClass:[UserNameLogin class]</span><br><span class="line">toProtocol:@protocol(LoginProtocol)</span><br><span class="line">inScope:JSObjectionScopeSingleton//单例存在</span><br><span class="line">named:UserNameLoginKey];</span><br><span class="line"></span><br><span class="line">[self bindClass:[GestureLogin class]</span><br><span class="line">toProtocol:@protocol(LoginProtocol)</span><br><span class="line">inScope:JSObjectionScopeNormal//多实例</span><br><span class="line">named:GestureLoginKey];</span><br><span class="line"></span><br><span class="line">[self bindClass:[PhonumLogin class]</span><br><span class="line">toProtocol:@protocol(LoginProtocol)</span><br><span class="line">inScope:JSObjectionScopeNone//多实例</span><br><span class="line">named:PhonumLoginKey];</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<ul>
+<li>LoginViewController测试类，任意切换登陆方式</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">- (void)UserNameAndPasswordLogin </span><br><span class="line">&#123;</span><br><span class="line">//1. </span><br><span class="line">ObjectInjectorManager *manager = [ObjectInjectorManager manager];</span><br><span class="line"></span><br><span class="line">//使用不同的name，通过Injector查询到接口实现类对象</span><br><span class="line">id&lt;LoginProtocol&gt; userNameLogin = [manager.injector getObject:@protocol(LoginProtocol)</span><br><span class="line">named:UserNameLoginKey</span><br><span class="line">argumentList:nil];</span><br><span class="line"></span><br><span class="line">//3. </span><br><span class="line">[userNameLogin handleLogin];</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">- (void)gesturePasswordLogin </span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">ObjectInjectorManager *manager = [ObjectInjectorManager manager];</span><br><span class="line"></span><br><span class="line">//使用不同的name，通过Injector查询到接口实现类对象</span><br><span class="line">id&lt;LoginProtocol&gt; gestureLogin = [manager.injector getObject:@protocol(LoginProtocol)</span><br><span class="line">named:GestureLoginKey</span><br><span class="line">argumentList:nil];</span><br><span class="line"></span><br><span class="line">[gestureLogin handleLogin];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">- (void)mobileLogin </span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">ObjectInjectorManager *manager = [ObjectInjectorManager manager];</span><br><span class="line"></span><br><span class="line">//使用不同的name，通过Injector查询到接口实现类对象</span><br><span class="line">id&lt;LoginProtocol&gt; phonumLogin = [manager.injector getObject:@protocol(LoginProtocol)</span><br><span class="line">named:PhonumLoginKey</span><br><span class="line">argumentList:nil];</span><br><span class="line"></span><br><span class="line">[phonumLogin handleLogin];</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<p>OK，大概的功能就这么多了，有时间再看…</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2017/01/12/objection/" data-title="objection | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2017/01/18/RSA-Encrypt/" title="RSA Encrypt">
+  <strong>上一篇：</strong><br>
+  <span>
+  RSA Encrypt</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/01/10/LaunchImage和LaunchScreen-xib的作用/" title="LaunchImage和LaunchScreen.xib的作用">
+ <strong>下一篇：</strong><br> 
+ <span>LaunchImage和LaunchScreen.xib的作用
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/01/12/objection/" data-title="objection" data-url="http://yoursite.com/2017/01/12/objection/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Objection能干什么？"><span class="toc-number">1.</span> <span class="toc-text">Objection能干什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#JSObjectionModule，管理一个业务模块的所有相关接口与实现的映射关系"><span class="toc-number">2.</span> <span class="toc-text">JSObjectionModule，管理一个业务模块的所有相关接口与实现的映射关系</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#首先，可以抽一个公共的BaseModule，提供一些公共代码"><span class="toc-number">2.1.</span> <span class="toc-text">首先，可以抽一个公共的BaseModule，提供一些公共代码</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#提供一个所有的Module的统一管理的Manager单例类"><span class="toc-number">3.</span> <span class="toc-text">提供一个所有的Module的统一管理的Manager单例类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第一个JSObjectionModule-ApplicationModule，来负责一些依赖对象之间的注入"><span class="toc-number">4.</span> <span class="toc-text">第一个JSObjectionModule: ApplicationModule，来负责一些依赖对象之间的注入</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#ApplicationModule代码"><span class="toc-number">4.1.</span> <span class="toc-text">ApplicationModule代码</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ApplicationModule使用，负责一些基础的依赖对象之间的注入"><span class="toc-number">4.2.</span> <span class="toc-text">ApplicationModule使用，负责一些基础的依赖对象之间的注入</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第二个JSObjectionModule-ViewControllerModule，来降低ViewController之间的耦合关系"><span class="toc-number">5.</span> <span class="toc-text">第二个JSObjectionModule: ViewControllerModule，来降低ViewController之间的耦合关系</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#这么做的好处"><span class="toc-number">5.1.</span> <span class="toc-text">这么做的好处:</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第三个JSObjectionModule-LoginHandleModule，管理登陆业务模块的接口与实现映射关系"><span class="toc-number">6.</span> <span class="toc-text">第三个JSObjectionModule: LoginHandleModule，管理登陆业务模块的接口与实现映射关系</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
