@@ -1,0 +1,464 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>设计模式-装饰器模式 | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="装饰模式、在不修改原始类代码的情况下，动态的给对象添加一些额外的功能 适配器模式，针对类方法和对象方法都可以进行扩展 装饰器模式，只针对对象方法进行扩展，又有点类似代理模式   如下举个简单的例子，假设Manager项目管理者本身只有管理项目的职责，但是需要扩展写代码的职责，但是又不能够修改Manager类的代码。 那么可以使用装饰器模式，来给一个Manager类对象来扩展具备写代码的职责.  只">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计模式-装饰器模式">
+<meta property="og:url" content="http://yoursite.com/2016/01/07/设计模式-装饰器模式/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="装饰模式、在不修改原始类代码的情况下，动态的给对象添加一些额外的功能 适配器模式，针对类方法和对象方法都可以进行扩展 装饰器模式，只针对对象方法进行扩展，又有点类似代理模式   如下举个简单的例子，假设Manager项目管理者本身只有管理项目的职责，但是需要扩展写代码的职责，但是又不能够修改Manager类的代码。 那么可以使用装饰器模式，来给一个Manager类对象来扩展具备写代码的职责.  只">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-08T12:07:48.372Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="设计模式-装饰器模式">
+<meta name="twitter:description" content="装饰模式、在不修改原始类代码的情况下，动态的给对象添加一些额外的功能 适配器模式，针对类方法和对象方法都可以进行扩展 装饰器模式，只针对对象方法进行扩展，又有点类似代理模式   如下举个简单的例子，假设Manager项目管理者本身只有管理项目的职责，但是需要扩展写代码的职责，但是又不能够修改Manager类的代码。 那么可以使用装饰器模式，来给一个Manager类对象来扩展具备写代码的职责.  只">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/01/07/设计模式-装饰器模式/" title="设计模式-装饰器模式" itemprop="url">设计模式-装饰器模式</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2016-01-07T15:01:46.000Z" itemprop="datePublished"> Published 2016-01-07</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#装饰模式、在不修改原始类代码的情况下，动态的给对象添加一些额外的功能"><span class="toc-number">1.</span> <span class="toc-text">装饰模式、在不修改原始类代码的情况下，动态的给对象添加一些额外的功能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#码农的抽象"><span class="toc-number">2.</span> <span class="toc-text">码农的抽象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#一个具体的码农"><span class="toc-number">3.</span> <span class="toc-text">一个具体的码农</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#项目管理能力的抽象"><span class="toc-number">4.</span> <span class="toc-text">项目管理能力的抽象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#项目管理能力的默认基础实现（抽象类）"><span class="toc-number">5.</span> <span class="toc-text">项目管理能力的默认基础实现（抽象类）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#项目管理者Manager对象来包装一个传入的码农Coder对象"><span class="toc-number">6.</span> <span class="toc-text">项目管理者Manager对象来包装一个传入的码农Coder对象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#demo示例"><span class="toc-number">7.</span> <span class="toc-text">demo示例</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="装饰模式、在不修改原始类代码的情况下，动态的给对象添加一些额外的功能"><a href="#装饰模式、在不修改原始类代码的情况下，动态的给对象添加一些额外的功能" class="headerlink" title="装饰模式、在不修改原始类代码的情况下，动态的给对象添加一些额外的功能"></a>装饰模式、在不修改原始类代码的情况下，动态的给<code>对象</code>添加一些额外的功能</h3><ul>
+<li>适配器模式，针对<code>类方法</code>和<code>对象方法</code>都可以进行扩展</li>
+<li>装饰器模式，只针对<code>对象方法</code>进行扩展，又有点类似<code>代理模式</code></li>
+</ul>
+<hr>
+<p>如下举个简单的例子，假设Manager项目管理者本身只有管理项目的职责，但是需要扩展写代码的职责，但是又不能够修改Manager类的代码。</p>
+<p>那么可以使用装饰器模式，来给一个<code>Manager类对象</code>来扩展具备写代码的职责.</p>
+<blockquote>
+<p>只针对对象方法，类方法不行.</p>
+</blockquote>
+<h3 id="码农的抽象"><a href="#码农的抽象" class="headerlink" title="码农的抽象"></a>码农的抽象</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  具备写代码能力的抽象</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">Coder</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/** 写代码 */</span></span><br><span class="line">- (<span class="keyword">void</span>)coding;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="一个具体的码农"><a href="#一个具体的码农" class="headerlink" title="一个具体的码农"></a>一个具体的码农</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Coder.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  一个具体的码农CoderA</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">CoderA</span> : <span class="title">NSObject</span> &lt;<span class="title">Coder</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">"CoderA.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">CoderA</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)coding &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"我是码农，正在写代码..."</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>现在将给 <code>码农的一个具体类对象</code> 添加额外的 <code>项目管理的一个具体类对象</code> 上去.</p>
+<hr>
+<h3 id="项目管理能力的抽象"><a href="#项目管理能力的抽象" class="headerlink" title="项目管理能力的抽象"></a>项目管理能力的抽象</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  项目管理者的抽象</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">ProjectManager</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/** 项目分析 */</span></span><br><span class="line">- (<span class="keyword">void</span>)projectAnalyze;</span><br><span class="line"></span><br><span class="line"><span class="comment">/** 项目设计 */</span></span><br><span class="line">- (<span class="keyword">void</span>)projectDesign;</span><br><span class="line"></span><br><span class="line"><span class="comment">/** 项目上线 */</span></span><br><span class="line">- (<span class="keyword">void</span>)projectOnline;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="项目管理能力的默认基础实现（抽象类）"><a href="#项目管理能力的默认基础实现（抽象类）" class="headerlink" title="项目管理能力的默认基础实现（抽象类）"></a>项目管理能力的默认基础实现（抽象类）</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//能够 项目管理的人</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"ProjectManager.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  能够项目管理的抽象人</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">AbstractProjectManager</span> : <span class="title">NSObject</span> &lt;<span class="title">ProjectManager</span>&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">"AbstractProjectManager.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">AbstractProjectManager</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 下面是抽象方法的默认实现</span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)projectAnalyze &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"项目分析"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)projectDesign &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"项目设计"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)projectOnline &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"项目上线"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="项目管理者Manager对象来包装一个传入的码农Coder对象"><a href="#项目管理者Manager对象来包装一个传入的码农Coder对象" class="headerlink" title="项目管理者Manager对象来包装一个传入的码农Coder对象"></a>项目管理者Manager对象来包装一个传入的码农Coder对象</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//继承得到项目能力的基础实现</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"AbstractProjectManager.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//能够 写代码的人</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Coder.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  Manager对象包装一个Coder对象</span></span><br><span class="line"><span class="comment">*  Manager对象实现Coder接口，具备码农写代码的职责</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">CoderDecorator</span> : <span class="title">AbstractProjectManager</span> &lt;<span class="title">Coder</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  要添加项目管理能力的Coder对象</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) <span class="keyword">id</span>&lt;Coder&gt; target;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  传入需要包装的Coder对象</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">- (<span class="keyword">instancetype</span>)initWithCoder:(<span class="keyword">id</span>&lt;Coder&gt;)coder;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">"CoderDecorator.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">CoderDecorator</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">instancetype</span>)initWithCoder:(<span class="keyword">id</span>&lt;Coder&gt;)coder &#123;</span><br><span class="line"><span class="keyword">self</span> = [<span class="keyword">super</span> init];</span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">self</span>) &#123;</span><br><span class="line">_target = coder;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Manager对象的写代码职责，实际上由传入的Coder对象最终来完成</span></span><br><span class="line">- (<span class="keyword">void</span>)coding &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//1. 项目分析</span></span><br><span class="line">[<span class="keyword">self</span> projectAnalyze];</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 项目设计</span></span><br><span class="line">[<span class="keyword">self</span> projectDesign];</span><br><span class="line"></span><br><span class="line"><span class="comment">//3. 调用原始Coder对象写代码</span></span><br><span class="line">[_target coding];</span><br><span class="line"></span><br><span class="line"><span class="comment">//4. 项目上线</span></span><br><span class="line">[<span class="keyword">self</span> projectOnline];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="demo示例"><a href="#demo示例" class="headerlink" title="demo示例"></a>demo示例</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">"DecoratorTest.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//原始码农</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"CoderA.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//码农包装器，添加项目管理的能力</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"CoderDecorator.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">DecoratorTest</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)test &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//1. 创建一个原始码农</span></span><br><span class="line"><span class="keyword">id</span>&lt;Coder&gt; coder = [CoderA new];</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 创建原始码农的 包装器</span></span><br><span class="line">coder = [[CoderDecorator alloc] initWithCoder:coder];</span><br><span class="line"></span><br><span class="line"><span class="comment">//3. 调用包装器的coding方法，内部附加其他方法</span></span><br><span class="line">[coder coding];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<hr>
+<p>这样的话，就不用在Manager类中去耦合很多的关于Coder的实现细节，通过包装一个Coder对象的方式，在运行时动态的完成Manager对象的方法扩展.</p>
+<p>如果是需要对<code>类方法</code>进行扩展，使用<code>适配器模式</code>.</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2016/01/07/设计模式-装饰器模式/" data-title="设计模式-装饰器模式 | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2016/01/08/设计模式-外观模式/" title="设计模式-外观模式">
+  <strong>上一篇：</strong><br>
+  <span>
+  设计模式-外观模式</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/01/06/设计模式-桥接模式/" title="设计模式-桥接模式">
+ <strong>下一篇：</strong><br> 
+ <span>设计模式-桥接模式
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2016/01/07/设计模式-装饰器模式/" data-title="设计模式-装饰器模式" data-url="http://yoursite.com/2016/01/07/设计模式-装饰器模式/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#装饰模式、在不修改原始类代码的情况下，动态的给对象添加一些额外的功能"><span class="toc-number">1.</span> <span class="toc-text">装饰模式、在不修改原始类代码的情况下，动态的给对象添加一些额外的功能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#码农的抽象"><span class="toc-number">2.</span> <span class="toc-text">码农的抽象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#一个具体的码农"><span class="toc-number">3.</span> <span class="toc-text">一个具体的码农</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#项目管理能力的抽象"><span class="toc-number">4.</span> <span class="toc-text">项目管理能力的抽象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#项目管理能力的默认基础实现（抽象类）"><span class="toc-number">5.</span> <span class="toc-text">项目管理能力的默认基础实现（抽象类）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#项目管理者Manager对象来包装一个传入的码农Coder对象"><span class="toc-number">6.</span> <span class="toc-text">项目管理者Manager对象来包装一个传入的码农Coder对象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#demo示例"><span class="toc-number">7.</span> <span class="toc-text">demo示例</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

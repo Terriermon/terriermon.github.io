@@ -1,0 +1,493 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>设计模式-抽象工厂模式 | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="抽象工厂、简单工厂的升级版，解决简单工厂只针对一个抽象接口 同时有多个 抽象接口 每个抽象接口，有多种实现情况   抽象工厂模式结构 &amp;gt;&amp;gt;&amp;gt; 延伸至类簇模式 两种抽象产品标准 ProductA ProductB  抽象工厂  生产ProductA类型的具体产品 生产ProductB类型的具体产品   具体工厂A 生产ProductA类型的具体产品     生产ProductB类型">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计模式-抽象工厂模式">
+<meta property="og:url" content="http://yoursite.com/2016/01/02/设计模式-抽象工厂模式/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="抽象工厂、简单工厂的升级版，解决简单工厂只针对一个抽象接口 同时有多个 抽象接口 每个抽象接口，有多种实现情况   抽象工厂模式结构 &amp;gt;&amp;gt;&amp;gt; 延伸至类簇模式 两种抽象产品标准 ProductA ProductB  抽象工厂  生产ProductA类型的具体产品 生产ProductB类型的具体产品   具体工厂A 生产ProductA类型的具体产品     生产ProductB类型">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-08T11:59:30.429Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="设计模式-抽象工厂模式">
+<meta name="twitter:description" content="抽象工厂、简单工厂的升级版，解决简单工厂只针对一个抽象接口 同时有多个 抽象接口 每个抽象接口，有多种实现情况   抽象工厂模式结构 &amp;gt;&amp;gt;&amp;gt; 延伸至类簇模式 两种抽象产品标准 ProductA ProductB  抽象工厂  生产ProductA类型的具体产品 生产ProductB类型的具体产品   具体工厂A 生产ProductA类型的具体产品     生产ProductB类型">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/01/02/设计模式-抽象工厂模式/" title="设计模式-抽象工厂模式" itemprop="url">设计模式-抽象工厂模式</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2016-01-02T09:49:47.000Z" itemprop="datePublished"> Published 2016-01-02</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#抽象工厂、简单工厂的升级版，解决简单工厂只针对一个抽象接口"><span class="toc-number">1.</span> <span class="toc-text">抽象工厂、简单工厂的升级版，解决简单工厂只针对一个抽象接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#抽象工厂模式结构-gt-gt-gt-延伸至类簇模式"><span class="toc-number">2.</span> <span class="toc-text">抽象工厂模式结构 &gt;&gt;&gt; 延伸至类簇模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#产品A的标准"><span class="toc-number">3.</span> <span class="toc-text">产品A的标准</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#产品B的标准"><span class="toc-number">4.</span> <span class="toc-text">产品B的标准</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#产品A标准的-A1版本实现"><span class="toc-number">5.</span> <span class="toc-text">产品A标准的 A1版本实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#产品A标准的-A2版本实现"><span class="toc-number">6.</span> <span class="toc-text">产品A标准的 A2版本实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#产品B标准的-B1版本实现"><span class="toc-number">7.</span> <span class="toc-text">产品B标准的 B1版本实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#产品B标准的-B2版本实现"><span class="toc-number">8.</span> <span class="toc-text">产品B标准的 B2版本实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#工厂抽象标准，定义生产-产品A标准与产品B标准-的商品"><span class="toc-number">9.</span> <span class="toc-text">工厂抽象标准，定义生产 产品A标准与产品B标准 的商品</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#生产-A1版本与B1版本-产品簇-的-具体工厂1"><span class="toc-number">10.</span> <span class="toc-text">生产 A1版本与B1版本 产品簇 的 具体工厂1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#生产-A2版本与B2版本-产品簇-的-具体工厂2"><span class="toc-number">11.</span> <span class="toc-text">生产 A2版本与B2版本 产品簇 的 具体工厂2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#向外只提供一个统一的工厂类，假设工厂分为便宜造价和昂贵造价之分，那么生成的产品也就有便宜与昂贵之分"><span class="toc-number">12.</span> <span class="toc-text">向外只提供一个统一的工厂类，假设工厂分为便宜造价和昂贵造价之分，那么生成的产品也就有便宜与昂贵之分.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#小结"><span class="toc-number">13.</span> <span class="toc-text">小结:</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="抽象工厂、简单工厂的升级版，解决简单工厂只针对一个抽象接口"><a href="#抽象工厂、简单工厂的升级版，解决简单工厂只针对一个抽象接口" class="headerlink" title="抽象工厂、简单工厂的升级版，解决简单工厂只针对一个抽象接口"></a>抽象工厂、简单工厂的升级版，解决简单工厂只针对<code>一个抽象接口</code></h3><ul>
+<li>同时有多个 <code>抽象接口</code></li>
+<li>每个抽象接口，有<code>多种实现情况</code></li>
+</ul>
+<hr>
+<h3 id="抽象工厂模式结构-gt-gt-gt-延伸至类簇模式"><a href="#抽象工厂模式结构-gt-gt-gt-延伸至类簇模式" class="headerlink" title="抽象工厂模式结构 &gt;&gt;&gt; 延伸至类簇模式"></a>抽象工厂模式结构 &gt;&gt;&gt; 延伸至类簇模式</h3><ul>
+<li>两种抽象产品标准</li>
+<li>ProductA</li>
+<li><p>ProductB</p>
+</li>
+<li><p>抽象工厂</p>
+</li>
+<li>生产ProductA类型的具体产品</li>
+<li>生产ProductB类型的具体产品</li>
+</ul>
+<ul>
+<li>具体工厂A</li>
+<li>生产ProductA类型的具体产品    </li>
+<li><p>生产ProductB类型的具体产品</p>
+</li>
+<li><p>具体工厂B</p>
+</li>
+<li>生产ProductA类型的具体产品    </li>
+<li><p>生产ProductB类型的具体产品</p>
+</li>
+<li><p>统一工厂C作为A工厂与B工厂的入口（类簇类）</p>
+</li>
+<li><strong>从而可以避免 A工厂 与 B工厂 直接向外暴露</strong></li>
+</ul>
+<hr>
+<h3 id="产品A的标准"><a href="#产品A的标准" class="headerlink" title="产品A的标准"></a>产品A的标准</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">ProductA</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)name;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)type;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="产品B的标准"><a href="#产品B的标准" class="headerlink" title="产品B的标准"></a>产品B的标准</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">ProductB</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)name;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)type;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="产品A标准的-A1版本实现"><a href="#产品A标准的-A1版本实现" class="headerlink" title="产品A标准的 A1版本实现"></a>产品A标准的 A1版本实现</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//实现商品接口，成为一个商品</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"ProductA.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">ProductA1</span> : <span class="title">NSObject</span> &lt;<span class="title">ProductA</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">"ProductA1.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ProductA1</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)name &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"我是ProductA标准一实现版本1"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)type &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"我是ProductA标准一实现版本1"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="产品A标准的-A2版本实现"><a href="#产品A标准的-A2版本实现" class="headerlink" title="产品A标准的 A2版本实现"></a>产品A标准的 A2版本实现</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//实现商品接口，成为一个商品</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"ProductA.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">ProductA2</span> : <span class="title">NSObject</span> &lt;<span class="title">ProductA</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">"ProductA2.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ProductA2</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)name &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"我是ProductA标准一实现版本2"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)type &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"我是ProductA标准一实现版本2"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="产品B标准的-B1版本实现"><a href="#产品B标准的-B1版本实现" class="headerlink" title="产品B标准的 B1版本实现"></a>产品B标准的 B1版本实现</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//实现商品接口，成为一个商品</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"ProductB.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">ProductB1</span> : <span class="title">NSObject</span> &lt;<span class="title">ProductB</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">"ProductB1.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ProductB1</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)name &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"我是ProductB标准一实现版本1"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)type &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"我是ProductB标准一实现版本1"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="产品B标准的-B2版本实现"><a href="#产品B标准的-B2版本实现" class="headerlink" title="产品B标准的 B2版本实现"></a>产品B标准的 B2版本实现</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//实现商品接口，成为一个商品</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"ProductB.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">ProductB2</span> : <span class="title">NSObject</span> &lt;<span class="title">ProductB</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">"ProductB2.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ProductB2</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)name &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"我是ProductB标准一实现版本2"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)type &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"我是ProductB标准一实现版本2"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="工厂抽象标准，定义生产-产品A标准与产品B标准-的商品"><a href="#工厂抽象标准，定义生产-产品A标准与产品B标准-的商品" class="headerlink" title="工厂抽象标准，定义生产 产品A标准与产品B标准 的商品"></a>工厂抽象标准，定义生产 <code>产品A标准与产品B标准</code> 的商品</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//标准A类产品</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"ProductA.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//标准B类产品</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"ProductB.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">AbstractFactory</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  生产 标准A类 产品</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">+ (<span class="keyword">id</span>&lt;ProductA&gt;)productA;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  生产 标准B类 产品</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">+ (<span class="keyword">id</span>&lt;ProductB&gt;)productB;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="生产-A1版本与B1版本-产品簇-的-具体工厂1"><a href="#生产-A1版本与B1版本-产品簇-的-具体工厂1" class="headerlink" title="生产 A1版本与B1版本 产品簇 的 具体工厂1"></a>生产 A1版本与B1版本 产品簇 的 <code>具体工厂1</code></h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//实现工厂，接口成为一个工厂，只生产 A1版本与B1版本 的产品</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"AbstractFactory.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  生产:</span></span><br><span class="line"><span class="comment">*      1. ProductA1 具体类</span></span><br><span class="line"><span class="comment">*      2. ProductB1 具体类</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Product1Factory</span> : <span class="title">NSObject</span> &lt;<span class="title">AbstractFactory</span>&gt;</span></span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">id</span>&lt;ProductA&gt;)productA;</span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">id</span>&lt;ProductB&gt;)productB;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">"Product1Factory.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//A1与B1</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"ProductA1.h"</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"ProductB1.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">Product1Factory</span></span></span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">id</span>&lt;ProductA&gt;)productA &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//返回A1版本</span></span><br><span class="line"><span class="keyword">return</span> [ProductA1 new];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">id</span>&lt;ProductB&gt;)productB &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//返回B1版本</span></span><br><span class="line"><span class="keyword">return</span> [ProductB1 new];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="生产-A2版本与B2版本-产品簇-的-具体工厂2"><a href="#生产-A2版本与B2版本-产品簇-的-具体工厂2" class="headerlink" title="生产 A2版本与B2版本 产品簇 的 具体工厂2"></a>生产 A2版本与B2版本 产品簇 的 <code>具体工厂2</code></h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//实现工厂，接口成为一个工厂，只生产 A1版本与B1版本 的产品</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"AbstractFactory.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  生产:</span></span><br><span class="line"><span class="comment">*      1. ProductA2 具体类</span></span><br><span class="line"><span class="comment">*      2. ProductB2 具体类</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Product2Factory</span> : <span class="title">NSObject</span> &lt;<span class="title">AbstractFactory</span>&gt;</span></span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">id</span>&lt;ProductA&gt;)productA;</span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">id</span>&lt;ProductB&gt;)productB;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">"Product2Factory.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//A2 与 B2</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"ProductA2.h"</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"ProductB2.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">Product2Factory</span></span></span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">id</span>&lt;ProductA&gt;)productA &#123;</span><br><span class="line"><span class="keyword">return</span> [ProductA2 new];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">id</span>&lt;ProductB&gt;)productB &#123;</span><br><span class="line"><span class="keyword">return</span> [ProductB2 new];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="向外只提供一个统一的工厂类，假设工厂分为便宜造价和昂贵造价之分，那么生成的产品也就有便宜与昂贵之分"><a href="#向外只提供一个统一的工厂类，假设工厂分为便宜造价和昂贵造价之分，那么生成的产品也就有便宜与昂贵之分" class="headerlink" title="向外只提供一个统一的工厂类，假设工厂分为便宜造价和昂贵造价之分，那么生成的产品也就有便宜与昂贵之分."></a>向外只提供一个统一的工厂类，假设工厂分为便宜造价和昂贵造价之分，那么生成的产品也就有便宜与昂贵之分.</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">"AbstractFactory.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">FactoryClouster</span> : <span class="title">NSObject</span> &lt;<span class="title">AbstractFactory</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">"FactoryClouster.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//内部管理各种具体工厂</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Product1Factory.h"</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Product2Factory.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">FactoryClouster</span></span></span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">id</span>&lt;ProductA&gt;)productA &#123;</span><br><span class="line"><span class="keyword">if</span> (选择便宜) &#123;</span><br><span class="line"><span class="keyword">return</span> [Product1Factory productA];</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"><span class="keyword">return</span> [Product2Factory productA];</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">id</span>&lt;ProductB&gt;)productB &#123;</span><br><span class="line"><span class="keyword">if</span> (选择便宜) &#123;</span><br><span class="line"><span class="keyword">return</span> [Product1Factory productB];</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"><span class="keyword">return</span> [Product2Factory productB];</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结:"></a>小结:</h3><ul>
+<li>有多种不同的产品标准共存</li>
+<li>而每一种产品标准又有不同版本实现</li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2016/01/02/设计模式-抽象工厂模式/" data-title="设计模式-抽象工厂模式 | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2016/01/03/设计模式-建造者模式/" title="设计模式-建造者模式">
+  <strong>上一篇：</strong><br>
+  <span>
+  设计模式-建造者模式</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/01/01/设计模式-工厂模式/" title="设计模式-工厂模式">
+ <strong>下一篇：</strong><br> 
+ <span>设计模式-工厂模式
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2016/01/02/设计模式-抽象工厂模式/" data-title="设计模式-抽象工厂模式" data-url="http://yoursite.com/2016/01/02/设计模式-抽象工厂模式/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#抽象工厂、简单工厂的升级版，解决简单工厂只针对一个抽象接口"><span class="toc-number">1.</span> <span class="toc-text">抽象工厂、简单工厂的升级版，解决简单工厂只针对一个抽象接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#抽象工厂模式结构-gt-gt-gt-延伸至类簇模式"><span class="toc-number">2.</span> <span class="toc-text">抽象工厂模式结构 &gt;&gt;&gt; 延伸至类簇模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#产品A的标准"><span class="toc-number">3.</span> <span class="toc-text">产品A的标准</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#产品B的标准"><span class="toc-number">4.</span> <span class="toc-text">产品B的标准</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#产品A标准的-A1版本实现"><span class="toc-number">5.</span> <span class="toc-text">产品A标准的 A1版本实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#产品A标准的-A2版本实现"><span class="toc-number">6.</span> <span class="toc-text">产品A标准的 A2版本实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#产品B标准的-B1版本实现"><span class="toc-number">7.</span> <span class="toc-text">产品B标准的 B1版本实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#产品B标准的-B2版本实现"><span class="toc-number">8.</span> <span class="toc-text">产品B标准的 B2版本实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#工厂抽象标准，定义生产-产品A标准与产品B标准-的商品"><span class="toc-number">9.</span> <span class="toc-text">工厂抽象标准，定义生产 产品A标准与产品B标准 的商品</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#生产-A1版本与B1版本-产品簇-的-具体工厂1"><span class="toc-number">10.</span> <span class="toc-text">生产 A1版本与B1版本 产品簇 的 具体工厂1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#生产-A2版本与B2版本-产品簇-的-具体工厂2"><span class="toc-number">11.</span> <span class="toc-text">生产 A2版本与B2版本 产品簇 的 具体工厂2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#向外只提供一个统一的工厂类，假设工厂分为便宜造价和昂贵造价之分，那么生成的产品也就有便宜与昂贵之分"><span class="toc-number">12.</span> <span class="toc-text">向外只提供一个统一的工厂类，假设工厂分为便宜造价和昂贵造价之分，那么生成的产品也就有便宜与昂贵之分.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#小结"><span class="toc-number">13.</span> <span class="toc-text">小结:</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

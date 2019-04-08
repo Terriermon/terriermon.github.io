@@ -1,0 +1,565 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>Reachability源码学习 | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="实时监测手机的联网状态，并作出对应的回调处理，源码学习子AFNetworkReachabilityManager.  首先定义网络状态的所有可能的状态的枚举  12345678910111213typedef NS_ENUM(NSInteger, AFNetworkReachabilityStatus) &amp;#123;//未知AFNetworkReachabilityStatusUnknown">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Reachability源码学习">
+<meta property="og:url" content="http://yoursite.com/2015/12/30/reachability源码学习/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="实时监测手机的联网状态，并作出对应的回调处理，源码学习子AFNetworkReachabilityManager.  首先定义网络状态的所有可能的状态的枚举  12345678910111213typedef NS_ENUM(NSInteger, AFNetworkReachabilityStatus) &amp;#123;//未知AFNetworkReachabilityStatusUnknown">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-08T11:56:25.994Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Reachability源码学习">
+<meta name="twitter:description" content="实时监测手机的联网状态，并作出对应的回调处理，源码学习子AFNetworkReachabilityManager.  首先定义网络状态的所有可能的状态的枚举  12345678910111213typedef NS_ENUM(NSInteger, AFNetworkReachabilityStatus) &amp;#123;//未知AFNetworkReachabilityStatusUnknown">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015/12/30/reachability源码学习/" title="Reachability源码学习" itemprop="url">Reachability源码学习</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2015-12-30T04:08:22.000Z" itemprop="datePublished"> Published 2015-12-30</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#实时监测手机的联网状态，并作出对应的回调处理，源码学习子AFNetworkReachabilityManager"><span class="toc-number">1.</span> <span class="toc-text">实时监测手机的联网状态，并作出对应的回调处理，源码学习子AFNetworkReachabilityManager.</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="实时监测手机的联网状态，并作出对应的回调处理，源码学习子AFNetworkReachabilityManager"><a href="#实时监测手机的联网状态，并作出对应的回调处理，源码学习子AFNetworkReachabilityManager" class="headerlink" title="实时监测手机的联网状态，并作出对应的回调处理，源码学习子AFNetworkReachabilityManager."></a>实时监测手机的联网状态，并作出对应的回调处理，源码学习子<code>AFNetworkReachabilityManager</code>.</h3><hr>
+<ul>
+<li>首先定义网络状态的所有可能的状态的枚举</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">typedef NS_ENUM(NSInteger, AFNetworkReachabilityStatus) &#123;</span><br><span class="line">//未知</span><br><span class="line">AFNetworkReachabilityStatusUnknown          = -1,</span><br><span class="line"></span><br><span class="line">//与App通信的服务器，不可达</span><br><span class="line">AFNetworkReachabilityStatusNotReachable     = 0,</span><br><span class="line"></span><br><span class="line">//与App通信的服务器，可达且通过3G，4G ...</span><br><span class="line">AFNetworkReachabilityStatusReachableViaWWAN = 1,</span><br><span class="line"></span><br><span class="line">//与App通信的服务器，可达且通过WiFi</span><br><span class="line">AFNetworkReachabilityStatusReachableViaWiFi = 2,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<hr>
+<ul>
+<li>定义了网络状态变化后的<code>通知Key</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//状态改变后的通知key</span><br><span class="line">extern NSString * const AFNetworkingReachabilityDidChangeNotification;</span><br><span class="line"></span><br><span class="line">//从通知实例中获取到当前状态的key</span><br><span class="line">extern NSString * const AFNetworkingReachabilityNotificationStatusItem;</span><br></pre></td></tr></table></figure>
+<hr>
+<ul>
+<li><code>AFNetworkReachabilityManager</code>的<code>向外暴露</code>的属性</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line">The current network reachability status.</span><br><span class="line">*/</span><br><span class="line">@property (readonly, nonatomic, assign) AFNetworkReachabilityStatus networkReachabilityStatus;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">Whether or not the network is currently reachable.</span><br><span class="line">*/</span><br><span class="line">@property (readonly, nonatomic, assign, getter = isReachable) BOOL reachable;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">Whether or not the network is currently reachable via WWAN.</span><br><span class="line">*/</span><br><span class="line">@property (readonly, nonatomic, assign, getter = isReachableViaWWAN) BOOL reachableViaWWAN;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">Whether or not the network is currently reachable via WiFi.</span><br><span class="line">*/</span><br><span class="line">@property (readonly, nonatomic, assign, getter = isReachableViaWiFi) BOOL reachableViaWiFi;</span><br></pre></td></tr></table></figure>
+<hr>
+<ul>
+<li><code>AFNetworkReachabilityManager</code>的<code>只向内暴露</code>的属性</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">//保存转换成oc对象后的SCNetworkReachabilityRef结构体实例</span><br><span class="line">@property (readwrite, nonatomic, strong) id networkReachability;</span><br><span class="line"></span><br><span class="line">@property (readwrite, nonatomic, assign) AFNetworkReachabilityAssociation networkReachabilityAssociation;</span><br><span class="line"></span><br><span class="line">@property (readwrite, nonatomic, assign) AFNetworkReachabilityStatus networkReachabilityStatus;</span><br><span class="line"></span><br><span class="line">@property (readwrite, nonatomic, copy) AFNetworkReachabilityStatusBlock networkReachabilityStatusBlock;</span><br></pre></td></tr></table></figure>
+<hr>
+<ul>
+<li><p><code>AFNetworkReachabilityManager</code>实例化的集中方式</p>
+</li>
+<li><p>1) 使用默认的监测地址</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">+ (instancetype)sharedManager &#123;</span><br><span class="line">static AFNetworkReachabilityManager *_sharedManager = nil;</span><br><span class="line">static dispatch_once_t onceToken;</span><br><span class="line">dispatch_once(&amp;onceToken, ^&#123;</span><br><span class="line"></span><br><span class="line">//1. 构造默认的地址</span><br><span class="line">struct sockaddr_in address;</span><br><span class="line">bzero(&amp;address, sizeof(address));</span><br><span class="line">address.sin_len = sizeof(address);</span><br><span class="line">address.sin_family = AF_INET;</span><br><span class="line"></span><br><span class="line">//2. 调用传入ip地址的方法创建AFNetworkReachabilityManager实例</span><br><span class="line">_sharedManager = [self managerForAddress:&amp;address];</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">return _sharedManager;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>2) 使用指定的服务器域名作为监测地址（注意:<code>SCNetworkReachabilityCreateWithName</code>）</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">+ (instancetype)managerForDomain:(NSString *)domain &#123;</span><br><span class="line"></span><br><span class="line">//1. 根据传入的域名字符串，创建SCNetworkReachabilityRef实例（网络连接）</span><br><span class="line">SCNetworkReachabilityRef reachability = SCNetworkReachabilityCreateWithName(kCFAllocatorDefault, [domain UTF8String]);</span><br><span class="line"></span><br><span class="line">//2. 创建AFNetworkReachabilityManager实例，并保存上面创建的SCNetworkReachabilityRef实例</span><br><span class="line">AFNetworkReachabilityManager *manager = [[self alloc] initWithReachability:reachability];</span><br><span class="line"></span><br><span class="line">//3. 标示来自域名</span><br><span class="line">manager.networkReachabilityAssociation = AFNetworkReachabilityForName;</span><br><span class="line"></span><br><span class="line">return manager;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>3) 直接使用ip地址作为监测地址（注意:<code>SCNetworkReachabilityCreateWithAddress</code>）</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">+ (instancetype)managerForAddress:(const void *)address &#123;</span><br><span class="line"></span><br><span class="line">//1. 根据传入的ip地址结构体实例，创建SCNetworkReachabilityRef实例（网络连接）</span><br><span class="line">SCNetworkReachabilityRef reachability = SCNetworkReachabilityCreateWithAddress(kCFAllocatorDefault, (const struct sockaddr *)address);</span><br><span class="line"></span><br><span class="line">//2. 创建AFNetworkReachabilityManager实例，并保存上面创建的SCNetworkReachabilityRef实例</span><br><span class="line">AFNetworkReachabilityManager *manager = [[self alloc] initWithReachability:reachability];</span><br><span class="line"></span><br><span class="line">//3. 标示来自ip地址</span><br><span class="line">manager.networkReachabilityAssociation = AFNetworkReachabilityForAddress;</span><br><span class="line"></span><br><span class="line">return manager;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<ul>
+<li>创建<code>AFNetworkReachabilityManager</code>时，传入<code>SCNetworkReachabilityRef</code>的初始化方法</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">- (instancetype)initWithReachability:(SCNetworkReachabilityRef)reachability &#123;</span><br><span class="line">self = [super init];</span><br><span class="line">if (!self) &#123;</span><br><span class="line">return nil;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//1. 将`SCNetworkReachabilityRef结构体实例`转换成oc中的对象</span><br><span class="line">self.networkReachability = CFBridgingRelease(reachability);</span><br><span class="line"></span><br><span class="line">//2. 初始网络状态设置为未知</span><br><span class="line">self.networkReachabilityStatus = AFNetworkReachabilityStatusUnknown;</span><br><span class="line"></span><br><span class="line">return self;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">CFBridgingRelease()这个c函数主要作用:</span><br><span class="line"></span><br><span class="line">1. 将【非Objective-C对象】转换为【Objective-C对象】</span><br><span class="line">2. 同时将对象的管理权交给ARC，开发者无需手动管理内存</span><br><span class="line">3. 效果和 __bridge_transfer 是一样的</span><br></pre></td></tr></table></figure>
+<hr>
+<ul>
+<li><p><code>AFNetworkReachabilityManager</code>的init函数与dealloc函数</p>
+</li>
+<li><p>init函数，在<code>ARC环境下被标记为不可用</code></p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">- (instancetype)init NS_UNAVAILABLE</span><br><span class="line">&#123;</span><br><span class="line">return nil;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>dealloc函数，在执行时停止网络状态改变的监测</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- (void)dealloc &#123;</span><br><span class="line">[self stopMonitoring];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>NS_UNAVAILABLE</code>这个宏的使用</li>
+<li>ARC 状态时候 标记一些 函数不能够使用</li>
+</ul>
+<hr>
+<ul>
+<li>使用<code>AFNetworkReachabilityManager实例</code>，获取当前网络状态的Api</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">- (BOOL)isReachable &#123;</span><br><span class="line">return [self isReachableViaWWAN] || [self isReachableViaWiFi];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (BOOL)isReachableViaWWAN &#123;</span><br><span class="line">return self.networkReachabilityStatus == AFNetworkReachabilityStatusReachableViaWWAN;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (BOOL)isReachableViaWiFi &#123;</span><br><span class="line">return self.networkReachabilityStatus == AFNetworkReachabilityStatusReachableViaWiFi;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<ul>
+<li>使用<code>AFNetworkReachabilityManager实例</code>开启网络状态改变监听（注意，AFN默认是没有开启网络状态监听的，需要自己start开启）</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line">- (void)startMonitoring &#123;</span><br><span class="line"></span><br><span class="line">//1. 如果当前有正在监听，先停止当前的监听</span><br><span class="line">[self stopMonitoring];</span><br><span class="line"></span><br><span class="line">//2. 如果没有要监听的网络连接，就结束此次start操作</span><br><span class="line">if (!self.networkReachability) &#123;</span><br><span class="line">return;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//3. 设置当使用ios c函数库的回调的回调Block</span><br><span class="line">__weak __typeof(self)weakSelf = self;</span><br><span class="line">AFNetworkReachabilityStatusBlock callback = ^(AFNetworkReachabilityStatus status) &#123;</span><br><span class="line">__strong __typeof(weakSelf)strongSelf = weakSelf;</span><br><span class="line"></span><br><span class="line">// 保存当前改变后的网络状态</span><br><span class="line">strongSelf.networkReachabilityStatus = status;</span><br><span class="line"></span><br><span class="line">// 执行使用AFNetworkReachabilityManager传入的用户回调Block</span><br><span class="line">if (strongSelf.networkReachabilityStatusBlock) &#123;</span><br><span class="line">strongSelf.networkReachabilityStatusBlock(status);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">//4. 取出AFNetworkReachabilityManager实例保存的SCNetworkReachabilityRef实例</span><br><span class="line">id networkReachability = self.networkReachability;</span><br><span class="line"></span><br><span class="line">//5. 建立 SCNetworkReachabilityContext 实例，需要使用几个Block</span><br><span class="line">//先将如下这几个Block存入到context，后面再从context中取出来</span><br><span class="line">//回调Block1: 前面创建的AFNetworkReachabilityStatusBlock类型的callback</span><br><span class="line">//回调Block2: AFNetworkReachabilityRetainCallback</span><br><span class="line">//回调Block3: AFNetworkReachabilityReleaseCallback</span><br><span class="line">SCNetworkReachabilityContext context = &#123;0, (__bridge void *)callback, AFNetworkReachabilityRetainCallback, AFNetworkReachabilityReleaseCallback, NULL&#125;;</span><br><span class="line"></span><br><span class="line">//6. 设置使用ios c函数库，监听到网络连接状态改变后的回调函数</span><br><span class="line">//参数1: 网络连接</span><br><span class="line">//参数2: AFNetworkReachabilityCallback回调函数，这个函数是在使用c函数库，监听到网络状态改变时由iOS sdk触发的回调</span><br><span class="line">//参数3: 指定为上面创建的Context</span><br><span class="line">SCNetworkReachabilitySetCallback((__bridge SCNetworkReachabilityRef)networkReachability, AFNetworkReachabilityCallback, &amp;context);</span><br><span class="line"></span><br><span class="line">//7. 执行网络监测的操作</span><br><span class="line">//在`主线程的runloop`上调度</span><br><span class="line">//`runloop mode`为kCFRunLoopCommonModes，也就是任何情况下都要进行调度</span><br><span class="line">SCNetworkReachabilityScheduleWithRunLoop((__bridge SCNetworkReachabilityRef)networkReachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);</span><br><span class="line"></span><br><span class="line">//8. 判断当前网络监听是来自 1)domain 2)ip地址</span><br><span class="line">switch (self.networkReachabilityAssociation) &#123;</span><br><span class="line"></span><br><span class="line">//如果是domain，就不发通知</span><br><span class="line">case AFNetworkReachabilityForName:</span><br><span class="line">break;</span><br><span class="line"></span><br><span class="line">//如果是ip地址，就发送通知</span><br><span class="line">case AFNetworkReachabilityForAddress:</span><br><span class="line">case AFNetworkReachabilityForAddressPair:</span><br><span class="line">default: &#123;</span><br><span class="line">dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0),^&#123;</span><br><span class="line"></span><br><span class="line">//首先得到网络连接的flags</span><br><span class="line">SCNetworkReachabilityFlags flags;</span><br><span class="line">SCNetworkReachabilityGetFlags((__bridge SCNetworkReachabilityRef)networkReachability, &amp;flags);</span><br><span class="line"></span><br><span class="line">//根据flags得到当前网络状态</span><br><span class="line">AFNetworkReachabilityStatus status = AFNetworkReachabilityStatusForFlags(flags);</span><br><span class="line"></span><br><span class="line">//然后再回到主队列，发送通知，告知网络状态已经改变</span><br><span class="line">dispatch_async(dispatch_get_main_queue(), ^&#123;</span><br><span class="line">callback(status);</span><br><span class="line"></span><br><span class="line">NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];</span><br><span class="line">[notificationCenter postNotificationName:AFNetworkingReachabilityDidChangeNotification object:nil userInfo:@&#123; AFNetworkingReachabilityNotificationStatusItem: @(status) &#125;];</span><br><span class="line"></span><br><span class="line">&#125;);</span><br><span class="line">&#125;);</span><br><span class="line">&#125;</span><br><span class="line">break;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">这个【函数】是在使用ios sdk 的 c函数库监听到网络状态改变时由iOS sdk触发的回调执行的函数</span><br><span class="line"></span><br><span class="line">static void AFNetworkReachabilityCallback(SCNetworkReachabilityRef __unused target, SCNetworkReachabilityFlags flags, void *info) &#123;</span><br><span class="line"></span><br><span class="line">//1. 根据flags得到网络状态</span><br><span class="line">AFNetworkReachabilityStatus status = AFNetworkReachabilityStatusForFlags(flags);</span><br><span class="line"></span><br><span class="line">//2. 取出之前设置的callback，并执行</span><br><span class="line">AFNetworkReachabilityStatusBlock block = (__bridge AFNetworkReachabilityStatusBlock)info;</span><br><span class="line">if (block) &#123;</span><br><span class="line">block(status);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//3. 发送网络状态改变的通知</span><br><span class="line">dispatch_async(dispatch_get_main_queue(), ^&#123;</span><br><span class="line">NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];</span><br><span class="line">NSDictionary *userInfo = @&#123; AFNetworkingReachabilityNotificationStatusItem: @(status) &#125;;</span><br><span class="line">[notificationCenter postNotificationName:AFNetworkingReachabilityDidChangeNotification object:nil userInfo:userInfo];</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">创建SCNetworkReachabilityContext时，指定的retain Block</span><br><span class="line"></span><br><span class="line">static const void * AFNetworkReachabilityRetainCallback(const void *info) &#123;</span><br><span class="line">return Block_copy(info);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">创建SCNetworkReachabilityContext时，指定的release Block</span><br><span class="line"></span><br><span class="line">static void AFNetworkReachabilityReleaseCallback(const void *info) &#123;</span><br><span class="line">if (info) &#123;</span><br><span class="line">Block_release(info);</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<ul>
+<li>停止网络监听</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">- (void)stopMonitoring &#123;</span><br><span class="line">if (!self.networkReachability) &#123;</span><br><span class="line">return;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//从主线程的runloop unschedule 监听操作</span><br><span class="line">SCNetworkReachabilityUnscheduleFromRunLoop((__bridge SCNetworkReachabilityRef)self.networkReachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<ul>
+<li><p>发现AFNetworkReachabilityManager.m有一个关于kvo的函数</p>
+</li>
+<li><p>源码如下</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">+ (NSSet *)keyPathsForValuesAffectingValueForKey:(NSString *)key &#123;</span><br><span class="line"></span><br><span class="line">//1. 如果当前被修改的key是: 1) reachable 2) reachableViaWWAN 3) reachableViaWiFi 其中的一种，那么就发出networkReachabilityStatus属性被修改的通知</span><br><span class="line">if ([key isEqualToString:@&quot;reachable&quot;] || [key isEqualToString:@&quot;reachableViaWWAN&quot;] || [key isEqualToString:@&quot;reachableViaWiFi&quot;]) &#123;</span><br><span class="line">return [NSSet setWithObject:@&quot;networkReachabilityStatus&quot;];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//2. 返回当前被修改的属性</span><br><span class="line">return [super keyPathsForValuesAffectingValueForKey:key];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>这个方法的作用</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1. 如果一个@property的变化，依赖于某个对象的一个或者多个@property的变化</span><br><span class="line">2. 一旦这些一个或者多个@property的值发生变化，那么之前的主动依赖的@property也表示发生变化，并发送KVO修改通知</span><br></pre></td></tr></table></figure>
+<ul>
+<li>上如源码的作用</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1. networkReachabilityStatus属性变化，依赖于 1) reachable 2) reachableViaWWAN 3) reachableViaWiFi 这三个属性值的变化</span><br><span class="line"></span><br><span class="line">2. 一旦后三个其中一个属性值变化，就代表networkReachabilityStatus属性值发生变化</span><br></pre></td></tr></table></figure>
+<ul>
+<li>使用这个方法注意:</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">属性必须实现 setter方法与gettter方法</span><br></pre></td></tr></table></figure>
+<hr>
+<ul>
+<li>将<code>SCNetworkReachabilityFlags</code>解析成网络状态枚举</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">static AFNetworkReachabilityStatus AFNetworkReachabilityStatusForFlags(SCNetworkReachabilityFlags flags) &#123;</span><br><span class="line"></span><br><span class="line">//1. </span><br><span class="line">BOOL isReachable = ((flags &amp; kSCNetworkReachabilityFlagsReachable) != 0);</span><br><span class="line">BOOL needsConnection = ((flags &amp; kSCNetworkReachabilityFlagsConnectionRequired) != 0);</span><br><span class="line">BOOL canConnectionAutomatically = (((flags &amp; kSCNetworkReachabilityFlagsConnectionOnDemand ) != 0) || ((flags &amp; kSCNetworkReachabilityFlagsConnectionOnTraffic) != 0));</span><br><span class="line">BOOL canConnectWithoutUserInteraction = (canConnectionAutomatically &amp;&amp; (flags &amp; kSCNetworkReachabilityFlagsInterventionRequired) == 0);</span><br><span class="line">BOOL isNetworkReachable = (isReachable &amp;&amp; (!needsConnection || canConnectWithoutUserInteraction));</span><br><span class="line"></span><br><span class="line">//2. </span><br><span class="line">AFNetworkReachabilityStatus status = AFNetworkReachabilityStatusUnknown;</span><br><span class="line">if (isNetworkReachable == NO) &#123;</span><br><span class="line">status = AFNetworkReachabilityStatusNotReachable;</span><br><span class="line">&#125;</span><br><span class="line">#if    TARGET_OS_IPHONE</span><br><span class="line">else if ((flags &amp; kSCNetworkReachabilityFlagsIsWWAN) != 0) &#123;</span><br><span class="line">status = AFNetworkReachabilityStatusReachableViaWWAN;</span><br><span class="line">&#125;</span><br><span class="line">#endif</span><br><span class="line">else &#123;</span><br><span class="line">status = AFNetworkReachabilityStatusReachableViaWiFi;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">return status;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<ul>
+<li><p>主要使用的是iOS sdk提供的<code>SCNetworkReachability.h</code></p>
+</li>
+<li><p>SCNetworkReachabilityContext结构体</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">typedef struct &#123;</span><br><span class="line">CFIndex        version;</span><br><span class="line">void *        info;</span><br><span class="line">const void    *(*retain)(const void *info);</span><br><span class="line">void        (*release)(const void *info);</span><br><span class="line">CFStringRef    (*copyDescription)(const void *info);</span><br><span class="line">&#125; SCNetworkReachabilityContext;</span><br><span class="line">``` </span><br><span class="line"></span><br><span class="line">- SCNetworkReachabilityFlags枚举值</span><br></pre></td></tr></table></figure>
+<p>enum {<br>kSCNetworkReachabilityFlagsTransientConnection    = 1&lt;&lt;0,<br>kSCNetworkReachabilityFlagsReachable        = 1&lt;&lt;1,<br>kSCNetworkReachabilityFlagsConnectionRequired    = 1&lt;&lt;2,<br>kSCNetworkReachabilityFlagsConnectionOnTraffic    = 1&lt;&lt;3,<br>kSCNetworkReachabilityFlagsInterventionRequired    = 1&lt;&lt;4,<br>kSCNetworkReachabilityFlagsConnectionOnDemand    = 1&lt;&lt;5,    // <strong>OSX_AVAILABLE_STARTING(</strong>MAC_10_6,__IPHONE_3_0)<br>kSCNetworkReachabilityFlagsIsLocalAddress    = 1&lt;&lt;16,<br>kSCNetworkReachabilityFlagsIsDirect        = 1&lt;&lt;17,</p>
+<p>#if    TARGET_OS_IPHONE<br>kSCNetworkReachabilityFlagsIsWWAN        = 1&lt;&lt;18,</p>
+<p>#endif    // TARGET_OS_IPHONE</p>
+<p>kSCNetworkReachabilityFlagsConnectionAutomatic    = kSCNetworkReachabilityFlagsConnectionOnTraffic<br>};<br>typedef    uint32_t    SCNetworkReachabilityFlags;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 获取SCNetworkReachabilityGetFlags的Api</span><br></pre></td></tr></table></figure></p>
+<p>Boolean//返回bool，表示获取是否成功<br>SCNetworkReachabilityGetFlags            (<br>SCNetworkReachabilityRef    target,<br>SCNetworkReachabilityFlags    *flags<br>)                <strong>OSX_AVAILABLE_STARTING(</strong>MAC_10_3,__IPHONE_2_0);<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- SCNetworkReachabilityCallBack，block声明</span><br></pre></td></tr></table></figure></p>
+<p>typedef void (<em>SCNetworkReachabilityCallBack)    (<br>SCNetworkReachabilityRef    target,<br>SCNetworkReachabilityFlags    flags,<br>void                </em>info<br>);<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 创建`SCNetworkReachabilityRef`的Api</span><br></pre></td></tr></table></figure></p>
+<p>方式1:</p>
+<p>SCNetworkReachabilityRef//返回值类型<br>SCNetworkReachabilityCreateWithName        (<br>CFAllocatorRef            allocator,<br>const char            *nodename<br>)                <strong>OSX_AVAILABLE_STARTING(</strong>MAC_10_3,__IPHONE_2_0);<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
+<p>方式2:</p>
+<p>SCNetworkReachabilityRef//返回值类型<br>SCNetworkReachabilityCreateWithAddress        (<br>CFAllocatorRef            allocator,<br>const struct sockaddr        *address<br>)                <strong>OSX_AVAILABLE_STARTING(</strong>MAC_10_3,__IPHONE_2_0);<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
+<p>方式3:</p>
+<p>SCNetworkReachabilityRef//返回值类型<br>SCNetworkReachabilityCreateWithAddressPair    (<br>CFAllocatorRef            allocator,<br>const struct sockaddr        <em>localAddress,<br>const struct sockaddr        </em>remoteAddress<br>)                <strong>OSX_AVAILABLE_STARTING(</strong>MAC_10_3,__IPHONE_2_0);<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 设置使用`SCNetworkReachability`监听到状态改变后的回调函数</span><br></pre></td></tr></table></figure></p>
+<p>Boolean//返回一个bool，返回是否设置成功<br>SCNetworkReachabilitySetCallback        (<br>SCNetworkReachabilityRef    target,<br>SCNetworkReachabilityCallBack    callout,<br>SCNetworkReachabilityContext    *context<br>)                <strong>OSX_AVAILABLE_STARTING(</strong>MAC_10_3,__IPHONE_2_0);<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 在一个runloop开始调度执行网络状态监听</span><br></pre></td></tr></table></figure></p>
+<p>Boolean//返回一个bool，返回是否开始调度成功<br>SCNetworkReachabilityScheduleWithRunLoop    (<br>SCNetworkReachabilityRef    target,<br>CFRunLoopRef            runLoop,<br>CFStringRef            runLoopMode<br>)                <strong>OSX_AVAILABLE_STARTING(</strong>MAC_10_3,__IPHONE_2_0);<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 在一个runloop移除结束执行网络状态监听</span><br></pre></td></tr></table></figure></p>
+<p>Boolean//返回一个bool，返回是否移除调度成功<br>SCNetworkReachabilityUnscheduleFromRunLoop    (<br>SCNetworkReachabilityRef    target,<br>CFRunLoopRef            runLoop,<br>CFStringRef            runLoopMode<br>)                <strong>OSX_AVAILABLE_STARTING(</strong>MAC_10_3,__IPHONE_2_0);<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 暂时不知道做什么的...</span><br></pre></td></tr></table></figure></p>
+<p>Boolean<br>SCNetworkReachabilitySetDispatchQueue        (<br>SCNetworkReachabilityRef    target,<br>dispatch_queue_t        queue<br>)                <strong>OSX_AVAILABLE_STARTING(</strong>MAC_10_6,__IPHONE_4_0);<br><code>`</code></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2015/12/30/reachability源码学习/" data-title="Reachability源码学习 | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2016/01/01/设计模式-工厂模式/" title="设计模式-工厂模式">
+  <strong>上一篇：</strong><br>
+  <span>
+  设计模式-工厂模式</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2015/12/10/lldb命令/" title="lldb命令">
+ <strong>下一篇：</strong><br> 
+ <span>lldb命令
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2015/12/30/reachability源码学习/" data-title="Reachability源码学习" data-url="http://yoursite.com/2015/12/30/reachability源码学习/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#实时监测手机的联网状态，并作出对应的回调处理，源码学习子AFNetworkReachabilityManager"><span class="toc-number">1.</span> <span class="toc-text">实时监测手机的联网状态，并作出对应的回调处理，源码学习子AFNetworkReachabilityManager.</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
