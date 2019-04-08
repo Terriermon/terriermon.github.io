@@ -137,16 +137,24 @@ Context1234typedef struct &amp;#123;void* object;void* value;&amp;#125;MyConext;
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2017/09/10/NSCache学习/" title="NSCache学习" itemprop="url">
+    <a href="/2018/01/27/代码重构六-业务逻辑代码/" title="代码重构六 业务逻辑代码" itemprop="url">
   
-    <h1 itemprop="name">NSCache学习</h1>
+    <h1 itemprop="name">代码重构六 业务逻辑代码</h1>
     
      
-           <p itemprop="description">之前看了一下NSURLCache，然后发现还有一个叫做NSCache的，感觉有点一样，但是不太清楚是做什么的，来学习下吧。
-首先、NSCache的用法与NSDictionary很相似，提供key，value的存储。不一样的是NSCache在系统【内存吃紧】的时候会做【自动释放】.</p>
+           <p itemprop="description">针对量大、复杂的业务逻辑性判断、处理代码进行比较好的隔离，有很多的好处:
+需要直接将某一块业务处理，直接拖到一个其他的工程，能够直接使用
+多个业务逻辑实现版本更替
+帮助新进员工快速熟悉业务代码流程
+
+
+改进一、抽象业务逻辑 与 具体业务逻辑
+业务接口抽象
+
+12345678910</p>
         
     
-    <time datetime="2017-09-10T15:31:00.000Z" itemprop="datePublished">2017-09-10</time>
+    <time datetime="2018-01-27T08:28:44.000Z" itemprop="datePublished">2018-01-27</time>
   </a>
 </section>
 
@@ -158,16 +166,18 @@ Context1234typedef struct &amp;#123;void* object;void* value;&amp;#125;MyConext;
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2017/09/05/CollectionView学习/" title="CollectionView学习" itemprop="url">
+    <a href="/2018/01/26/代码重构五-续解耦ViewController方法之模拟URLScheme/" title="代码重构五 续解耦ViewController方法之模拟URLScheme" itemprop="url">
   
-    <h1 itemprop="name">CollectionView学习</h1>
+    <h1 itemprop="name">代码重构五 续解耦ViewController方法之模拟URLScheme</h1>
     
      
-           <p itemprop="description">TableView用的挺多，CollectionView一直没怎么用过，还是学习一下…
-首先CollectionView基本设置dataSource和delegate和TableView差不多的。不同的地方是，CollectionView最重要的一个东西就是UICollectio</p>
+           <p itemprop="description">避免在ViewControllerA中导入其他ViewControllerB.h、ViewControllerC.h。之前记录了两种方法:
+使用 一个枚举值 映射 一个ViewController，提供一个父类ViewController
+此种方法，可能会造成 枚举值 越来越多
+</p>
         
     
-    <time datetime="2017-09-05T05:40:51.000Z" itemprop="datePublished">2017-09-05</time>
+    <time datetime="2018-01-26T05:51:37.000Z" itemprop="datePublished">2018-01-26</time>
   </a>
 </section>
 
@@ -179,16 +189,25 @@ Context1234typedef struct &amp;#123;void* object;void* value;&amp;#125;MyConext;
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2017/09/01/NSObject之我是一个接口/" title="NSObject之我是一个接口" itemprop="url">
+    <a href="/2018/01/26/代码重构四-抽象接口的设计原则记录/" title="代码重构四 抽象接口的设计原则记录" itemprop="url">
   
-    <h1 itemprop="name">NSObject之我是一个接口</h1>
+    <h1 itemprop="name">代码重构四 抽象接口的设计原则记录</h1>
     
      
-           <p itemprop="description">无意中打开了一个帖子，看到一句话说NSObject是一个@protocol.我震惊了之前一直认为是一个具体类，不行我的看看到底是不是.
-No1. 我打开一个Xcode项目，找到 &amp;lt;objc/NSObject.h&amp;gt;，发现确实是有一个NSObject的protocol，难</p>
+           <p itemprop="description">对于一切 可能发生变化的功能点 使用 抽象接口 隔离重构代码过程中，发现过去的一些封装思路好像都忘记的差不多了，还是回头记录下，经常温习把.
+
+接口设计原则一、接口隔离变化
+可能发生的变化点
+
+流程性逻辑 变化
+
+子模块内部实现 变化
+可见视图 变化
+
+将会经常变化的一些相关联性</p>
         
     
-    <time datetime="2017-09-01T13:21:23.000Z" itemprop="datePublished">2017-09-01</time>
+    <time datetime="2018-01-26T05:45:34.000Z" itemprop="datePublished">2018-01-26</time>
   </a>
 </section>
 
@@ -200,19 +219,15 @@ No1. 我打开一个Xcode项目，找到 &amp;lt;objc/NSObject.h&amp;gt;，发�
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2017/08/31/NSURLCache分析/" title="NSURLCache分析" itemprop="url">
+    <a href="/2018/01/26/代码重构三-ViewController之间的解耦/" title="代码重构三 ViewController之间的解耦" itemprop="url">
   
-    <h1 itemprop="name">NSURLCache分析</h1>
+    <h1 itemprop="name">代码重构三 ViewController之间的解耦</h1>
     
      
-           <p itemprop="description">NSURLCache如其名字针对请求URL进行缓存数据.但是NSURLCache并没有帮我完成response数据的缓存，而只是提供给我们什么时候可以让我们手动完成缓存数据.
-NSURLCache只是给我们提供了网络请求、响应两个时刻的回调函数.
-
-
-No1. 在App启动的时候</p>
+           <p itemprop="description">一般的App中，ViewControllerA要push到ViewControllerB，为如下几步:1231. ViewControllerA.m 导入 ViewControllerB.h2. new 一个 ViewControllerB 的实例3. [ViewControll</p>
         
     
-    <time datetime="2017-08-31T07:42:02.000Z" itemprop="datePublished">2017-08-31</time>
+    <time datetime="2018-01-26T05:18:46.000Z" itemprop="datePublished">2018-01-26</time>
   </a>
 </section>
 
@@ -224,16 +239,15 @@ No1. 在App启动的时候</p>
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2017/08/25/自定义快速枚举/" title="自定义快速枚举" itemprop="url">
+    <a href="/2018/01/26/代码重构二-UIView的数据适配/" title="代码重构二 UIView的数据适配" itemprop="url">
   
-    <h1 itemprop="name">自定义快速枚举</h1>
+    <h1 itemprop="name">代码重构二 UIView的数据适配</h1>
     
      
-           <p itemprop="description">在写缓存先关代码时，发现了一个从来没注意到的东西NSFastEnumeration，来记录下学习笔记.
-如果一个集合要使用for-in形式进行快速遍历，那么就要求这个集合需要实现某一些规定的方法 – NSFastEnumeration协议.12345forin demo代码:fo</p>
+           <p itemprop="description">常见在UIView中直接耦合实体类型对象1234567@interface ShopModel : NSObject@property (nonatomic, copy) NSString *shopName;@property (nonatomic, copy) NSStrin</p>
         
     
-    <time datetime="2017-08-25T15:54:49.000Z" itemprop="datePublished">2017-08-25</time>
+    <time datetime="2018-01-26T05:11:48.000Z" itemprop="datePublished">2018-01-26</time>
   </a>
 </section>
 
@@ -245,15 +259,23 @@ No1. 在App启动的时候</p>
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2017/08/23/Kache、KObject/" title="Kache、KObject" itemprop="url">
+    <a href="/2018/01/26/代码重构一-MethodParam接口方法参数经常变动/" title="代码重构一 MethodParam接口方法参数经常变动" itemprop="url">
   
-    <h1 itemprop="name">Kache、KObject</h1>
+    <h1 itemprop="name">代码重构一 MethodParam接口方法参数经常变动</h1>
     
      
-           <p itemprop="description">KObject管理被缓存的内存对象，以及缓存超时控制.123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051#import &amp;lt;Foundati</p>
+           <p itemprop="description">重构别人的App代码时，发现了一个问题
+就是一个业务接口的参数，可能会经常改变
+但是又不好修改业务接口的参数
+可能造成很多的地方都得修改
+
+
+解决方法: 将参数列表抽象成一个协议下面开始demo
+
+登陆和注册业务接口需要的参数抽象 MyServiceRequestParamete</p>
         
     
-    <time datetime="2017-08-23T11:26:51.000Z" itemprop="datePublished">2017-08-23</time>
+    <time datetime="2018-01-26T04:16:50.000Z" itemprop="datePublished">2018-01-26</time>
   </a>
 </section>
 
@@ -265,21 +287,21 @@ No1. 在App启动的时候</p>
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2017/08/23/Kache、KHolder/" title="Kache、KHolder" itemprop="url">
+    <a href="/2017/09/19/HTTPS、SSL与TLS/" title="HTTPS、SSL与TLS" itemprop="url">
   
-    <h1 itemprop="name">Kache、KHolder</h1>
+    <h1 itemprop="name">HTTPS、SSL与TLS</h1>
     
      
-           <p itemprop="description">KHolder提供最终的缓存功能
-一个KHolder对象，就是一个单独的内存块
-使用这个内存块来保存一些常用的内存对象
-以及将超时的缓存项、超过长度的缓存项，写入磁盘文件
+           <p itemprop="description">首先 SSL与TLS都是一种接口标准.
+SSL协议 与 TLS协议 的关系
+SSL 是洋文Secure Sockets Layer的缩写，中文叫做 安全套接层
 
+SSL协议解决http协议使用明文方式传输数据，防止数据被拦截嗅探
 
-1234567891011121314151617181920212223242526272829303</p>
+到了1999年，SSL协议 因为应用广泛，已经成</p>
         
     
-    <time datetime="2017-08-23T11:26:46.000Z" itemprop="datePublished">2017-08-23</time>
+    <time datetime="2017-09-19T05:05:10.000Z" itemprop="datePublished">2017-09-19</time>
   </a>
 </section>
 
@@ -290,7 +312,7 @@ No1. 在App启动的时候</p>
 
 
   <nav id="page-nav" class="clearfix unexpand">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/2/">Next<span></span></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/2/">Next<span></span></a>
   </nav>
 
 </div>

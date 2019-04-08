@@ -1,0 +1,571 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>代码重构四 抽象接口的设计原则记录 | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="对于一切 可能发生变化的功能点 使用 抽象接口 隔离重构代码过程中，发现过去的一些封装思路好像都忘记的差不多了，还是回头记录下，经常温习把.  接口设计原则一、接口隔离变化 可能发生的变化点  流程性逻辑 变化  子模块内部实现 变化 可见视图 变化  将会经常变化的一些相关联性的功能函数，集中使用一个 抽象协议 封装.   123456789101112/***  动物类的抽象*/@protoc">
+<meta property="og:type" content="article">
+<meta property="og:title" content="代码重构四 抽象接口的设计原则记录">
+<meta property="og:url" content="http://yoursite.com/2018/01/26/代码重构四-抽象接口的设计原则记录/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="对于一切 可能发生变化的功能点 使用 抽象接口 隔离重构代码过程中，发现过去的一些封装思路好像都忘记的差不多了，还是回头记录下，经常温习把.  接口设计原则一、接口隔离变化 可能发生的变化点  流程性逻辑 变化  子模块内部实现 变化 可见视图 变化  将会经常变化的一些相关联性的功能函数，集中使用一个 抽象协议 封装.   123456789101112/***  动物类的抽象*/@protoc">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://i4.tietuku.com/3aedcb0ac09c34c0.png">
+<meta property="og:image" content="http://i4.tietuku.com/a3370193957460b6.png">
+<meta property="og:updated_time" content="2019-04-08T14:25:45.737Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="代码重构四 抽象接口的设计原则记录">
+<meta name="twitter:description" content="对于一切 可能发生变化的功能点 使用 抽象接口 隔离重构代码过程中，发现过去的一些封装思路好像都忘记的差不多了，还是回头记录下，经常温习把.  接口设计原则一、接口隔离变化 可能发生的变化点  流程性逻辑 变化  子模块内部实现 变化 可见视图 变化  将会经常变化的一些相关联性的功能函数，集中使用一个 抽象协议 封装.   123456789101112/***  动物类的抽象*/@protoc">
+<meta name="twitter:image" content="http://i4.tietuku.com/3aedcb0ac09c34c0.png">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/01/26/代码重构四-抽象接口的设计原则记录/" title="代码重构四 抽象接口的设计原则记录" itemprop="url">代码重构四 抽象接口的设计原则记录</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2018-01-26T05:45:34.000Z" itemprop="datePublished"> Published 2018-01-26</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#对于一切-可能发生变化的功能点-使用-抽象接口-隔离"><span class="toc-number">1.</span> <span class="toc-text">对于一切 可能发生变化的功能点 使用 抽象接口 隔离</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#接口设计原则一、接口隔离变化"><span class="toc-number">2.</span> <span class="toc-text">接口设计原则一、接口隔离变化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#接口设计原则二、职责单一"><span class="toc-number">3.</span> <span class="toc-text">接口设计原则二、职责单一</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#接口设计原则三、抽象父类-提供-一些基础模板方法、以及这些模板方法组成的一套逻辑步骤"><span class="toc-number">4.</span> <span class="toc-text">接口设计原则三、抽象父类 提供 一些基础模板方法、以及这些模板方法组成的一套逻辑步骤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#接口设计原则四、里氏替换原则"><span class="toc-number">5.</span> <span class="toc-text">接口设计原则四、里氏替换原则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#接口设计原则五、依赖倒置原则（面向抽象-接口）"><span class="toc-number">6.</span> <span class="toc-text">接口设计原则五、依赖倒置原则（面向抽象/接口）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#对于面向接口编程的最佳实现状态"><span class="toc-number">6.1.</span> <span class="toc-text">对于面向接口编程的最佳实现状态</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#接口设计原则六、开闭原则"><span class="toc-number">7.</span> <span class="toc-text">接口设计原则六、开闭原则</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="对于一切-可能发生变化的功能点-使用-抽象接口-隔离"><a href="#对于一切-可能发生变化的功能点-使用-抽象接口-隔离" class="headerlink" title="对于一切 可能发生变化的功能点 使用 抽象接口 隔离"></a>对于一切 <code>可能发生变化的功能点</code> 使用 抽象接口 隔离</h3><p>重构代码过程中，发现过去的一些封装思路好像都忘记的差不多了，还是回头记录下，经常温习把.</p>
+<hr>
+<h3 id="接口设计原则一、接口隔离变化"><a href="#接口设计原则一、接口隔离变化" class="headerlink" title="接口设计原则一、接口隔离变化"></a>接口设计原则一、接口隔离变化</h3><ul>
+<li><p>可能发生的变化点</p>
+</li>
+<li><p>流程性逻辑 变化</p>
+</li>
+<li>子模块内部实现 变化</li>
+<li><p>可见视图 变化</p>
+</li>
+<li><p>将会经常变化的一些<code>相关联性的功能函数</code>，集中使用一个 <code>抽象协议</code> 封装.</p>
+</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  动物类的抽象</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">Animal</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/** 动物睡觉 */</span></span><br><span class="line">- (<span class="keyword">void</span>)slepp;</span><br><span class="line"></span><br><span class="line"><span class="comment">/** 动物跑步 */</span></span><br><span class="line">- (<span class="keyword">void</span>)run;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>每一种动物 都有各自的 奔跑姿势、睡觉姿势…</p>
+<p><img src="http://i4.tietuku.com/3aedcb0ac09c34c0.png" alt></p>
+<p>实现类一、猫</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Cat</span> : <span class="title">NSObject</span> &lt;<span class="title">Animal</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">Cat</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)slepp &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"猫睡觉..."</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)run &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"猫跑步..."</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>实现类二、狗</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Dog</span> : <span class="title">NSObject</span> &lt;<span class="title">Animal</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">Dog</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)slepp &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"狗睡觉..."</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)run &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"狗跑步..."</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>在需要一个 <code>动物</code> 的地方，使用 <code>抽象接口</code> 隔离 具体实现</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//1. 由中间容器获取一个实现类对象</span></span><br><span class="line"><span class="keyword">id</span>&lt;Animal&gt; animal = [中间容器 getInstanceWithProtocol:<span class="class"><span class="keyword">@protocol</span>(<span class="title">Aniaml</span>)];</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 然后调用 `抽象接口给出` 的方法</span></span><br><span class="line">[animal run];</span><br><span class="line">[animal sleep];</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="接口设计原则二、职责单一"><a href="#接口设计原则二、职责单一" class="headerlink" title="接口设计原则二、职责单一"></a>接口设计原则二、职责单一</h3><ul>
+<li><p>一个接口 应该只负责 一个模块 的功能点抽象，不应该加入 <code>其它不相关模块</code> 的功能点函数</p>
+</li>
+<li><p>一个接口的功能函数要尽量少</p>
+</li>
+<li><p><code>不要</code> 建立 <code>臃肿庞大</code> 的接口，尽量建立细粒度的抽象接口</p>
+</li>
+<li><p>接口之间还可以组合</p>
+</li>
+</ul>
+<p><img src="http://i4.tietuku.com/a3370193957460b6.png" alt></p>
+<p>首先对 动物类 的 <code>基本功能</code> 抽象</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  动物类抽象</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">Animal</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//全部必须实现</span></span><br><span class="line"><span class="keyword">@required</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  动物可以跑步</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">- (<span class="keyword">void</span>)run;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  动物可以睡觉</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">- (<span class="keyword">void</span>)sleep;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p><code>独立功能1</code> 的抽象接口定义</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  动物表演杂技功能的单独抽象</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">AnimalPerfomance</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//可选实现</span></span><br><span class="line"><span class="keyword">@optional</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  表演跳火圈</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">- (<span class="keyword">void</span>)tiaoHuoQuan;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p><code>独立功能2</code> 的抽象接口定义</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  动物卖萌功能的单独抽象</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">AnimalMaiMeng</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//可选实现</span></span><br><span class="line"><span class="keyword">@optional</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  卖萌功能</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">- (<span class="keyword">void</span>)maimeng;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p><code>独立功能3</code> 的抽象接口定义</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  动物看家功能的单独抽象</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">AnimalKanJia</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//可选实现</span></span><br><span class="line"><span class="keyword">@optional</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  看家功能</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">- (<span class="keyword">void</span>)kanjia;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>如上抽象接口的全部实现</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Dog.h</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by xiongzenghui on 16/1/29.</span></span><br><span class="line"><span class="comment">//  Copyright © 2016年 xiongzenghui. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//导入所有需要实现的抽象接口</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Animal.h"</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"AnimalPerfomance.h"</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"AnimalMaiMeng.h"</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"AnimalKanJia.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//实现所有抽象接口的方法</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Dog</span> : <span class="title">NSObject</span> &lt;<span class="title">Animal</span>, <span class="title">AnimalPerfomance</span>, <span class="title">AnimalKanJia</span>, <span class="title">AnimalMaiMeng</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Dog.m</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by xiongzenghui on 16/1/29.</span></span><br><span class="line"><span class="comment">//  Copyright © 2016年 xiongzenghui. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Dog.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">Dog</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/////////////////////////////////////////////////////////////</span></span><br><span class="line"><span class="comment">///Animal 协议</span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)run &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"狗正在跑..."</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)sleep &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"狗正在睡觉..."</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/////////////////////////////////////////////////////////////</span></span><br><span class="line"><span class="comment">///AnimalPerfomance 协议</span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)tiaoHuoQuan &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"狗正在表演跳火圈..."</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/////////////////////////////////////////////////////////////</span></span><br><span class="line"><span class="comment">///AnimalKanJia 协议</span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)kanjia &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"狗正在看家..."</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/////////////////////////////////////////////////////////////</span></span><br><span class="line"><span class="comment">///AnimalMaiMeng 协议</span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)maimeng &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"狗正在卖萌..."</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>将 <code>实现类</code> 与 <code>前面的所有抽象接口</code> 进行绑定，后续获取这四个接口的实现类对象都是Dog对象.</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">bind(<span class="string">"Dog"</span>, <span class="class"><span class="keyword">@protocol</span>(<span class="title">Animal</span>));</span></span><br><span class="line">bind(<span class="string">"Dog"</span>, <span class="class"><span class="keyword">@protocol</span>(<span class="title">AnimalPerfomance</span>));</span></span><br><span class="line">bind(<span class="string">"Dog"</span>, <span class="class"><span class="keyword">@protocol</span>(<span class="title">AnimalKanJia</span>));</span></span><br><span class="line">bind(<span class="string">"Dog"</span>, <span class="class"><span class="keyword">@protocol</span>(<span class="title">AnimalMaiMeng</span>));</span></span><br></pre></td></tr></table></figure>
+<p>后续就根据需要 使用 <code>不同的抽象接口</code> 来泛化 实现类对象，指明<code>只能调用其抽象接口中定义</code>的方法</p>
+<ul>
+<li>假设需要调用 动物基础功能</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//1. 使用 Animal主抽象接口类型 指向 实现类对象</span></span><br><span class="line"><span class="keyword">id</span>&lt;Animal&gt; animal = [中间容器 getInstanceWithProtocol:<span class="class"><span class="keyword">@protocol</span>(<span class="title">Aniaml</span>)];</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 调用 Animal接口 中的定义的方法</span></span><br><span class="line">[animal run];</span><br><span class="line">[animal sleep];</span><br></pre></td></tr></table></figure>
+<ul>
+<li>假设需要调用 动物表演杂技的功能</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//1. 使用 AnimalPerfomance抽象接口类型 指向 实现类对象</span></span><br><span class="line"><span class="keyword">id</span>&lt;AnimalPerfomance&gt; animal = [中间容器 getInstanceWithProtocol:<span class="class"><span class="keyword">@protocol</span>(<span class="title">AnimalPerfomance</span>)];</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 调用 AnimalPerfomance接口 中的定义的方法</span></span><br><span class="line">[animal tiaoHuoQuan];</span><br></pre></td></tr></table></figure>
+<ul>
+<li>假设需要调用 动物卖萌的功能</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//1. 使用 AnimalMaiMeng抽象接口类型 指向 实现类对象</span></span><br><span class="line"><span class="keyword">id</span>&lt;AnimalMaiMeng&gt; animal = [中间容器 getInstanceWithProtocol:<span class="class"><span class="keyword">@protocol</span>(<span class="title">AnimalMaiMeng</span>)];</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 调用 AnimalMaiMeng接口 中的定义的方法</span></span><br><span class="line">[animal maimeng];</span><br></pre></td></tr></table></figure>
+<ul>
+<li>假设需要调用 动物看家的功能</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//1. 使用 AnimalKanJia抽象接口类型 指向 实现类对象</span></span><br><span class="line"><span class="keyword">id</span>&lt;AnimalKanJia&gt; animal = [中间容器 getInstanceWithProtocol:<span class="class"><span class="keyword">@protocol</span>(<span class="title">AnimalKanJia</span>)];</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 调用 AnimalKanJia接口 中的定义的方法</span></span><br><span class="line">[animal kanjia];</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="接口设计原则三、抽象父类-提供-一些基础模板方法、以及这些模板方法组成的一套逻辑步骤"><a href="#接口设计原则三、抽象父类-提供-一些基础模板方法、以及这些模板方法组成的一套逻辑步骤" class="headerlink" title="接口设计原则三、抽象父类 提供 一些基础模板方法、以及这些模板方法组成的一套逻辑步骤"></a>接口设计原则三、抽象父类 提供 一些基础<code>模板方法</code>、以及这些模板方法组成的一套<code>逻辑步骤</code></h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  抽象父类，提供一些基础的方法模块</span></span><br><span class="line"><span class="comment">*  这些模板方法可以有基础实现，也可以是空实现</span></span><br><span class="line"><span class="comment">*  具体由每一个不同的子类去各自实现</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">MyAbstractClass</span> : <span class="title">NSObject</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#pragma mark - 模板方法</span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)run;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)sleep;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)dead;</span><br><span class="line"></span><br><span class="line"><span class="meta">#pragma mark - 提供一些基本流程</span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)life;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">"MyAbstractClass.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">MyAbstractClass</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">////////////////////////////////////////////</span></span><br><span class="line"><span class="comment">//////空实现</span></span><br><span class="line"><span class="comment">////////////////////////////////////////////</span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)run&#123;&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)sleep&#123;&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">////////////////////////////////////////////</span></span><br><span class="line"><span class="comment">//////默认基础实现</span></span><br><span class="line"><span class="comment">////////////////////////////////////////////</span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)dead &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"我挂了..."</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">////////////////////////////////////////////</span></span><br><span class="line"><span class="comment">//////提供一些基本流程</span></span><br><span class="line"><span class="comment">////////////////////////////////////////////</span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)life &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//1. 走路</span></span><br><span class="line">[<span class="keyword">self</span> run];</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 睡觉</span></span><br><span class="line">[<span class="keyword">self</span> sleep];</span><br><span class="line"></span><br><span class="line"><span class="comment">//3. 挂了</span></span><br><span class="line">[<span class="keyword">self</span> dead];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>子类可以重写 抽象父类的</li>
+<li><p><code>模板方法</code></p>
+</li>
+<li><p>子类<code>最好不要</code>重写 抽象父类的</p>
+</li>
+<li><code>默认方法实现</code> ，默认方法实现最好是能否提供给所有子类的 <code>通用</code>功能</li>
+<li><code>逻辑步骤</code></li>
+</ul>
+<hr>
+<h3 id="接口设计原则四、里氏替换原则"><a href="#接口设计原则四、里氏替换原则" class="headerlink" title="接口设计原则四、里氏替换原则"></a>接口设计原则四、里氏替换原则</h3><ul>
+<li>使用 <code>父类</code> 引用 <code>子类的对象</code></li>
+<li>可以随时替 换成 <code>其它子类的对象</code></li>
+<li>适合做一些 <code>抽象父类</code> 提供一些 <code>基本的方法模块</code></li>
+<li><p>供子类实现 <code>特殊</code> 的功能</p>
+</li>
+<li><p>使用 <code>抽象接口</code> 引用 <code>接口实现类的对象</code></p>
+</li>
+<li>可以随时替 换成 <code>其它接口实现类的对象</code></li>
+</ul>
+<p>动物抽象接口实现一、猫</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Cat</span> : <span class="title">NSObject</span> &lt;<span class="title">Animal</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">Cat</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)slepp &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"猫睡觉..."</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)run &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"猫跑步..."</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>动物抽象接口实现二、猫</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Dog</span> : <span class="title">NSObject</span> &lt;<span class="title">Animal</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">Dog</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)slepp &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"狗睡觉..."</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)run &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"狗跑步..."</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>使用抽象接口定义对象的类型</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">id</span>&lt;Animal&gt; animal = [Cat new];</span><br><span class="line"><span class="comment">//id&lt;Animal&gt; animal = [Dog new];</span></span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="接口设计原则五、依赖倒置原则（面向抽象-接口）"><a href="#接口设计原则五、依赖倒置原则（面向抽象-接口）" class="headerlink" title="接口设计原则五、依赖倒置原则（面向抽象/接口）"></a>接口设计原则五、依赖倒置原则（面向抽象/接口）</h3><ul>
+<li><p>上层 只依赖 下层暴露出来的 <code>抽象接口</code></p>
+</li>
+<li><p>依赖的几种写法</p>
+</li>
+</ul>
+<p>写法一、构造函数传递依赖对象</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">Animal</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)run;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">ViewController</span> ()</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) <span class="keyword">id</span>&lt;Animal&gt; animal;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ViewController</span></span></span><br><span class="line"></span><br><span class="line">- initWithAnimal:(<span class="keyword">id</span>&lt;Animal&gt;)animal</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">self</span> = [<span class="keyword">super</span> init];</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">self</span>) &#123;</span><br><span class="line"><span class="keyword">self</span>.animal = animal;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>写法二、由中间容器注入依赖对象</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Objection开源库使用</span><br></pre></td></tr></table></figure>
+<p>写法三、接口声明依赖对象</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">ViewController</span> ()</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) <span class="keyword">id</span>&lt;Animal&gt; animal;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h4 id="对于面向接口编程的最佳实现状态"><a href="#对于面向接口编程的最佳实现状态" class="headerlink" title="对于面向接口编程的最佳实现状态"></a>对于面向接口编程的最佳实现状态</h4><ul>
+<li>状态一: 每个类 尽量都有 <code>接口或抽象类</code>，或者 <code>抽象类和接口两者同时具备</code></li>
+</ul>
+<p>使用前面的抽象类 <code>MyAbstractClass</code>，新添加一个抽象接口</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  可以在马戏团表演</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">AnimalPerformance</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/** 表演跳火圈 */</span></span><br><span class="line">- (<span class="keyword">void</span>)tiaoHuoQuan;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>具体类Monkey先<code>继承自抽象类</code>，然后额外实现一个<code>功能抽象接口</code></p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//1. Monkey先`继承自抽象类`</span></span><br><span class="line"><span class="comment">//2. 额外实现一个`功能抽象接口`，来具备一个功能</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Monkey</span> : <span class="title">MyAbstractClass</span> &lt;<span class="title">AnimalPerformance</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">Monkey</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#pragma mark - 抽象类方法实现</span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)run &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"猴子跑.."</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)sleep &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"猴子睡觉.."</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)dead &#123;</span><br><span class="line"><span class="comment">//1. 可以做自己的实现</span></span><br><span class="line"><span class="comment">//2. 也可以使用父类的默认实现</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//切记不要重写抽象类提供的 `步骤性` 的方法</span></span><br><span class="line"><span class="comment">//- (void)life &#123;</span></span><br><span class="line"><span class="comment">//    .....</span></span><br><span class="line"><span class="comment">//&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#pragma mark - 抽象接口实现</span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)tiaoHuoQuan &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"猴子表演跳火圈了..."</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>状态二: 任何类 都不应该 从 <code>具体类</code> 派生</li>
+</ul>
+<p>这点好像有点太过理想化，有些东西感觉还是直接继承来的方便.</p>
+<ul>
+<li>状态三: 尽量 <code>不要覆写</code> 父类 的方法</li>
+</ul>
+<p>而将需要<code>变化实现</code>的方法 抽象隔离到 接口协议中，使用<code>实现接口的形式</code>的重写</p>
+<hr>
+<h3 id="接口设计原则六、开闭原则"><a href="#接口设计原则六、开闭原则" class="headerlink" title="接口设计原则六、开闭原则"></a>接口设计原则六、开闭原则</h3><ul>
+<li>只能 添加 <code>新的实现类 或 接口</code></li>
+<li>不能 修改 <code>已有实现实现类 或 接口</code></li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2018/01/26/代码重构四-抽象接口的设计原则记录/" data-title="代码重构四 抽象接口的设计原则记录 | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2018/01/26/代码重构五-续解耦ViewController方法之模拟URLScheme/" title="代码重构五 续解耦ViewController方法之模拟URLScheme">
+  <strong>上一篇：</strong><br>
+  <span>
+  代码重构五 续解耦ViewController方法之模拟URLScheme</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/01/26/代码重构三-ViewController之间的解耦/" title="代码重构三 ViewController之间的解耦">
+ <strong>下一篇：</strong><br> 
+ <span>代码重构三 ViewController之间的解耦
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/01/26/代码重构四-抽象接口的设计原则记录/" data-title="代码重构四 抽象接口的设计原则记录" data-url="http://yoursite.com/2018/01/26/代码重构四-抽象接口的设计原则记录/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#对于一切-可能发生变化的功能点-使用-抽象接口-隔离"><span class="toc-number">1.</span> <span class="toc-text">对于一切 可能发生变化的功能点 使用 抽象接口 隔离</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#接口设计原则一、接口隔离变化"><span class="toc-number">2.</span> <span class="toc-text">接口设计原则一、接口隔离变化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#接口设计原则二、职责单一"><span class="toc-number">3.</span> <span class="toc-text">接口设计原则二、职责单一</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#接口设计原则三、抽象父类-提供-一些基础模板方法、以及这些模板方法组成的一套逻辑步骤"><span class="toc-number">4.</span> <span class="toc-text">接口设计原则三、抽象父类 提供 一些基础模板方法、以及这些模板方法组成的一套逻辑步骤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#接口设计原则四、里氏替换原则"><span class="toc-number">5.</span> <span class="toc-text">接口设计原则四、里氏替换原则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#接口设计原则五、依赖倒置原则（面向抽象-接口）"><span class="toc-number">6.</span> <span class="toc-text">接口设计原则五、依赖倒置原则（面向抽象/接口）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#对于面向接口编程的最佳实现状态"><span class="toc-number">6.1.</span> <span class="toc-text">对于面向接口编程的最佳实现状态</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#接口设计原则六、开闭原则"><span class="toc-number">7.</span> <span class="toc-text">接口设计原则六、开闭原则</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

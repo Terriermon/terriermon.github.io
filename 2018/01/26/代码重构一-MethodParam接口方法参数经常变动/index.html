@@ -1,0 +1,479 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>代码重构一 MethodParam接口方法参数经常变动 | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="重构别人的App代码时，发现了一个问题 就是一个业务接口的参数，可能会经常改变 但是又不好修改业务接口的参数 可能造成很多的地方都得修改   解决方法: 将参数列表抽象成一个协议下面开始demo  登陆和注册业务接口需要的参数抽象 MyServiceRequestParameterProtocols.h123456789101112131415161718192021222324252627282">
+<meta property="og:type" content="article">
+<meta property="og:title" content="代码重构一 MethodParam接口方法参数经常变动">
+<meta property="og:url" content="http://yoursite.com/2018/01/26/代码重构一-MethodParam接口方法参数经常变动/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="重构别人的App代码时，发现了一个问题 就是一个业务接口的参数，可能会经常改变 但是又不好修改业务接口的参数 可能造成很多的地方都得修改   解决方法: 将参数列表抽象成一个协议下面开始demo  登陆和注册业务接口需要的参数抽象 MyServiceRequestParameterProtocols.h123456789101112131415161718192021222324252627282">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-08T14:19:21.477Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="代码重构一 MethodParam接口方法参数经常变动">
+<meta name="twitter:description" content="重构别人的App代码时，发现了一个问题 就是一个业务接口的参数，可能会经常改变 但是又不好修改业务接口的参数 可能造成很多的地方都得修改   解决方法: 将参数列表抽象成一个协议下面开始demo  登陆和注册业务接口需要的参数抽象 MyServiceRequestParameterProtocols.h123456789101112131415161718192021222324252627282">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/01/26/代码重构一-MethodParam接口方法参数经常变动/" title="代码重构一 MethodParam接口方法参数经常变动" itemprop="url">代码重构一 MethodParam接口方法参数经常变动</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2018-01-26T04:16:50.000Z" itemprop="datePublished"> Published 2018-01-26</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#重构别人的App代码时，发现了一个问题"><span class="toc-number">1.</span> <span class="toc-text">重构别人的App代码时，发现了一个问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#解决方法-将参数列表抽象成一个协议"><span class="toc-number">2.</span> <span class="toc-text">解决方法: 将参数列表抽象成一个协议</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#登陆和注册业务接口需要的参数抽象-MyServiceRequestParameterProtocols-h"><span class="toc-number">3.</span> <span class="toc-text">登陆和注册业务接口需要的参数抽象 MyServiceRequestParameterProtocols.h</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#然后是具体参数封装类，实现-参数抽象协议，提供参数值，MyServiceLoginRequestParamV1-h"><span class="toc-number">4.</span> <span class="toc-text">然后是具体参数封装类，实现 参数抽象协议，提供参数值，MyServiceLoginRequestParamV1.h</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#业务类的业务方法声明，只依赖抽象的参数协议的一个实现类对象，而不是单个单个的所有参数"><span class="toc-number">5.</span> <span class="toc-text">业务类的业务方法声明，只依赖抽象的参数协议的一个实现类对象，而不是单个单个的所有参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#在ViewController使用业务类方法类"><span class="toc-number">6.</span> <span class="toc-text">在ViewController使用业务类方法类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#假设要修改-登陆接口-的参数，比如添加一个参数xxx，那么首先修改参数接口抽象"><span class="toc-number">7.</span> <span class="toc-text">假设要修改 登陆接口 的参数，比如添加一个参数xxx，那么首先修改参数接口抽象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#再对象修改参数协议实现类，添加新的参数方法的实现"><span class="toc-number">8.</span> <span class="toc-text">再对象修改参数协议实现类，添加新的参数方法的实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#最后修改业务类的业务方法内部具体实现，添加获取新的参数"><span class="toc-number">9.</span> <span class="toc-text">最后修改业务类的业务方法内部具体实现，添加获取新的参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#在ViewController使用业务类方法类-1"><span class="toc-number">10.</span> <span class="toc-text">在ViewController使用业务类方法类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#小结参数变化优化"><span class="toc-number">11.</span> <span class="toc-text">小结参数变化优化:</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="重构别人的App代码时，发现了一个问题"><a href="#重构别人的App代码时，发现了一个问题" class="headerlink" title="重构别人的App代码时，发现了一个问题"></a>重构别人的App代码时，发现了一个问题</h3><ul>
+<li>就是一个业务接口的参数，可能会经常改变</li>
+<li>但是又不好修改业务接口的参数</li>
+<li>可能造成很多的地方都得修改</li>
+</ul>
+<hr>
+<h3 id="解决方法-将参数列表抽象成一个协议"><a href="#解决方法-将参数列表抽象成一个协议" class="headerlink" title="解决方法: 将参数列表抽象成一个协议"></a>解决方法: 将参数列表抽象成一个协议</h3><p>下面开始demo</p>
+<hr>
+<h3 id="登陆和注册业务接口需要的参数抽象-MyServiceRequestParameterProtocols-h"><a href="#登陆和注册业务接口需要的参数抽象-MyServiceRequestParameterProtocols-h" class="headerlink" title="登陆和注册业务接口需要的参数抽象 MyServiceRequestParameterProtocols.h"></a>登陆和注册业务接口需要的参数抽象 MyServiceRequestParameterProtocols.h</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  抽象 登陆 业务接口的参数</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">LoginRequestParameterPtotocol</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@required</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  账号</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">- (<span class="built_in">NSString</span> *)username;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  密码</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">- (<span class="built_in">NSString</span> *)password;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@optional</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  抽象 注册 业务接口的参数</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">RegistRequestParameterPtotocol</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//就是将一些参数抽象出来</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="然后是具体参数封装类，实现-参数抽象协议，提供参数值，MyServiceLoginRequestParamV1-h"><a href="#然后是具体参数封装类，实现-参数抽象协议，提供参数值，MyServiceLoginRequestParamV1-h" class="headerlink" title="然后是具体参数封装类，实现 参数抽象协议，提供参数值，MyServiceLoginRequestParamV1.h"></a>然后是具体参数封装类，实现 参数抽象协议，提供参数值，MyServiceLoginRequestParamV1.h</h3><p>.h</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//导入参数抽象接口</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"MyServiceRequestParameterProtocols.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//实现参数接口，提供参数</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">MyServiceLoginRequestParamV1</span> : <span class="title">NSObject</span> &lt;<span class="title">LoginRequestParameterPtotocol</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">copy</span>) <span class="built_in">NSString</span> *loginName;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">copy</span>) <span class="built_in">NSString</span> *loginPassword;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>.m</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">"MyServiceLoginRequestParamV1.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">MyServiceLoginRequestParamV1</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//接口实现方法，提供参数值</span></span><br><span class="line">- (<span class="built_in">NSString</span> *)username &#123;</span><br><span class="line"><span class="keyword">return</span> <span class="keyword">self</span>.loginName;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSString</span> *)password &#123;</span><br><span class="line"><span class="keyword">return</span> <span class="keyword">self</span>.password;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="业务类的业务方法声明，只依赖抽象的参数协议的一个实现类对象，而不是单个单个的所有参数"><a href="#业务类的业务方法声明，只依赖抽象的参数协议的一个实现类对象，而不是单个单个的所有参数" class="headerlink" title="业务类的业务方法声明，只依赖抽象的参数协议的一个实现类对象，而不是单个单个的所有参数"></a>业务类的业务方法声明，只依赖抽象的参数协议的一个实现类对象，而不是单个单个的所有参数</h3><p>.h</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//导入参数抽象接口</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"MyServiceRequestParameterProtocols.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">MyService</span> : <span class="title">NSObject</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  业务方法接收 参数接口的 一个实现类的对象</span></span><br><span class="line"><span class="comment">*  打包所有的单个参数值</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">- (<span class="keyword">void</span>)login:(<span class="keyword">id</span>&lt;LoginRequestParameterPtotocol&gt;)param;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>.m </p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">"MyService.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">MyService</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)login:(<span class="keyword">id</span>&lt;LoginRequestParameterPtotocol&gt;)param &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//获取接口定义的参数方法</span></span><br><span class="line"><span class="built_in">NSString</span> *username = [param username];</span><br><span class="line"><span class="built_in">NSString</span> *password = [param password];</span><br><span class="line"></span><br><span class="line"><span class="comment">//请求网络...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="在ViewController使用业务类方法类"><a href="#在ViewController使用业务类方法类" class="headerlink" title="在ViewController使用业务类方法类"></a>在ViewController使用业务类方法类</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ViewController</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)viewDidLoad &#123;</span><br><span class="line">[<span class="keyword">super</span> viewDidLoad];</span><br><span class="line"></span><br><span class="line"><span class="comment">//1.   </span></span><br><span class="line">MyService *service = ...;</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 构造参数打包</span></span><br><span class="line">MyServiceLoginRequestParamV1 *loginParam = [[MyServiceLoginRequestParamV1 alloc] init];</span><br><span class="line">loginParam.loginName = <span class="string">@"zhansgan"</span>;</span><br><span class="line">loginParam.loginPassword = <span class="string">@"123456"</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//3. 传入打包好的参数给业务方法</span></span><br><span class="line">[service login:loginParam];</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="假设要修改-登陆接口-的参数，比如添加一个参数xxx，那么首先修改参数接口抽象"><a href="#假设要修改-登陆接口-的参数，比如添加一个参数xxx，那么首先修改参数接口抽象" class="headerlink" title="假设要修改 登陆接口 的参数，比如添加一个参数xxx，那么首先修改参数接口抽象"></a>假设要修改 登陆接口 的参数，比如添加一个参数xxx，那么首先修改参数接口抽象</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  抽象 登陆 业务接口的参数</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">LoginRequestParameterPtotocol</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@required</span></span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSString</span> *)username;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSString</span> *)password;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  新添加的参数</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">- (<span class="built_in">NSString</span> *)xxx;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@optional</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">RegistRequestParameterPtotocol</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//就是将一些参数抽象出来</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="再对象修改参数协议实现类，添加新的参数方法的实现"><a href="#再对象修改参数协议实现类，添加新的参数方法的实现" class="headerlink" title="再对象修改参数协议实现类，添加新的参数方法的实现"></a>再对象修改参数协议实现类，添加新的参数方法的实现</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//导入参数抽象接口</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"MyServiceRequestParameterProtocols.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//实现参数接口，提供参数</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">MyServiceLoginRequestParamV1</span> : <span class="title">NSObject</span> &lt;<span class="title">LoginRequestParameterPtotocol</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">copy</span>) <span class="built_in">NSString</span> *loginName;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">copy</span>) <span class="built_in">NSString</span> *loginPassword;</span><br><span class="line"></span><br><span class="line"><span class="comment">//新添加的方法实现</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">copy</span>) <span class="built_in">NSString</span> *xxx;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;MyServiceLoginRequestParamV1.h&quot;</span><br><span class="line"></span><br><span class="line">@implementation MyServiceLoginRequestParamV1</span><br><span class="line"></span><br><span class="line">//接口实现方法，提供参数值</span><br><span class="line">- (NSString *)username &#123;</span><br><span class="line">return self.loginName;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (NSString *)password &#123;</span><br><span class="line">return self.password;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (NSString *)xxx &#123;</span><br><span class="line">return self.xxx;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<h3 id="最后修改业务类的业务方法内部具体实现，添加获取新的参数"><a href="#最后修改业务类的业务方法内部具体实现，添加获取新的参数" class="headerlink" title="最后修改业务类的业务方法内部具体实现，添加获取新的参数"></a>最后修改业务类的业务方法内部具体实现，添加获取新的参数</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">"MyService.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">MyService</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)login:(<span class="keyword">id</span>&lt;LoginRequestParameterPtotocol&gt;)param &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//获取接口定义的参数方法</span></span><br><span class="line"><span class="built_in">NSString</span> *username = [param username];</span><br><span class="line"><span class="built_in">NSString</span> *password = [param password];</span><br><span class="line"></span><br><span class="line"><span class="comment">//获取新的参数</span></span><br><span class="line"><span class="built_in">NSString</span> *xxx = [param xxx];</span><br><span class="line"></span><br><span class="line"><span class="comment">//请求网络...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="在ViewController使用业务类方法类-1"><a href="#在ViewController使用业务类方法类-1" class="headerlink" title="在ViewController使用业务类方法类"></a>在ViewController使用业务类方法类</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ViewController</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)viewDidLoad &#123;</span><br><span class="line">[<span class="keyword">super</span> viewDidLoad];</span><br><span class="line"></span><br><span class="line"><span class="comment">//1.   </span></span><br><span class="line">MyService *service = ...;</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 构造参数打包</span></span><br><span class="line">MyServiceLoginRequestParamV1 *loginParam = [[MyServiceLoginRequestParamV1 alloc] init];</span><br><span class="line">loginParam.loginName = <span class="string">@"zhansgan"</span>;</span><br><span class="line">loginParam.loginPassword = <span class="string">@"123456"</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*     只需要多添加一个参数值</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">loginParam.xxx = <span class="string">@"xxx"</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//3. 传入打包好的参数给业务方法</span></span><br><span class="line">[service login:loginParam];</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>参数接口与实现还有一种写法，但是在Effective Objective-C 2.0书上不提倡</p>
+<ul>
+<li>接口参数的抽象</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;Foundation/Foundation.h&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">*  所需参数抽象接口定义</span><br><span class="line">*/</span><br><span class="line">@protocol VSCashierDeskPayFailedHandlerArgumentProtocol &lt;NSObject&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@property (nonatomic, strong) NSArray* arrOrders;</span><br><span class="line">@property (nonatomic, assign) BOOL isPrePay;</span><br><span class="line">@property (nonatomic, assign) BOOL isFinalPay;</span><br><span class="line">@property (nonatomic, strong) NSArray* ordersArray;</span><br><span class="line">@property(nonatomic, strong)  NSDate *orderAddTime;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<ul>
+<li>接口参数实现类</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@interface VSCashierDeskPayFailedHandlerArgumentProtocolV1_0 : NSObject &lt;VSCashierDeskPayFailedHandlerArgumentProtocol&gt;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">@implementation VSCashierDeskPayFailedHandlerArgumentProtocolV1_0</span><br><span class="line"></span><br><span class="line">@synthesize arrOrders;</span><br><span class="line">@synthesize isPrePay;</span><br><span class="line">@synthesize isFinalPay;</span><br><span class="line">@synthesize ordersArray;</span><br><span class="line">@synthesize orderAddTime;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="小结参数变化优化"><a href="#小结参数变化优化" class="headerlink" title="小结参数变化优化:"></a>小结参数变化优化:</h3><ul>
+<li>所有参数使用一些协议抽象出来</li>
+<li>所有的参数使用一个协议实现类对象，打包起来</li>
+<li>业务方法只依赖这个协议的一个具体实现类的<code>对象</code>而不是单个单个的参数</li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2018/01/26/代码重构一-MethodParam接口方法参数经常变动/" data-title="代码重构一 MethodParam接口方法参数经常变动 | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2018/01/26/代码重构二-UIView的数据适配/" title="代码重构二 UIView的数据适配">
+  <strong>上一篇：</strong><br>
+  <span>
+  代码重构二 UIView的数据适配</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/09/19/HTTPS、SSL与TLS/" title="HTTPS、SSL与TLS">
+ <strong>下一篇：</strong><br> 
+ <span>HTTPS、SSL与TLS
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/01/26/代码重构一-MethodParam接口方法参数经常变动/" data-title="代码重构一 MethodParam接口方法参数经常变动" data-url="http://yoursite.com/2018/01/26/代码重构一-MethodParam接口方法参数经常变动/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#重构别人的App代码时，发现了一个问题"><span class="toc-number">1.</span> <span class="toc-text">重构别人的App代码时，发现了一个问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#解决方法-将参数列表抽象成一个协议"><span class="toc-number">2.</span> <span class="toc-text">解决方法: 将参数列表抽象成一个协议</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#登陆和注册业务接口需要的参数抽象-MyServiceRequestParameterProtocols-h"><span class="toc-number">3.</span> <span class="toc-text">登陆和注册业务接口需要的参数抽象 MyServiceRequestParameterProtocols.h</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#然后是具体参数封装类，实现-参数抽象协议，提供参数值，MyServiceLoginRequestParamV1-h"><span class="toc-number">4.</span> <span class="toc-text">然后是具体参数封装类，实现 参数抽象协议，提供参数值，MyServiceLoginRequestParamV1.h</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#业务类的业务方法声明，只依赖抽象的参数协议的一个实现类对象，而不是单个单个的所有参数"><span class="toc-number">5.</span> <span class="toc-text">业务类的业务方法声明，只依赖抽象的参数协议的一个实现类对象，而不是单个单个的所有参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#在ViewController使用业务类方法类"><span class="toc-number">6.</span> <span class="toc-text">在ViewController使用业务类方法类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#假设要修改-登陆接口-的参数，比如添加一个参数xxx，那么首先修改参数接口抽象"><span class="toc-number">7.</span> <span class="toc-text">假设要修改 登陆接口 的参数，比如添加一个参数xxx，那么首先修改参数接口抽象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#再对象修改参数协议实现类，添加新的参数方法的实现"><span class="toc-number">8.</span> <span class="toc-text">再对象修改参数协议实现类，添加新的参数方法的实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#最后修改业务类的业务方法内部具体实现，添加获取新的参数"><span class="toc-number">9.</span> <span class="toc-text">最后修改业务类的业务方法内部具体实现，添加获取新的参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#在ViewController使用业务类方法类-1"><span class="toc-number">10.</span> <span class="toc-text">在ViewController使用业务类方法类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#小结参数变化优化"><span class="toc-number">11.</span> <span class="toc-text">小结参数变化优化:</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

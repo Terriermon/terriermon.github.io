@@ -1,0 +1,499 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>代码重构三 ViewController之间的解耦 | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="一般的App中，ViewControllerA要push到ViewControllerB，为如下几步:1231. ViewControllerA.m 导入 ViewControllerB.h2. new 一个 ViewControllerB 的实例3. [ViewControllerA实例 pushViewController: ViewControllerB实例]; 毋庸置疑如上的方法 简单明了">
+<meta property="og:type" content="article">
+<meta property="og:title" content="代码重构三 ViewController之间的解耦">
+<meta property="og:url" content="http://yoursite.com/2018/01/26/代码重构三-ViewController之间的解耦/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="一般的App中，ViewControllerA要push到ViewControllerB，为如下几步:1231. ViewControllerA.m 导入 ViewControllerB.h2. new 一个 ViewControllerB 的实例3. [ViewControllerA实例 pushViewController: ViewControllerB实例]; 毋庸置疑如上的方法 简单明了">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-08T14:23:27.597Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="代码重构三 ViewController之间的解耦">
+<meta name="twitter:description" content="一般的App中，ViewControllerA要push到ViewControllerB，为如下几步:1231. ViewControllerA.m 导入 ViewControllerB.h2. new 一个 ViewControllerB 的实例3. [ViewControllerA实例 pushViewController: ViewControllerB实例]; 毋庸置疑如上的方法 简单明了">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/01/26/代码重构三-ViewController之间的解耦/" title="代码重构三 ViewController之间的解耦" itemprop="url">代码重构三 ViewController之间的解耦</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2018-01-26T05:18:46.000Z" itemprop="datePublished"> Published 2018-01-26</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#一般的App中，ViewControllerA要push到ViewControllerB，为如下几步"><span class="toc-number">1.</span> <span class="toc-text">一般的App中，ViewControllerA要push到ViewControllerB，为如下几步:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#因重构现有的App项目，希望把其中一些ViewController、业务类单独抽出封装成SDK。可是一看项目的代码，全部是A依赖B，B依赖C，C依赖A的形式，几乎是无法单独抽出某一个部分，深深感觉到这种-强依赖-的代码结构，在需要-将某一部分代码单独剥离出来-的时候真的很恶心，造成这样的原因"><span class="toc-number">2.</span> <span class="toc-text">因重构现有的App项目，希望把其中一些ViewController、业务类单独抽出封装成SDK。可是一看项目的代码，全部是A依赖B，B依赖C，C依赖A的形式，几乎是无法单独抽出某一个部分，深深感觉到这种 强依赖 的代码结构，在需要 将某一部分代码单独剥离出来 的时候真的很恶心，造成这样的原因:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#对一个功能模块实现类最理想的复用状态"><span class="toc-number">3.</span> <span class="toc-text">对一个功能模块实现类最理想的复用状态:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#解耦方式一、一个UIViewController具体类-lt-–映射一个–-gt-一个整形ViewControllerId枚举值"><span class="toc-number">4.</span> <span class="toc-text">解耦方式一、一个UIViewController具体类 &lt;–映射一个–&gt; 一个整形ViewControllerId枚举值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#之前自己的App中，使用了一个BaseViewController添加了一个自己的push方法，然后让具体ViewController类-对应一个-整形唯一Id值"><span class="toc-number">5.</span> <span class="toc-text">之前自己的App中，使用了一个BaseViewController添加了一个自己的push方法，然后让具体ViewController类 对应一个 整形唯一Id值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#解耦方式二、使用抽象接口protocol隔离"><span class="toc-number">6.</span> <span class="toc-text">解耦方式二、使用抽象接口protocol隔离</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#角色1、显示新闻列表功能-的ViewController-抽象接口协议定义"><span class="toc-number">6.1.</span> <span class="toc-text">角色1、显示新闻列表功能 的ViewController 抽象接口协议定义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#角色2、新闻列表抽象接口协议的-实现类-ViewControllerB"><span class="toc-number">6.2.</span> <span class="toc-text">角色2、新闻列表抽象接口协议的 实现类 ViewControllerB</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#角色3、ViewControllerA跳转到-一个能够显示新闻列表的Controller（获得一个抽象接口实现类对象完成对应的功能）"><span class="toc-number">7.</span> <span class="toc-text">角色3、ViewControllerA跳转到 一个能够显示新闻列表的Controller（获得一个抽象接口实现类对象完成对应的功能）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#角色4、中间容器类，负责管理-抽象与具体实现的映射"><span class="toc-number">7.1.</span> <span class="toc-text">角色4、中间容器类，负责管理 抽象与具体实现的映射</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#对于中间容器类，可以使用一个开源类库-Objection-来代替"><span class="toc-number">7.2.</span> <span class="toc-text">对于中间容器类，可以使用一个开源类库 Objection 来代替.</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<h3 id="一般的App中，ViewControllerA要push到ViewControllerB，为如下几步"><a href="#一般的App中，ViewControllerA要push到ViewControllerB，为如下几步" class="headerlink" title="一般的App中，ViewControllerA要push到ViewControllerB，为如下几步:"></a>一般的App中，ViewControllerA要push到ViewControllerB，为如下几步:</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1. ViewControllerA.m 导入 ViewControllerB.h</span><br><span class="line">2. new 一个 ViewControllerB 的实例</span><br><span class="line">3. [ViewControllerA实例 pushViewController: ViewControllerB实例];</span><br></pre></td></tr></table></figure>
+<p>毋庸置疑如上的方法 简单明了快速，但是有个最大的缺点</p>
+<blockquote>
+<p>ViewControllerA.m 强依赖 ViewControllerB.h</p>
+</blockquote>
+<p>如果哪天希望单独将 <code>ViewControllerA</code> 复用到一个新的App项目中时，基本上是不可能。因为ViewControllerA 强依赖了ViewControllerB.h，或许还有ViewControllerC.h、ViewControllerD.h、ViewControllerE.h…</p>
+<p>那么这样的 ViewControllerA.h与ViewControllerA.m 几乎是 <code>无法复用</code>.</p>
+<h3 id="因重构现有的App项目，希望把其中一些ViewController、业务类单独抽出封装成SDK。可是一看项目的代码，全部是A依赖B，B依赖C，C依赖A的形式，几乎是无法单独抽出某一个部分，深深感觉到这种-强依赖-的代码结构，在需要-将某一部分代码单独剥离出来-的时候真的很恶心，造成这样的原因"><a href="#因重构现有的App项目，希望把其中一些ViewController、业务类单独抽出封装成SDK。可是一看项目的代码，全部是A依赖B，B依赖C，C依赖A的形式，几乎是无法单独抽出某一个部分，深深感觉到这种-强依赖-的代码结构，在需要-将某一部分代码单独剥离出来-的时候真的很恶心，造成这样的原因" class="headerlink" title="因重构现有的App项目，希望把其中一些ViewController、业务类单独抽出封装成SDK。可是一看项目的代码，全部是A依赖B，B依赖C，C依赖A的形式，几乎是无法单独抽出某一个部分，深深感觉到这种 强依赖 的代码结构，在需要 将某一部分代码单独剥离出来 的时候真的很恶心，造成这样的原因:"></a>因重构现有的App项目，希望把其中一些ViewController、业务类单独抽出封装成SDK。可是一看项目的代码，全部是A依赖B，B依赖C，C依赖A的形式，几乎是无法单独抽出某一个部分，深深感觉到这种 <code>强依赖</code> 的代码结构，在需要 <code>将某一部分代码单独剥离出来</code> 的时候真的很恶心，造成这样的原因:</h3><ul>
+<li>过度 依赖 <code>具体类</code></li>
+<li>具体类 之间的 互相引用</li>
+</ul>
+<p>如下这种，一个A类里面，直接导入其他 <code>具体类.h</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;具体类1.h&quot;</span><br><span class="line">#import &quot;具体类2.h&quot;</span><br><span class="line">#import &quot;具体类3.h&quot;</span><br><span class="line"></span><br><span class="line">@implementation 类A</span><br><span class="line"></span><br><span class="line">//使用具体类1、具体类2、具体类3的实现代码</span><br><span class="line"></span><br><span class="line">@emd</span><br></pre></td></tr></table></figure>
+<p>如上结构的代码造成无法单独剥离 类A实现代码 </p>
+<ul>
+<li>如上结构代码在需要单独将<code>类A的 .h与.m</code>拖到<code>另一个工程</code>中复用时</li>
+<li>就必须同时拖入 <code>类A .h与.m 所依赖的其他具体类.h与.m</code></li>
+<li>那拖入的这些.h与.m又可能会依赖其他的.h与.m</li>
+</ul>
+<h3 id="对一个功能模块实现类最理想的复用状态"><a href="#对一个功能模块实现类最理想的复用状态" class="headerlink" title="对一个功能模块实现类最理想的复用状态:"></a>对一个功能模块实现类最理想的复用状态:</h3><blockquote>
+<p>从当前App项目中拷贝出 ViewController.h与ViewController.m 或 ManagerA.h与ManagerB.m 到另一个App项目中直接编译成功.</p>
+</blockquote>
+<p>###而能够达到完全的复用程度必须遵循</p>
+<ul>
+<li><p>依赖抽象、不依赖具体。每一层的类都最好都是依赖抽象。</p>
+</li>
+<li><p>尽可能少的与其他模块实现类产生关系。</p>
+</li>
+</ul>
+<hr>
+<h3 id="解耦方式一、一个UIViewController具体类-lt-–映射一个–-gt-一个整形ViewControllerId枚举值"><a href="#解耦方式一、一个UIViewController具体类-lt-–映射一个–-gt-一个整形ViewControllerId枚举值" class="headerlink" title="解耦方式一、一个UIViewController具体类 &lt;–映射一个–&gt; 一个整形ViewControllerId枚举值"></a>解耦方式一、一个UIViewController具体类 &lt;–映射一个–&gt; 一个整形ViewControllerId枚举值</h3><h3 id="之前自己的App中，使用了一个BaseViewController添加了一个自己的push方法，然后让具体ViewController类-对应一个-整形唯一Id值"><a href="#之前自己的App中，使用了一个BaseViewController添加了一个自己的push方法，然后让具体ViewController类-对应一个-整形唯一Id值" class="headerlink" title="之前自己的App中，使用了一个BaseViewController添加了一个自己的push方法，然后让具体ViewController类 对应一个 整形唯一Id值"></a>之前自己的App中，使用了一个BaseViewController添加了一个自己的push方法，然后让<code>具体ViewController类</code> 对应一个 <code>整形唯一Id值</code></h3><p>UIViewController具体类 对应的 整形ViewControllerId枚举定义</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="built_in">NS_ENUM</span>(<span class="built_in">NSInteger</span>, ViewControllerId) &#123;</span><br><span class="line">ViewControllerIdLogin = <span class="number">0x01</span>,</span><br><span class="line">ViewControllerIdRegist,</span><br><span class="line">ViewControllerIdModify,</span><br><span class="line"><span class="comment">//...</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>基类BaseViewController提供统一pushViewController的方法，通过id值找到对应的ViewController类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">+ (instancetype)pushWithControllerId:(ViewControllerId)controlelrId</span><br><span class="line">&#123;</span><br><span class="line">//1. 根据controlelrId得到对应Class</span><br><span class="line">//2. 实例化Class</span><br><span class="line">//3. 设置得到的实例</span><br><span class="line">//4. push viewController</span><br><span class="line">//5. 返回实例</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我自己觉的还是比 直接强依赖 好很多了。<br>至少ViewControllerA.m中 耦合的仅仅只是一个 <code>整形 ViewControllerId 枚举值</code>，没有依赖任何的 <code>ViewControllerB.h、ViewControllerC.h、ViewControllerD.h</code>。</p>
+<p>但是觉得这种方法也有几个问题:</p>
+<ul>
+<li>ViewControllerId 枚举值 越来越多</li>
+<li>传入的参数没有解耦、打包成一体</li>
+<li>参考之前的《参数封装》文章</li>
+</ul>
+<hr>
+<h3 id="解耦方式二、使用抽象接口protocol隔离"><a href="#解耦方式二、使用抽象接口protocol隔离" class="headerlink" title="解耦方式二、使用抽象接口protocol隔离"></a>解耦方式二、使用抽象接口protocol隔离</h3><blockquote>
+<p>举例一个简单的例子 ViewControllerA需要跳转到ViewControllerB显示最新新闻列表</p>
+</blockquote>
+<h4 id="角色1、显示新闻列表功能-的ViewController-抽象接口协议定义"><a href="#角色1、显示新闻列表功能-的ViewController-抽象接口协议定义" class="headerlink" title="角色1、显示新闻列表功能 的ViewController 抽象接口协议定义"></a>角色1、<code>显示新闻列表功能</code> 的ViewController 抽象接口协议定义</h4><blockquote>
+<p>主要针对 <code>功能点</code> 的抽象</p>
+</blockquote>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  抽象获取最新新闻的ViewController接口</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">NewsListlization</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)receiveNewsList;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h4 id="角色2、新闻列表抽象接口协议的-实现类-ViewControllerB"><a href="#角色2、新闻列表抽象接口协议的-实现类-ViewControllerB" class="headerlink" title="角色2、新闻列表抽象接口协议的 实现类 ViewControllerB"></a>角色2、新闻列表抽象接口协议的 <code>实现类</code> ViewControllerB</h4><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;UIKit/UIKit.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"NewsListlization.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">ViewControllerB</span> : <span class="title">UIViewController</span> &lt;<span class="title">NewsListlization</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">"ViewControllerB.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ViewControllerB</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)receiveNewsList &#123;</span><br><span class="line"><span class="comment">//1. 获取最新数据</span></span><br><span class="line"><span class="comment">//2. reload UI</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="角色3、ViewControllerA跳转到-一个能够显示新闻列表的Controller（获得一个抽象接口实现类对象完成对应的功能）"><a href="#角色3、ViewControllerA跳转到-一个能够显示新闻列表的Controller（获得一个抽象接口实现类对象完成对应的功能）" class="headerlink" title="角色3、ViewControllerA跳转到 一个能够显示新闻列表的Controller（获得一个抽象接口实现类对象完成对应的功能）"></a>角色3、ViewControllerA跳转到 <code>一个能够显示新闻列表的Controller（获得一个抽象接口实现类对象完成对应的功能）</code></h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">"ViewControllerA.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//依赖的是一个中间容器对象</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"ViewControllerManager.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ViewControllerA</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)buttonClick&#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//1. 获取到单例容器对象</span></span><br><span class="line">ViewControllerManager *manager = [ViewControllerManager sharedInstance];</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 从容器对象获取 一个可以加载最新新闻列表的ViewController抽象的实现类对象</span></span><br><span class="line"><span class="keyword">id</span>&lt;NewsListlization&gt; controller = [manager newsListViewController];</span><br><span class="line"></span><br><span class="line"><span class="comment">//3. push 得到的这个 ViewController实例</span></span><br><span class="line">[<span class="keyword">self</span>.navigationController pushViewController:(<span class="built_in">UIViewController</span> *)controller</span><br><span class="line">animated:<span class="literal">YES</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>从上看到，ViewControllerA中没有强依赖ViewControllerB.h，只是依赖一个中间容器类。后续复用这个ViewControllerA时，只需要维护这个中间容器类，而不需要关系其他的<code>具体类</code>.</p>
+<h4 id="角色4、中间容器类，负责管理-抽象与具体实现的映射"><a href="#角色4、中间容器类，负责管理-抽象与具体实现的映射" class="headerlink" title="角色4、中间容器类，负责管理 抽象与具体实现的映射"></a>角色4、中间容器类，负责管理 抽象与具体实现的映射</h4><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"NewsListlization.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">ViewControllerManager</span> : <span class="title">NSObject</span></span></span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">instancetype</span>)sharedInstance;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">id</span>&lt;NewsListlization&gt;)newsListViewController;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">"ViewControllerManager.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//导入抽象的实现类</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"ViewControllerB.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ViewControllerManager</span></span></span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">id</span>&lt;NewsListlization&gt;)newsListViewController &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//返回抽象的实现类的一个实例</span></span><br><span class="line"><span class="keyword">return</span> [[ViewControllerB alloc] init];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>依赖 <code>具体类</code> 的代码都交给 这个<code>中间容器类</code>.</li>
+<li>并且由中间容器类对象 管理 所有的抽象与具体类的 映射关系.</li>
+</ul>
+<h4 id="对于中间容器类，可以使用一个开源类库-Objection-来代替"><a href="#对于中间容器类，可以使用一个开源类库-Objection-来代替" class="headerlink" title="对于中间容器类，可以使用一个开源类库 Objection 来代替."></a>对于中间容器类，可以使用一个开源类库 <code>Objection</code> 来代替.</h4>  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2018/01/26/代码重构三-ViewController之间的解耦/" data-title="代码重构三 ViewController之间的解耦 | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2018/01/26/代码重构四-抽象接口的设计原则记录/" title="代码重构四 抽象接口的设计原则记录">
+  <strong>上一篇：</strong><br>
+  <span>
+  代码重构四 抽象接口的设计原则记录</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/01/26/代码重构二-UIView的数据适配/" title="代码重构二 UIView的数据适配">
+ <strong>下一篇：</strong><br> 
+ <span>代码重构二 UIView的数据适配
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/01/26/代码重构三-ViewController之间的解耦/" data-title="代码重构三 ViewController之间的解耦" data-url="http://yoursite.com/2018/01/26/代码重构三-ViewController之间的解耦/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#一般的App中，ViewControllerA要push到ViewControllerB，为如下几步"><span class="toc-number">1.</span> <span class="toc-text">一般的App中，ViewControllerA要push到ViewControllerB，为如下几步:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#因重构现有的App项目，希望把其中一些ViewController、业务类单独抽出封装成SDK。可是一看项目的代码，全部是A依赖B，B依赖C，C依赖A的形式，几乎是无法单独抽出某一个部分，深深感觉到这种-强依赖-的代码结构，在需要-将某一部分代码单独剥离出来-的时候真的很恶心，造成这样的原因"><span class="toc-number">2.</span> <span class="toc-text">因重构现有的App项目，希望把其中一些ViewController、业务类单独抽出封装成SDK。可是一看项目的代码，全部是A依赖B，B依赖C，C依赖A的形式，几乎是无法单独抽出某一个部分，深深感觉到这种 强依赖 的代码结构，在需要 将某一部分代码单独剥离出来 的时候真的很恶心，造成这样的原因:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#对一个功能模块实现类最理想的复用状态"><span class="toc-number">3.</span> <span class="toc-text">对一个功能模块实现类最理想的复用状态:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#解耦方式一、一个UIViewController具体类-lt-–映射一个–-gt-一个整形ViewControllerId枚举值"><span class="toc-number">4.</span> <span class="toc-text">解耦方式一、一个UIViewController具体类 &lt;–映射一个–&gt; 一个整形ViewControllerId枚举值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#之前自己的App中，使用了一个BaseViewController添加了一个自己的push方法，然后让具体ViewController类-对应一个-整形唯一Id值"><span class="toc-number">5.</span> <span class="toc-text">之前自己的App中，使用了一个BaseViewController添加了一个自己的push方法，然后让具体ViewController类 对应一个 整形唯一Id值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#解耦方式二、使用抽象接口protocol隔离"><span class="toc-number">6.</span> <span class="toc-text">解耦方式二、使用抽象接口protocol隔离</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#角色1、显示新闻列表功能-的ViewController-抽象接口协议定义"><span class="toc-number">6.1.</span> <span class="toc-text">角色1、显示新闻列表功能 的ViewController 抽象接口协议定义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#角色2、新闻列表抽象接口协议的-实现类-ViewControllerB"><span class="toc-number">6.2.</span> <span class="toc-text">角色2、新闻列表抽象接口协议的 实现类 ViewControllerB</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#角色3、ViewControllerA跳转到-一个能够显示新闻列表的Controller（获得一个抽象接口实现类对象完成对应的功能）"><span class="toc-number">7.</span> <span class="toc-text">角色3、ViewControllerA跳转到 一个能够显示新闻列表的Controller（获得一个抽象接口实现类对象完成对应的功能）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#角色4、中间容器类，负责管理-抽象与具体实现的映射"><span class="toc-number">7.1.</span> <span class="toc-text">角色4、中间容器类，负责管理 抽象与具体实现的映射</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#对于中间容器类，可以使用一个开源类库-Objection-来代替"><span class="toc-number">7.2.</span> <span class="toc-text">对于中间容器类，可以使用一个开源类库 Objection 来代替.</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
