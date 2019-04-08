@@ -1,0 +1,467 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>Kache、KQueue | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="KQueue对象 提供队列机制来缓存传入的对象 最终借助KHolder对象完成对象的缓存与读取   KQueue.h 暴露的api12345678910111213141516171819202122232425262728293031323334353637383940414243#import &amp;lt;Foundation/Foundation.h&amp;gt;@class KHolder;@int">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kache、KQueue">
+<meta property="og:url" content="http://yoursite.com/2017/08/22/Kache、KQueue/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="KQueue对象 提供队列机制来缓存传入的对象 最终借助KHolder对象完成对象的缓存与读取   KQueue.h 暴露的api12345678910111213141516171819202122232425262728293031323334353637383940414243#import &amp;lt;Foundation/Foundation.h&amp;gt;@class KHolder;@int">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-08T15:00:03.229Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Kache、KQueue">
+<meta name="twitter:description" content="KQueue对象 提供队列机制来缓存传入的对象 最终借助KHolder对象完成对象的缓存与读取   KQueue.h 暴露的api12345678910111213141516171819202122232425262728293031323334353637383940414243#import &amp;lt;Foundation/Foundation.h&amp;gt;@class KHolder;@int">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/08/22/Kache、KQueue/" title="Kache、KQueue" itemprop="url">Kache、KQueue</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2017-08-22T11:26:41.000Z" itemprop="datePublished"> Published 2017-08-22</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#KQueue对象"><span class="toc-number">1.</span> <span class="toc-text">KQueue对象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#KQueue-h-暴露的api"><span class="toc-number">2.</span> <span class="toc-text">KQueue.h 暴露的api</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#接下来开始看-KQueue-m-…"><span class="toc-number">3.</span> <span class="toc-text">接下来开始看 KQueue.m ….</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#匿名分类声明属性与方法"><span class="toc-number">3.1.</span> <span class="toc-text">匿名分类声明属性与方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#KQueue的初始化init函数"><span class="toc-number">3.2.</span> <span class="toc-text">KQueue的初始化init函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#KQueue队列入队-缓存key"><span class="toc-number">3.3.</span> <span class="toc-text">KQueue队列入队 缓存key</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#清理超时的内存缓存"><span class="toc-number">3.4.</span> <span class="toc-text">清理超时的内存缓存</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#KQueue退出队头保存的key对应的缓存value（缓存对象）"><span class="toc-number">3.5.</span> <span class="toc-text">KQueue退出队头保存的key对应的缓存value（缓存对象）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#组装KQueue对象数据成字典"><span class="toc-number">4.</span> <span class="toc-text">组装KQueue对象数据成字典</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#从传入的字典恢复KQueue对象数据"><span class="toc-number">5.</span> <span class="toc-text">从传入的字典恢复KQueue对象数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#KQueue使用demo一、通过使用Kache对象注册KQueue使用"><span class="toc-number">6.</span> <span class="toc-text">KQueue使用demo一、通过使用Kache对象注册KQueue使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#KQueue使用demo二、直接使用KQueue对象"><span class="toc-number">7.</span> <span class="toc-text">KQueue使用demo二、直接使用KQueue对象</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="KQueue对象"><a href="#KQueue对象" class="headerlink" title="KQueue对象"></a>KQueue对象</h3><ul>
+<li>提供队列机制来缓存传入的对象</li>
+<li>最终借助KHolder对象完成对象的缓存与读取</li>
+</ul>
+<hr>
+<h3 id="KQueue-h-暴露的api"><a href="#KQueue-h-暴露的api" class="headerlink" title="KQueue.h 暴露的api"></a>KQueue.h 暴露的api</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@class</span> <span class="title">KHolder</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">KQueue</span> : <span class="title">NSObject</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  队列的名字</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">assign</span>, <span class="keyword">nonatomic</span>)   <span class="built_in">NSString</span>          *name;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  队列最大缓存长度</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">assign</span>, <span class="keyword">nonatomic</span>)   <span class="built_in">NSInteger</span>         size;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  传入KHolder对象，完成对象的存储</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">- (KQueue *)initWithHolder:(KHolder *)holder;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  使用队列结构缓存对象，传入的对象类需要实现NSCoding协议具备归档</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">- (<span class="keyword">void</span>)push:(<span class="keyword">id</span>&lt;<span class="built_in">NSCoding</span>&gt;)obj;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  出队头key对应的缓存对象</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">- (<span class="keyword">id</span>&lt;<span class="built_in">NSCoding</span>&gt;)pop;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  将保存的数据归档为字典返回出去</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">- (<span class="built_in">NSDictionary</span> *)serialize;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  从传入的字典恢复数据</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">- (<span class="keyword">void</span>)unserializeFrom:(<span class="built_in">NSDictionary</span> *)dict;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="接下来开始看-KQueue-m-…"><a href="#接下来开始看-KQueue-m-…" class="headerlink" title="接下来开始看 KQueue.m …."></a>接下来开始看 KQueue.m ….</h3><hr>
+<h4 id="匿名分类声明属性与方法"><a href="#匿名分类声明属性与方法" class="headerlink" title="匿名分类声明属性与方法"></a>匿名分类声明属性与方法</h4><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">KQueue</span> ()</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">strong</span>, <span class="keyword">nonatomic</span>)   KHolder               *holder;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*    当前缓存key的id值，这个offset是累加值</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">assign</span>, <span class="keyword">nonatomic</span>)   <span class="built_in">NSInteger</span>             offset;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*    使用一个数组模拟队列结构</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">strong</span>, atomic)      <span class="built_in">NSMutableArray</span>        *queue;</span><br><span class="line"></span><br><span class="line"><span class="comment">/** 清理缓存 */</span></span><br><span class="line">- (<span class="keyword">void</span>)cleanExpiredObjects;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h4 id="KQueue的初始化init函数"><a href="#KQueue的初始化init函数" class="headerlink" title="KQueue的初始化init函数"></a>KQueue的初始化init函数</h4><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">- (KQueue *)initWithHolder:(KHolder *)aHolder</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">self</span> = [<span class="keyword">super</span> init];</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">self</span>)</span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">//1. 保存Kache对象的持有的KHolder对象（内存缓存块）</span></span><br><span class="line"><span class="keyword">self</span>.holder = aHolder;</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 创建一个数组，模拟队列结构</span></span><br><span class="line"><span class="keyword">self</span>.queue  = [[<span class="built_in">NSMutableArray</span> alloc] init];</span><br><span class="line"></span><br><span class="line"><span class="comment">//3. 默认的队列最大长度</span></span><br><span class="line"><span class="keyword">self</span>.size   = KACHE_DEFAULT_QUEUE_SIZE;</span><br><span class="line"></span><br><span class="line"><span class="comment">//4. 队列存放元素的id偏移值（递增）</span></span><br><span class="line"><span class="keyword">self</span>.offset = <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="KQueue队列入队-缓存key"><a href="#KQueue队列入队-缓存key" class="headerlink" title="KQueue队列入队 缓存key"></a>KQueue队列入队 缓存key</h4><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)push:(<span class="keyword">id</span>&lt;<span class="built_in">NSCoding</span>&gt;)obj</span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">//1. 给传入的key生成一个id = QUEUE_当前Queue名字_offset值</span></span><br><span class="line"><span class="built_in">NSString</span> *identifier = [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"QUEUE_%@_%ld"</span>,</span><br><span class="line"><span class="keyword">self</span>.name,</span><br><span class="line"><span class="keyword">self</span>.offset];</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 累加offset</span></span><br><span class="line"><span class="keyword">self</span>.offset ++;</span><br><span class="line"></span><br><span class="line"><span class="comment">//3. 使用identifier作为key，传入的对象为value</span></span><br><span class="line">[<span class="keyword">self</span>.holder setValue:obj</span><br><span class="line">forKey:identifier</span><br><span class="line">expiredAfter:<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">//4. 清理超时的缓存项</span></span><br><span class="line">[<span class="keyword">self</span> cleanExpiredObjects];</span><br><span class="line"></span><br><span class="line"><span class="comment">//5. 判断当前内存缓存长度是否超过</span></span><br><span class="line"><span class="keyword">if</span> ([<span class="keyword">self</span>.queue count] &gt;= <span class="keyword">self</span>.size)</span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">//如下处理缓存长度超过 self.size</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//5.1 移除队头第一个元素的缓存</span></span><br><span class="line">[<span class="keyword">self</span>.holder removeObjectForKey:[<span class="keyword">self</span>.queue objectAtIndex:<span class="number">0</span>]];</span><br><span class="line"></span><br><span class="line"><span class="comment">//5.2 从队列移除队头第一个元素</span></span><br><span class="line">[<span class="keyword">self</span>.queue removeObjectAtIndex:<span class="number">0</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//6. 缓存key添加到queue数组</span></span><br><span class="line">[<span class="keyword">self</span>.queue addObject:key];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>对传入的缓存key生成一个唯一标识identidier</li>
+<li>KQueue内部数组管理identidier</li>
+<li>使用KHolder内存缓存块存储 <code>identidier : 缓存key</code></li>
+</ul>
+<h4 id="清理超时的内存缓存"><a href="#清理超时的内存缓存" class="headerlink" title="清理超时的内存缓存"></a>清理超时的内存缓存</h4><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)cleanExpiredObjects</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">self</span>.queue &amp;&amp; <span class="number">0</span> &lt; [<span class="keyword">self</span>.queue count])</span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">//左 --&gt; 右，遍历queue数组，遍历出所有的 identidier</span></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; [<span class="keyword">self</span>.queue count] - <span class="number">1</span>; i ++)</span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">//1. identidier</span></span><br><span class="line"><span class="built_in">NSString</span> *tmpKey = [<span class="keyword">self</span>.queue objectAtIndex:i];</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. identidier 对应存储在KHolder中的 缓存key</span></span><br><span class="line">KObject *leftObject = [<span class="keyword">self</span>.holder objectForKey:tmpKey];</span><br><span class="line"></span><br><span class="line"><span class="comment">//3. 判断缓存项目是否已经超时</span></span><br><span class="line"><span class="keyword">if</span> ([leftObject expiredTimestamp] &lt; [KUtil nowTimestamp])</span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">//缓存超时，只从KQueue维护的数组中移除</span></span><br><span class="line"><span class="comment">//并没有从KHolder中移除缓存</span></span><br><span class="line">[<span class="keyword">self</span>.queue removeObject:tmpKey];</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"></span><br><span class="line"><span class="keyword">break</span>;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="KQueue退出队头保存的key对应的缓存value（缓存对象）"><a href="#KQueue退出队头保存的key对应的缓存value（缓存对象）" class="headerlink" title="KQueue退出队头保存的key对应的缓存value（缓存对象）"></a>KQueue退出队头保存的key对应的缓存value（缓存对象）</h4><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">id</span>&lt;<span class="built_in">NSCoding</span>&gt;)pop</span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">//判断queue数组是否存在identifier</span></span><br><span class="line"><span class="keyword">if</span> (<span class="number">0</span> &lt; [<span class="keyword">self</span>.queue count])</span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">//1. 取出queue数组保存的第一个 identifier</span></span><br><span class="line"><span class="built_in">NSString</span> *key = [<span class="keyword">self</span>.queue objectAtIndex:<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 从queue数组移除</span></span><br><span class="line">[<span class="keyword">self</span>.queue removeObjectAtIndex:<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">//3. 从KHolder缓存快查询identifier对应的缓存项</span></span><br><span class="line">KObject *object = [<span class="keyword">self</span>.holder objectForKey:key];</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//4. 从KHolder缓存快移除缓存项</span></span><br><span class="line">[<span class="keyword">self</span>.holder removeObjectForKey:key];</span><br><span class="line"></span><br><span class="line"><span class="comment">//5. 返回缓存项KObject保存的缓存key</span></span><br><span class="line"><span class="keyword">return</span> [object value];</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="组装KQueue对象数据成字典"><a href="#组装KQueue对象数据成字典" class="headerlink" title="组装KQueue对象数据成字典"></a>组装KQueue对象数据成字典</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">NSDictionary</span> *)serialize</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">return</span> @&#123;</span><br><span class="line"><span class="string">@"size"</span> : [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"%ld"</span>, <span class="keyword">self</span>.size],</span><br><span class="line"><span class="string">@"name"</span> : <span class="keyword">self</span>.name,</span><br><span class="line"><span class="string">@"queue"</span> : <span class="keyword">self</span>.queue,</span><br><span class="line"><span class="string">@"offset"</span> : [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"%ld"</span>, <span class="keyword">self</span>.offset]</span><br><span class="line">&#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="从传入的字典恢复KQueue对象数据"><a href="#从传入的字典恢复KQueue对象数据" class="headerlink" title="从传入的字典恢复KQueue对象数据"></a>从传入的字典恢复KQueue对象数据</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)unserializeFrom:(<span class="built_in">NSDictionary</span> *)dict</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">if</span> ([[dict allKeys] containsObject:<span class="string">@"size"</span>]</span><br><span class="line">&amp;&amp; [[dict allKeys] containsObject:<span class="string">@"name"</span>]</span><br><span class="line">&amp;&amp; [[dict allKeys] containsObject:<span class="string">@"queue"</span>]</span><br><span class="line">&amp;&amp; [[dict allKeys] containsObject:<span class="string">@"offset"</span>])</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">self</span>.size   = [[dict objectForKey:<span class="string">@"size"</span>] intValue];</span><br><span class="line"><span class="keyword">self</span>.name   = [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"%@"</span>, [dict objectForKey:<span class="string">@"name"</span>]];</span><br><span class="line"><span class="keyword">self</span>.queue  = [[dict objectForKey:<span class="string">@"queue"</span>] mutableCopy];</span><br><span class="line"><span class="keyword">self</span>.offset = [[dict objectForKey:<span class="string">@"offset"</span>] intValue];</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="KQueue使用demo一、通过使用Kache对象注册KQueue使用"><a href="#KQueue使用demo一、通过使用Kache对象注册KQueue使用" class="headerlink" title="KQueue使用demo一、通过使用Kache对象注册KQueue使用"></a>KQueue使用demo一、通过使用Kache对象注册KQueue使用</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//1.</span></span><br><span class="line">Kache *kache = [[Kache alloc] initWithFiletoken:<span class="string">@"kache名字"</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">//2.</span></span><br><span class="line">[kache newQueueWithName:<span class="string">@"queue名字"</span> size:<span class="number">10</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">//3.</span></span><br><span class="line">Person *person = [[Person alloc] init];</span><br><span class="line">[kache pushValue:person toQueue:<span class="string">@"在Kache对象中注册的queue的名字"</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">//4.</span></span><br><span class="line">[kache popFromQueue:<span class="string">@"在Kache对象中注册的queue的名字"</span>];</span><br></pre></td></tr></table></figure>
+<h3 id="KQueue使用demo二、直接使用KQueue对象"><a href="#KQueue使用demo二、直接使用KQueue对象" class="headerlink" title="KQueue使用demo二、直接使用KQueue对象"></a>KQueue使用demo二、直接使用KQueue对象</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//1. 需要自己创建一个KHolder对象，作为最终的所有内存对象的缓存内存块</span></span><br><span class="line">KHolder *holder = [[KHolder alloc] initWithToken:<span class="string">@"名字"</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">//2.</span></span><br><span class="line">KQueue *queue = [[KQueue alloc] initWithHolder:holder];</span><br><span class="line"></span><br><span class="line"><span class="comment">//3.</span></span><br><span class="line">Person *p = [[Person alloc] init];</span><br><span class="line">[queue push:p];</span><br><span class="line"></span><br><span class="line"><span class="comment">//4.</span></span><br><span class="line">p = [queue pop];</span><br></pre></td></tr></table></figure>
+<p>两种用法的区别是，需不需要自己创建KHolder对象.</p>
+<ul>
+<li>第一种，KQueue使用Kache的Kholder对象</li>
+<li>第二种，需要自己创建一个KHolder对象作为缓存内存块</li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2017/08/22/Kache、KQueue/" data-title="Kache、KQueue | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2017/08/23/Kache、KHolder/" title="Kache、KHolder">
+  <strong>上一篇：</strong><br>
+  <span>
+  Kache、KHolder</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/08/20/git使用遇到的问题/" title="git使用遇到的问题">
+ <strong>下一篇：</strong><br> 
+ <span>git使用遇到的问题
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/08/22/Kache、KQueue/" data-title="Kache、KQueue" data-url="http://yoursite.com/2017/08/22/Kache、KQueue/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#KQueue对象"><span class="toc-number">1.</span> <span class="toc-text">KQueue对象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#KQueue-h-暴露的api"><span class="toc-number">2.</span> <span class="toc-text">KQueue.h 暴露的api</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#接下来开始看-KQueue-m-…"><span class="toc-number">3.</span> <span class="toc-text">接下来开始看 KQueue.m ….</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#匿名分类声明属性与方法"><span class="toc-number">3.1.</span> <span class="toc-text">匿名分类声明属性与方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#KQueue的初始化init函数"><span class="toc-number">3.2.</span> <span class="toc-text">KQueue的初始化init函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#KQueue队列入队-缓存key"><span class="toc-number">3.3.</span> <span class="toc-text">KQueue队列入队 缓存key</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#清理超时的内存缓存"><span class="toc-number">3.4.</span> <span class="toc-text">清理超时的内存缓存</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#KQueue退出队头保存的key对应的缓存value（缓存对象）"><span class="toc-number">3.5.</span> <span class="toc-text">KQueue退出队头保存的key对应的缓存value（缓存对象）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#组装KQueue对象数据成字典"><span class="toc-number">4.</span> <span class="toc-text">组装KQueue对象数据成字典</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#从传入的字典恢复KQueue对象数据"><span class="toc-number">5.</span> <span class="toc-text">从传入的字典恢复KQueue对象数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#KQueue使用demo一、通过使用Kache对象注册KQueue使用"><span class="toc-number">6.</span> <span class="toc-text">KQueue使用demo一、通过使用Kache对象注册KQueue使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#KQueue使用demo二、直接使用KQueue对象"><span class="toc-number">7.</span> <span class="toc-text">KQueue使用demo二、直接使用KQueue对象</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

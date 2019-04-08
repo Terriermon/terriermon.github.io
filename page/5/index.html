@@ -74,6 +74,109 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
+    <a href="/2017/03/17/Mach-O-代码签名/" title="Mach-O 代码签名" itemprop="url">
+  
+    <h1 itemprop="name">Mach-O 代码签名</h1>
+    
+     
+           <p itemprop="description">一直对iOS安全相关的东西接触的比较少，在有一些面试中也碰过几次，觉得安全相关的东西还是要会。
+我们写的App程序，最后经过编译打包生成一个ipa文件
+这个ipa文件其实就是一个压缩包
+
+ipa解压文件夹/Payload/xxx.app包/存放了所有程序资源如下
+
+主要的二进制可</p>
+        
+    
+    <time datetime="2017-03-17T09:44:08.000Z" itemprop="datePublished">2017-03-17</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2017/03/17/Mach-O可执行文件/" title="Mach-O可执行文件" itemprop="url">
+  
+    <h1 itemprop="name">Mach-O可执行文件</h1>
+    
+     
+           <p itemprop="description">Mac OS X/iOS平台上可执行文件格式是: Mach-O
+学习资料来源于: http://www.cocoachina.com/mac/20150122/10988.html
+
+
+每一种操作系统平台上都有对应的可执行文件格式
+Windows上exe是可直接执行的文件扩展名
+</p>
+        
+    
+    <time datetime="2017-03-17T04:53:37.000Z" itemprop="datePublished">2017-03-17</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2017/02/15/NSDictionary/" title="NSDictionary" itemprop="url">
+  
+    <h1 itemprop="name">NSDictionary</h1>
+    
+     
+           <p itemprop="description">在YYModel中，看到 NSDictionary 使用 数组 作为key 进行存取
+-[NSObject hash]
+-[NSObject description]
+NSDictionary 是按照 key的值，而不是 key的地址 进行运算
+
+作为字典key的要求1NSMut</p>
+        
+    
+    <time datetime="2017-02-15T05:39:54.000Z" itemprop="datePublished">2017-02-15</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2017/01/18/RSA-Encrypt/" title="RSA Encrypt" itemprop="url">
+  
+    <h1 itemprop="name">RSA Encrypt</h1>
+    
+     
+           <p itemprop="description">iOS中使用RSA非对称加密
+
+先查看当前Mac系统安装的OpenSSL版本1openssl version
+默认Mac系统安装的是OpenSSL 0.9.8zh 14 Jan 2016。版本已经很老了，需要更新下OpenSSL程序。
+
+更新OpenSSL
+(1) 使用brew更</p>
+        
+    
+    <time datetime="2017-01-18T03:07:46.000Z" itemprop="datePublished">2017-01-18</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
     <a href="/2017/01/12/objection/" title="objection" itemprop="url">
   
     <h1 itemprop="name">objection</h1>
@@ -211,101 +314,6 @@ objection 是一个轻量级的依赖注入的实现框架.
         
     
     <time datetime="2017-01-05T03:11:46.000Z" itemprop="datePublished">2017-01-05</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/12/20/weibo/" title="weibo" itemprop="url">
-  
-    <h1 itemprop="name">weibo</h1>
-    
-     
-           <p itemprop="description">###自己模仿Sina Weibo做了一个Demo，记录一下。
-
-###使用CocoaPods导入第三方的框架
-1234567891011121314151617181920212223242526#自动布局pod &amp;apos;Masonry&amp;apos;				#依赖注入pod </p>
-        
-    
-    <time datetime="2016-12-20T06:51:04.000Z" itemprop="datePublished">2016-12-20</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/11/20/UIWindow/" title="UIWindow" itemprop="url">
-  
-    <h1 itemprop="name">UIWindow</h1>
-    
-     
-           <p itemprop="description">UIScreen、UIWindow、UIView三者之间的关系
-(1) UIScreen为硬件设备的屏幕抽象，其中一个属性是整个屏幕区域bounds
-
-(2) UIWindow为内容显示提供背景平台，一个App程序必须至少要有一个UIWindow，否则不会显示任何的东西
-
-
-12</p>
-        
-    
-    <time datetime="2016-11-20T09:21:06.000Z" itemprop="datePublished">2016-11-20</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/09/26/Runtime-Part13-TypeEncodings/" title="Runtime Part13 TypeEncodings" itemprop="url">
-  
-    <h1 itemprop="name">Runtime Part13 TypeEncodings</h1>
-    
-     
-           <p itemprop="description">类型编码: 苹果会对每一种数据类型，统一按照特定的格式进行编码，得到一个格式化字符串，作用是可以加快消息分发
-对所有的开发者使用的数据类型，按照特定的格式进行编码
-
-系统按照特定的格式进行解码，找到最终要执行的方法、是被方法参数，类型、返回值类型…等等
-
-而如果不使用这种特定的格</p>
-        
-    
-    <time datetime="2016-09-26T07:25:28.000Z" itemprop="datePublished">2016-09-26</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/09/25/Runtime-Part12-Intercept/" title="Runtime Part12 Intercept" itemprop="url">
-  
-    <h1 itemprop="name">Runtime Part12 Intercept</h1>
-    
-     
-           <p itemprop="description">方法拦截的途径方法一、执行一个SEL不存在Method的消息
-然后不让方法继续执行，直接拦截掉 （resolve）转发给其他具有这个Method实例的Target （forward）方法二、使用runtime api，直接替换掉SEL指向的Method实例，让其找到一个假的函数实</p>
-        
-    
-    <time datetime="2016-09-25T12:49:50.000Z" itemprop="datePublished">2016-09-25</time>
   </a>
 </section>
 

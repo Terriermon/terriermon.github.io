@@ -1,0 +1,537 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>NSMutableAttributedString | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="NSAttributedString、NSMutableAttributedString是由&amp;lt;CoreText/CoreText.h&amp;gt;提供，可以让我们使一个字符串内部同时可以有很多不同颜色、不同大小、下划线、间距…等等丰富的显示样式设置。 列举下可用的 富文本字符串设置属性名字 命名结构: NS...AttributeName  1234567891011121314151617181">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NSMutableAttributedString">
+<meta property="og:url" content="http://yoursite.com/2017/08/12/NSMutableAttributedString/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="NSAttributedString、NSMutableAttributedString是由&amp;lt;CoreText/CoreText.h&amp;gt;提供，可以让我们使一个字符串内部同时可以有很多不同颜色、不同大小、下划线、间距…等等丰富的显示样式设置。 列举下可用的 富文本字符串设置属性名字 命名结构: NS...AttributeName  1234567891011121314151617181">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-08T14:59:48.740Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="NSMutableAttributedString">
+<meta name="twitter:description" content="NSAttributedString、NSMutableAttributedString是由&amp;lt;CoreText/CoreText.h&amp;gt;提供，可以让我们使一个字符串内部同时可以有很多不同颜色、不同大小、下划线、间距…等等丰富的显示样式设置。 列举下可用的 富文本字符串设置属性名字 命名结构: NS...AttributeName  1234567891011121314151617181">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/08/12/NSMutableAttributedString/" title="NSMutableAttributedString" itemprop="url">NSMutableAttributedString</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2017-08-12T13:50:14.000Z" itemprop="datePublished"> Published 2017-08-12</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#NSAttributedString、NSMutableAttributedString是由-lt-CoreText-CoreText-h-gt-提供，可以让我们使一个字符串内部同时可以有很多不同颜色、不同大小、下划线、间距…等等丰富的显示样式设置。"><span class="toc-number">1.</span> <span class="toc-text">NSAttributedString、NSMutableAttributedString是由&lt;CoreText/CoreText.h&gt;提供，可以让我们使一个字符串内部同时可以有很多不同颜色、不同大小、下划线、间距…等等丰富的显示样式设置。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#列举下可用的-富文本字符串设置属性名字"><span class="toc-number">2.</span> <span class="toc-text">列举下可用的 富文本字符串设置属性名字</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#主要使用的步骤"><span class="toc-number">3.</span> <span class="toc-text">主要使用的步骤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#如下有一个简单的使用例子"><span class="toc-number">4.</span> <span class="toc-text">如下有一个简单的使用例子</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#以下看看有哪一些常用富文本属性可以设置"><span class="toc-number">5.</span> <span class="toc-text">以下看看有哪一些常用富文本属性可以设置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用NSMutableAttributedString、NSTextAttachment、NSAttributedString完成UITextView内部显示文字与图片简单混排"><span class="toc-number">6.</span> <span class="toc-text">使用NSMutableAttributedString、NSTextAttachment、NSAttributedString完成UITextView内部显示文字与图片简单混排.</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="NSAttributedString、NSMutableAttributedString是由-lt-CoreText-CoreText-h-gt-提供，可以让我们使一个字符串内部同时可以有很多不同颜色、不同大小、下划线、间距…等等丰富的显示样式设置。"><a href="#NSAttributedString、NSMutableAttributedString是由-lt-CoreText-CoreText-h-gt-提供，可以让我们使一个字符串内部同时可以有很多不同颜色、不同大小、下划线、间距…等等丰富的显示样式设置。" class="headerlink" title="NSAttributedString、NSMutableAttributedString是由&lt;CoreText/CoreText.h&gt;提供，可以让我们使一个字符串内部同时可以有很多不同颜色、不同大小、下划线、间距…等等丰富的显示样式设置。"></a>NSAttributedString、NSMutableAttributedString是由<code>&lt;CoreText/CoreText.h&gt;</code>提供，可以让我们使一个字符串内部同时可以有很多不同颜色、不同大小、下划线、间距…等等丰富的显示样式设置。</h3><hr>
+<h3 id="列举下可用的-富文本字符串设置属性名字"><a href="#列举下可用的-富文本字符串设置属性名字" class="headerlink" title="列举下可用的 富文本字符串设置属性名字"></a>列举下可用的 富文本字符串设置属性名字</h3><ul>
+<li>命名结构: <code>NS...AttributeName</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">NSFontAttributeName                设置字体属性，默认值：字体：Helvetica(Neue) 字号：12</span><br><span class="line">NSForegroundColorAttributeName      设置字体颜色，取值为 UIColor对象，默认值为黑色</span><br><span class="line">NSBackgroundColorAttributeName     设置字体所在区域背景颜色，取值为 UIColor对象，默认值为nil, 透明色</span><br><span class="line">NSLigatureAttributeName            设置连体属性，取值为NSNumber 对象(整数)，0 表示没有连体字符，1 表示使用默认的连体字符</span><br><span class="line">NSKernAttributeName                设定字符间距，取值为 NSNumber 对象（整数），正值间距加宽，负值间距变窄</span><br><span class="line">NSStrikethroughStyleAttributeName  设置删除线，取值为 NSNumber 对象（整数）</span><br><span class="line">NSStrikethroughColorAttributeName  设置删除线颜色，取值为 UIColor 对象，默认值为黑色</span><br><span class="line">NSUnderlineStyleAttributeName      设置下划线，取值为 NSNumber 对象（整数），枚举常量 NSUnderlineStyle中的值，与删除线类似</span><br><span class="line">NSUnderlineColorAttributeName      设置下划线颜色，取值为 UIColor 对象，默认值为黑色</span><br><span class="line">NSStrokeWidthAttributeName         设置笔画宽度，取值为 NSNumber 对象（整数），负值填充效果，正值中空效果</span><br><span class="line">NSStrokeColorAttributeName         填充部分颜色，不是字体颜色，取值为 UIColor 对象</span><br><span class="line">NSShadowAttributeName              设置阴影属性，取值为 NSShadow 对象</span><br><span class="line">NSTextEffectAttributeName          设置文本特殊效果，取值为 NSString 对象，目前只有图版印刷效果可用：</span><br><span class="line">NSBaselineOffsetAttributeName      设置基线偏移值，取值为 NSNumber （float）,正值上偏，负值下偏</span><br><span class="line">NSObliquenessAttributeName         设置字形倾斜度，取值为 NSNumber （float）,正值右倾，负值左倾</span><br><span class="line">NSExpansionAttributeName           设置文本横向拉伸属性，取值为 NSNumber （float）,正值横向拉伸文本，负值横向压缩文本</span><br><span class="line">NSWritingDirectionAttributeName    设置文字书写方向，从左向右书写或者从右向左书写</span><br><span class="line">NSVerticalGlyphFormAttributeName   设置文字排版方向，取值为 NSNumber 对象(整数)，0 表示横排文本，1 表示竖排文本</span><br><span class="line">NSLinkAttributeName                设置链接属性，点击后调用浏览器打开指定URL地址</span><br><span class="line">NSAttachmentAttributeName          设置文本附件,取值为NSTextAttachment对象,常用于文字图片混排</span><br><span class="line">NSParagraphStyleAttributeName      设置文本段落排版格式，取值为 NSParagraphStyle 对象</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="主要使用的步骤"><a href="#主要使用的步骤" class="headerlink" title="主要使用的步骤"></a>主要使用的步骤</h3><ul>
+<li>1) 将原始字符串使用<code>NSMutableAttributedString</code>包装</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">NSString *targetStr = @&quot;将要多样化显示的原始字符串&quot;;</span><br><span class="line"></span><br><span class="line">NSMutableAttributedString * targetStr = [[NSMutableAttributedString alloc] initWithString: targetStr];</span><br></pre></td></tr></table></figure>
+<ul>
+<li>2) 开始编辑属性</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[targetStr beginEditing];</span><br></pre></td></tr></table></figure>
+<ul>
+<li>3) 给富文本字符串添加样式</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[attString addAttribute:属性名</span><br><span class="line">value:属性值</span><br><span class="line">range:范围];</span><br></pre></td></tr></table></figure>
+<ul>
+<li>4) 结束编辑属性</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[targetStr endEditing];</span><br></pre></td></tr></table></figure>
+<ul>
+<li>5) 显示设置后的富文本字符串</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">直接显示给UI</span><br><span class="line">label.attributedText = targetStr;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">使用绘图绘制</span><br><span class="line">[targetStr drawInRect:区域];</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="如下有一个简单的使用例子"><a href="#如下有一个简单的使用例子" class="headerlink" title="如下有一个简单的使用例子"></a>如下有一个简单的使用例子</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">//原始数据字符串</span><br><span class="line">NSString *string = @&quot;我是好人我是好人我是个好人额鹅鹅鹅鹅鹅鹅饿哇哇哇哇哇哇哇&quot;;</span><br><span class="line"></span><br><span class="line">//1. 创建可变属性化字符串</span><br><span class="line">NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:string];</span><br><span class="line"></span><br><span class="line">//2.1 设置单个样式</span><br><span class="line">UIFont *smallFont = [UIFont systemFontOfSize:30];</span><br><span class="line">[attrString addAttribute:NSFontAttributeName</span><br><span class="line">value:smallFont</span><br><span class="line">range:NSMakeRange(5, 10)];</span><br><span class="line"></span><br><span class="line">//2.2 设置单个样式</span><br><span class="line">UIColor *rcolor = [UIColor redColor];</span><br><span class="line">[attrString addAttribute:NSForegroundColorAttributeName</span><br><span class="line">value:rcolor</span><br><span class="line">range:[string rangeOfString:@&quot;是&quot;]];</span><br><span class="line"></span><br><span class="line">//3. 将设置过属性的【富文本字符串】设置给label显示</span><br><span class="line">label.attributedText = attrString;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>小结<code>富文本字符串</code>属性三个东西:</p>
+</blockquote>
+<ul>
+<li>要设置的富文本<code>属性名</code>. </li>
+<li><p>Attribute Key （如: NSForegroundColorAttributeName颜色 … ）</p>
+</li>
+<li><p>要设置的富文本属性对应的<code>属性值</code>.</p>
+</li>
+<li><p>Attribute Value （如: [UIColor redColor] .. id类型）</p>
+</li>
+<li><p>上如富文本设置对应的<code>范围</code>. </p>
+</li>
+<li>Attribute Range (如:[string rangeOfString:@”是”]..）</li>
+</ul>
+<blockquote>
+<p>小结<code>NSMutableAttributedString</code>的常用Api</p>
+</blockquote>
+<ul>
+<li>为某一范围内文字设置<code>多个属性</code>（做第一次的全部默认的样式设置）</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (void)setAttributes:(NSDictionary *)attrs range:(NSRange)range;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>为某一范围内文字添加<code>单个属性</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (void)addAttribute:(NSString *)name value:(id)value range:(NSRange)range;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>为某一范围内文字添加<code>多个属性</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (void)addAttributes:(NSDictionary *)attrs range:(NSRange)range;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>移除某范围内的<code>单个属性</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (void)removeAttribute:(NSString *)name range:(NSRange)range;</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="以下看看有哪一些常用富文本属性可以设置"><a href="#以下看看有哪一些常用富文本属性可以设置" class="headerlink" title="以下看看有哪一些常用富文本属性可以设置"></a>以下看看有哪一些常用<code>富文本属性</code>可以设置</h3><p>字体颜色、字体大小就不说了…</p>
+<ul>
+<li>给部分内容设置<code>下划线</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[attString addAttribute:NSUnderlineStyleAttributeName</span><br><span class="line">value:[NSNumber numberWithInteger:NSUnderlineStyleSingle]</span><br><span class="line">range:[myString rangeOfString:@&quot;learn&quot;]];</span><br></pre></td></tr></table></figure>
+<ul>
+<li>给部分内容设置<code>删除线</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">//1. 删除线样式</span><br><span class="line">[attString addAttribute:NSStrikethroughStyleAttributeName</span><br><span class="line">value:@(NSUnderlineStyleSingle)</span><br><span class="line">range:[myString rangeOfString:@&quot;learn&quot;]];</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//2. 删除线的颜色    </span><br><span class="line">[attString addAttribute:NSStrikethroughColorAttributeName</span><br><span class="line">value:[UIColor greenColor]</span><br><span class="line">range:[myString rangeOfString:@&quot;learn&quot;]];</span><br></pre></td></tr></table></figure>
+<ul>
+<li>给部分内容设置<code>背景颜色</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[attString addAttribute:NSBackgroundColorAttributeName</span><br><span class="line">value:[UIColor redColor]</span><br><span class="line">range:[myString rangeOfString:@&quot;learn&quot;]];</span><br></pre></td></tr></table></figure>
+<ul>
+<li>给部分内容设置<code>空心字</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">//1. 设置空心字的字体颜色</span><br><span class="line">[attString addAttribute:NSStrokeColorAttributeName</span><br><span class="line">value:[UIColor greenColor]</span><br><span class="line">range:[myString rangeOfString:@&quot;Fast&quot;]];</span><br><span class="line"></span><br><span class="line">//2. 设置空心字的字体宽度</span><br><span class="line">[attString addAttribute:NSStrokeWidthAttributeName</span><br><span class="line">value:@(5)</span><br><span class="line">range:[myString rangeOfString:@&quot;Fast&quot;]];</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="使用NSMutableAttributedString、NSTextAttachment、NSAttributedString完成UITextView内部显示文字与图片简单混排"><a href="#使用NSMutableAttributedString、NSTextAttachment、NSAttributedString完成UITextView内部显示文字与图片简单混排" class="headerlink" title="使用NSMutableAttributedString、NSTextAttachment、NSAttributedString完成UITextView内部显示文字与图片简单混排."></a>使用NSMutableAttributedString、NSTextAttachment、NSAttributedString完成UITextView内部显示文字与图片简单混排.</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">//2. 判断是Emoji还是其图片表情</span><br><span class="line">if (model.code) &#123;</span><br><span class="line">//显示Emoji表情: 插入的是文字</span><br><span class="line"></span><br><span class="line">//2.1 先对emoji表情十六进制数解码成字符串文字</span><br><span class="line">NSString *value = [model.code emoji];</span><br><span class="line"></span><br><span class="line">//2.2 再insert到textView显示</span><br><span class="line">[self.contentTextView insertText:value];</span><br><span class="line"></span><br><span class="line">&#125; else &#123;</span><br><span class="line">//显示非Emoji表情: 插入的是图片</span><br><span class="line"></span><br><span class="line">//2.1 创建一个可变的富文本字符串</span><br><span class="line">NSMutableAttributedString *mutableAttrStr = [[NSMutableAttributedString alloc] init];</span><br><span class="line"></span><br><span class="line">//2.2 拼接之前的内容字符串（带字体的字符串、图片）</span><br><span class="line">[mutableAttrStr appendAttributedString:self.contentTextView.attributedText];</span><br><span class="line"></span><br><span class="line">//2.3 得到要插入的表情图片</span><br><span class="line">UIImage *image = [UIImage imageNamed:[model png]];</span><br><span class="line"></span><br><span class="line">//2.4 使用富文本附件包装显示的Image</span><br><span class="line">NSTextAttachment *textAttach = [[NSTextAttachment alloc] init];</span><br><span class="line">textAttach.image = image;</span><br><span class="line"></span><br><span class="line">//2.5 设置NSTextAttachment实例显示的宽度和高度</span><br><span class="line">CGFloat textLineH = self.contentTextView.font.lineHeight;//字体高度</span><br><span class="line">textAttach.bounds = CGRectMake(0, 0, textLineH, textLineH);</span><br><span class="line"></span><br><span class="line">//2.6 使用NSTextAttachment实例，创建富本文属性字符串</span><br><span class="line">NSAttributedString *textAttachAttString = [NSAttributedString attributedStringWithAttachment:textAttach];</span><br><span class="line"></span><br><span class="line">//2.7 可变富文本，拼接带有图片的子富文本</span><br><span class="line">//[mutableAttrStr appendAttributedString:textAttachAttString];这样会造成全部都是追加在最后面，不能够在中间插入内容</span><br><span class="line"></span><br><span class="line">//2.7 获取当前输入光标所在的位置</span><br><span class="line">NSUInteger location = self.contentTextView.selectedRange.location;</span><br><span class="line"></span><br><span class="line">//2.8 将带有图片的子富文本，插入到可变字符串中，输入光标所在的位置</span><br><span class="line">[mutableAttrStr insertAttributedString:textAttachAttString atIndex:location];</span><br><span class="line"></span><br><span class="line">//2.9 给可变富文本设置字体</span><br><span class="line">[mutableAttrStr addAttribute:NSFontAttributeName</span><br><span class="line">value:self.contentTextView.font</span><br><span class="line">range:NSMakeRange(0, mutableAttrStr.length)];</span><br><span class="line"></span><br><span class="line">//2.10 将最终的富文本字符串设置给TextView显示</span><br><span class="line">//这一句执行后，会将输入光标移动到末尾</span><br><span class="line">self.contentTextView.attributedText = mutableAttrStr;</span><br><span class="line"></span><br><span class="line">//2.11 调整输入光标到插入内容的后面以为</span><br><span class="line">self.contentTextView.selectedRange = NSMakeRange(location + 1, 0);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>小结:</p>
+<ul>
+<li><p>可变字符串的<code>insertAttributedString:atIndex:</code>插入其他子富文本字符串</p>
+</li>
+<li><p>当执行<code>UITextView对象.attributedText = mutableAttrStr;</code>后，输入光标会默认移动<code>末尾</code></p>
+</li>
+<li><p>获取当前输入光标的位置</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">NSUInteger location = UITextView对象.selectedRange.location;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>修改当前输入光标的位置</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//1. 计算得到一个起始位置</span><br><span class="line">NSUInteger location = ...;</span><br><span class="line"></span><br><span class="line">//2. 设置给TextView</span><br><span class="line">UITextView对象.selectedRange = NSMakeRange(location, 0);//长度是0，如果大于0，就会选中后面的一段文字</span><br></pre></td></tr></table></figure>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2017/08/12/NSMutableAttributedString/" data-title="NSMutableAttributedString | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2017/08/13/TextKit学习笔记一基本使用/" title="TextKit学习笔记一基本使用">
+  <strong>上一篇：</strong><br>
+  <span>
+  TextKit学习笔记一基本使用</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/08/12/Autolayout3/" title="Autolayout3">
+ <strong>下一篇：</strong><br> 
+ <span>Autolayout3
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/08/12/NSMutableAttributedString/" data-title="NSMutableAttributedString" data-url="http://yoursite.com/2017/08/12/NSMutableAttributedString/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#NSAttributedString、NSMutableAttributedString是由-lt-CoreText-CoreText-h-gt-提供，可以让我们使一个字符串内部同时可以有很多不同颜色、不同大小、下划线、间距…等等丰富的显示样式设置。"><span class="toc-number">1.</span> <span class="toc-text">NSAttributedString、NSMutableAttributedString是由&lt;CoreText/CoreText.h&gt;提供，可以让我们使一个字符串内部同时可以有很多不同颜色、不同大小、下划线、间距…等等丰富的显示样式设置。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#列举下可用的-富文本字符串设置属性名字"><span class="toc-number">2.</span> <span class="toc-text">列举下可用的 富文本字符串设置属性名字</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#主要使用的步骤"><span class="toc-number">3.</span> <span class="toc-text">主要使用的步骤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#如下有一个简单的使用例子"><span class="toc-number">4.</span> <span class="toc-text">如下有一个简单的使用例子</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#以下看看有哪一些常用富文本属性可以设置"><span class="toc-number">5.</span> <span class="toc-text">以下看看有哪一些常用富文本属性可以设置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用NSMutableAttributedString、NSTextAttachment、NSAttributedString完成UITextView内部显示文字与图片简单混排"><span class="toc-number">6.</span> <span class="toc-text">使用NSMutableAttributedString、NSTextAttachment、NSAttributedString完成UITextView内部显示文字与图片简单混排.</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

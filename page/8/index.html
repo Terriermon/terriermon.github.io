@@ -74,6 +74,116 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
+    <a href="/2016/02/23/nil-nsnull-null-kcfnull/" title="nil-nsnull-null-kcfnull" itemprop="url">
+  
+    <h1 itemprop="name">nil-nsnull-null-kcfnull</h1>
+    
+     
+           <p itemprop="description">NULL
+
+c语法中的指针
+1char *p = NULL;
+
+nil
+
+ObjC 对象的字面空值，对应 id 类型的对象
+123NSString *someString = nil;NSURL *someURL = nil;id someObject = nil;
+
+Nil
+
+</p>
+        
+    
+    <time datetime="2016-02-23T08:33:08.000Z" itemprop="datePublished">2016-02-23</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/02/16/枚举Mask/" title="枚举Mask" itemprop="url">
+  
+    <h1 itemprop="name">枚举Mask</h1>
+    
+     
+           <p itemprop="description">Mask 掩码，用于截取获得低n位的枚举值，让枚举值之间可以使用运算符|相加
+带Mask掩码的枚举值定义
+
+12345678910111213141516typedef NS_OPTIONS(NSInteger, Test) &amp;#123;TestIvarMask         </p>
+        
+    
+    <time datetime="2016-02-16T07:36:05.000Z" itemprop="datePublished">2016-02-16</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/01/21/NSCharacterSet/" title="NSCharacterSet" itemprop="url">
+  
+    <h1 itemprop="name">NSCharacterSet</h1>
+    
+     
+           <p itemprop="description">NSCharacterSet和NSMutableCharacterSet是用来表示一组Unicode字符
+常见系统的 字符集组合CharSet123456789101112131415[NSCharacterSet alphanumericCharacterSet];      </p>
+        
+    
+    <time datetime="2016-01-21T15:05:36.000Z" itemprop="datePublished">2016-01-21</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/01/18/设计模式-访问者模式/" title="设计模式-访问者模式" itemprop="url">
+  
+    <h1 itemprop="name">设计模式-访问者模式</h1>
+    
+     
+           <p itemprop="description">访问者、将对一个实体类的业务逻辑，封装到一个Visitor中.
+假设有两个实体
+书
+
+水果
+
+
+
+各自有各自的业务逻辑
+书本需要计算最终的价格 &amp;gt;&amp;gt;&amp;gt; float返回值类型
+
+水果需要计算最终的价格 &amp;gt;&amp;gt;&amp;gt; float返回值类型
+
+
+可以看到是</p>
+        
+    
+    <time datetime="2016-01-18T15:29:02.000Z" itemprop="datePublished">2016-01-18</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
     <a href="/2016/01/17/设计模式-策略模式/" title="设计模式-策略模式" itemprop="url">
   
     <h1 itemprop="name">设计模式-策略模式</h1>
@@ -209,110 +319,6 @@
         
     
     <time datetime="2016-01-12T04:48:25.000Z" itemprop="datePublished">2016-01-12</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/01/11/开发者证书/" title="开发者证书" itemprop="url">
-  
-    <h1 itemprop="name">开发者证书</h1>
-    
-     
-           <p itemprop="description">开发者账号的种类
-个人(individual) $99/year
-可以真机调试, 发布 appstore, 每年 最多为 100台设备分发。
-
-公司(company) $99/year
-
-与个人帐号类似, 只有这两种帐号（个人和公司）可以发布 appstore。
-但是比个人账号申</p>
-        
-    
-    <time datetime="2016-01-11T13:29:58.000Z" itemprop="datePublished">2016-01-11</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/01/11/设计模式-模板模式/" title="设计模式-模板模式" itemprop="url">
-  
-    <h1 itemprop="name">设计模式-模板模式</h1>
-    
-     
-           <p itemprop="description">模板模式、提供一些基础的模板方法、步骤性的逻辑代码框架给其他的子类.之前BaseViewController使用过这个模式.
-
-抽象模板接口12345678910111213141516171819202122232425262728////  Template.h//  dem</p>
-        
-    
-    <time datetime="2016-01-11T04:32:29.000Z" itemprop="datePublished">2016-01-11</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/01/10/设计模式-代理模式/" title="设计模式-代理模式" itemprop="url">
-  
-    <h1 itemprop="name">设计模式-代理模式</h1>
-    
-     
-           <p itemprop="description">代理模式、可谓是在iOS用的最多、最经典的模式具体应用场景
-
-NSProxy应用拦截目标对象方法
-UITableView中UI效果展示与数据源获取的逻辑分离
-
-小结代理的应用场景
-需要拦截目标方法执行、面向切面编程
-代理对象
-继承类
-swizzle方法实现
-消息转发（动态代理对象</p>
-        
-    
-    <time datetime="2016-01-10T03:14:16.000Z" itemprop="datePublished">2016-01-10</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/01/09/设计模式-享元模式/" title="设计模式-享元模式" itemprop="url">
-  
-    <h1 itemprop="name">设计模式-享元模式</h1>
-    
-     
-           <p itemprop="description">享元模式、我理解就类似缓存优化，先取缓存，没有就创建新的，再存入缓存.
-简单 享元
-复合 享元
-
-
-抽象享元接口定义1234567891011/***  抽象享元接口*/@protocol Flyweight &amp;lt;NSObject&amp;gt;/***  功能函数定义*/- (vo</p>
-        
-    
-    <time datetime="2016-01-09T02:28:07.000Z" itemprop="datePublished">2016-01-09</time>
   </a>
 </section>
 

@@ -74,6 +74,101 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
+    <a href="/2016/12/20/weibo/" title="weibo" itemprop="url">
+  
+    <h1 itemprop="name">weibo</h1>
+    
+     
+           <p itemprop="description">###自己模仿Sina Weibo做了一个Demo，记录一下。
+
+###使用CocoaPods导入第三方的框架
+1234567891011121314151617181920212223242526#自动布局pod &amp;apos;Masonry&amp;apos;				#依赖注入pod </p>
+        
+    
+    <time datetime="2016-12-20T06:51:04.000Z" itemprop="datePublished">2016-12-20</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/11/20/UIWindow/" title="UIWindow" itemprop="url">
+  
+    <h1 itemprop="name">UIWindow</h1>
+    
+     
+           <p itemprop="description">UIScreen、UIWindow、UIView三者之间的关系
+(1) UIScreen为硬件设备的屏幕抽象，其中一个属性是整个屏幕区域bounds
+
+(2) UIWindow为内容显示提供背景平台，一个App程序必须至少要有一个UIWindow，否则不会显示任何的东西
+
+
+12</p>
+        
+    
+    <time datetime="2016-11-20T09:21:06.000Z" itemprop="datePublished">2016-11-20</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/09/26/Runtime-Part13-TypeEncodings/" title="Runtime Part13 TypeEncodings" itemprop="url">
+  
+    <h1 itemprop="name">Runtime Part13 TypeEncodings</h1>
+    
+     
+           <p itemprop="description">类型编码: 苹果会对每一种数据类型，统一按照特定的格式进行编码，得到一个格式化字符串，作用是可以加快消息分发
+对所有的开发者使用的数据类型，按照特定的格式进行编码
+
+系统按照特定的格式进行解码，找到最终要执行的方法、是被方法参数，类型、返回值类型…等等
+
+而如果不使用这种特定的格</p>
+        
+    
+    <time datetime="2016-09-26T07:25:28.000Z" itemprop="datePublished">2016-09-26</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/09/25/Runtime-Part12-Intercept/" title="Runtime Part12 Intercept" itemprop="url">
+  
+    <h1 itemprop="name">Runtime Part12 Intercept</h1>
+    
+     
+           <p itemprop="description">方法拦截的途径方法一、执行一个SEL不存在Method的消息
+然后不让方法继续执行，直接拦截掉 （resolve）转发给其他具有这个Method实例的Target （forward）方法二、使用runtime api，直接替换掉SEL指向的Method实例，让其找到一个假的函数实</p>
+        
+    
+    <time datetime="2016-09-25T12:49:50.000Z" itemprop="datePublished">2016-09-25</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
     <a href="/2016/09/25/Runtime-Part11-NSInvocation/" title="Runtime Part11 NSInvocation" itemprop="url">
   
     <h1 itemprop="name">Runtime Part11 NSInvocation</h1>
@@ -211,112 +306,6 @@ Objective-c 中的 每一个类 如: Person类 其实包含两部分一、普通
         
     
     <time datetime="2016-09-23T15:46:40.000Z" itemprop="datePublished">2016-09-23</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/09/23/Runtime-Part5-Class/" title="Runtime Part5 Class" itemprop="url">
-  
-    <h1 itemprop="name">Runtime Part5 Class</h1>
-    
-     
-           <p itemprop="description">通常我们编写一个类并继承自NSObject，然后编写所有的变量、所有的方法、以及实现的所有的协议….Foundation中提供了两个根类NSObject、平时使用最多的根类，提供了很多我们常用的api基本的功能
-
-(BOOL)isEqual:(id)object;@propert</p>
-        
-    
-    <time datetime="2016-09-23T12:39:52.000Z" itemprop="datePublished">2016-09-23</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/09/23/Runtime-Part4-Ivar-Property/" title="Runtime Part4 Ivar Property" itemprop="url">
-  
-    <h1 itemprop="name">Runtime Part4 Ivar Property</h1>
-    
-     
-           <p itemprop="description">成员变量 与 属性 是不同的
-成员变量 Ivar
-
-
-仅仅只是一个对象的内部使用的 变量
-
-
-属性 Property
-
-
-首先包括成员变量，并且还包括对成员变量操作的 setter方法与getter方法
-
-
-成员变量的相关操作#Ivar 结构体定义1typedef struct </p>
-        
-    
-    <time datetime="2016-09-23T11:21:10.000Z" itemprop="datePublished">2016-09-23</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/09/22/Runtime-Part3-IMP/" title="Runtime Part3 IMP" itemprop="url">
-  
-    <h1 itemprop="name">Runtime Part3 IMP</h1>
-    
-     
-           <p itemprop="description">什么是IMP？
-IMP 就是一个指向任意一个 c函数的 函数指针
-
-IMP的原型
-12345#if !OBJC_OLD_DISPATCH_PROTOTYPEStypedef void (*IMP)(void /* id, SEL, ... */ ); #elsetypedef i</p>
-        
-    
-    <time datetime="2016-09-22T10:56:12.000Z" itemprop="datePublished">2016-09-22</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/09/22/Runtime-Part2-SEL/" title="Runtime Part2 SEL" itemprop="url">
-  
-    <h1 itemprop="name">Runtime Part2 SEL</h1>
-    
-     
-           <p itemprop="description">什么是消息选择器？
-(1) 消息选择器是一种文本字符串，用于消息传递的过程
-
-(2) 消息选择器是一种分为多段的文本字符串，每个段以冒号结尾且后面可以跟方法执行参数
-
-(3) 运行时系统根据消息选择器，找到对应的方法实现完成方法调用
-
-(4) 消息选择器主要是标识区别某个对象/某</p>
-        
-    
-    <time datetime="2016-09-22T10:04:03.000Z" itemprop="datePublished">2016-09-22</time>
   </a>
 </section>
 

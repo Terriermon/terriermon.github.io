@@ -1,0 +1,458 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>BaseViewController设计 | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="基于OOP的思想，我想所有的控制器根据需要去继承自我们的BaseViewController。这么做的好处有: 很多都要用的功能代码不会散落到每一个ViewController 可以提供一些模板方法（代码规则）让其他子类去遵守 便于统一添加/移除一些UI效果、网络状态监听 统一管理控制器的push/present，让控制器类之间彻底解耦 其他的…   No1. 指定一种代码规范让其他程序员遵守，便">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BaseViewController设计">
+<meta property="og:url" content="http://yoursite.com/2017/08/09/BaseViewController设计/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="基于OOP的思想，我想所有的控制器根据需要去继承自我们的BaseViewController。这么做的好处有: 很多都要用的功能代码不会散落到每一个ViewController 可以提供一些模板方法（代码规则）让其他子类去遵守 便于统一添加/移除一些UI效果、网络状态监听 统一管理控制器的push/present，让控制器类之间彻底解耦 其他的…   No1. 指定一种代码规范让其他程序员遵守，便">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-08T14:59:11.906Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="BaseViewController设计">
+<meta name="twitter:description" content="基于OOP的思想，我想所有的控制器根据需要去继承自我们的BaseViewController。这么做的好处有: 很多都要用的功能代码不会散落到每一个ViewController 可以提供一些模板方法（代码规则）让其他子类去遵守 便于统一添加/移除一些UI效果、网络状态监听 统一管理控制器的push/present，让控制器类之间彻底解耦 其他的…   No1. 指定一种代码规范让其他程序员遵守，便">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/08/09/BaseViewController设计/" title="BaseViewController设计" itemprop="url">BaseViewController设计</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2017-08-09T10:21:00.000Z" itemprop="datePublished"> Published 2017-08-09</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#基于OOP的思想，我想所有的控制器根据需要去继承自我们的BaseViewController。"><span class="toc-number">1.</span> <span class="toc-text">基于OOP的思想，我想所有的控制器根据需要去继承自我们的BaseViewController。</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#这么做的好处有"><span class="toc-number">1.1.</span> <span class="toc-text">这么做的好处有:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No1-指定一种代码规范让其他程序员遵守，便于维护代码"><span class="toc-number">1.2.</span> <span class="toc-text">No1. 指定一种代码规范让其他程序员遵守，便于维护代码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No2-封装一些公共的工具性代码"><span class="toc-number">1.3.</span> <span class="toc-text">No2. 封装一些公共的工具性代码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No3-统一处理所有控制器对象的push-present"><span class="toc-number">1.4.</span> <span class="toc-text">No3. 统一处理所有控制器对象的push/present</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<h2 id="基于OOP的思想，我想所有的控制器根据需要去继承自我们的BaseViewController。"><a href="#基于OOP的思想，我想所有的控制器根据需要去继承自我们的BaseViewController。" class="headerlink" title="基于OOP的思想，我想所有的控制器根据需要去继承自我们的BaseViewController。"></a>基于OOP的思想，我想所有的控制器根据需要去继承自我们的BaseViewController。</h2><h3 id="这么做的好处有"><a href="#这么做的好处有" class="headerlink" title="这么做的好处有:"></a>这么做的好处有:</h3><ul>
+<li>很多都要用的功能代码不会散落到每一个ViewController</li>
+<li>可以提供一些模板方法（代码规则）让其他子类去遵守</li>
+<li>便于统一添加/移除一些UI效果、网络状态监听</li>
+<li>统一管理控制器的push/present，让控制器类之间彻底解耦</li>
+<li>其他的…</li>
+</ul>
+<hr>
+<h3 id="No1-指定一种代码规范让其他程序员遵守，便于维护代码"><a href="#No1-指定一种代码规范让其他程序员遵守，便于维护代码" class="headerlink" title="No1. 指定一种代码规范让其他程序员遵守，便于维护代码"></a>No1. 指定一种代码规范让其他程序员遵守，便于维护代码</h3><p>在baseViewController加上如下方法</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">//用于取消请求的代码都写在这</span></span><br><span class="line">- (<span class="keyword">void</span>)destroyRequest;</span><br><span class="line"></span><br><span class="line"><span class="comment">//创建subviews的代码都写在这</span></span><br><span class="line">- (<span class="keyword">void</span>)createSubviews;</span><br><span class="line">- (<span class="keyword">void</span>)destroySubviews;</span><br><span class="line">- (<span class="keyword">void</span>)reloadSubviews;</span><br><span class="line"></span><br><span class="line"><span class="comment">//创建变量的代码都写在这</span></span><br><span class="line">- (<span class="keyword">void</span>)createVariables;</span><br><span class="line">- (<span class="keyword">void</span>)destroyVariables;</span><br><span class="line"></span><br><span class="line"><span class="comment">//绑定ViewModel的代码都写在这</span></span><br><span class="line">- (<span class="keyword">void</span>)bindViewModel;</span><br><span class="line">- (<span class="keyword">void</span>)unbindViewModel;</span><br><span class="line">- (<span class="keyword">void</span>)enableViewModel;</span><br><span class="line">- (<span class="keyword">void</span>)disableViewModel;</span><br><span class="line"></span><br><span class="line"><span class="comment">//获取数据的代码都写在这</span></span><br><span class="line">- (<span class="keyword">void</span>)loadData;</span><br><span class="line">- (<span class="keyword">void</span>)loadDataFromHost;</span><br><span class="line">- (<span class="keyword">void</span>)reloadDataFromHost;</span><br><span class="line">- (<span class="keyword">void</span>)loadDataFromLocal;</span><br><span class="line">- (<span class="keyword">void</span>)saveDataToLocal;</span><br><span class="line"></span><br><span class="line"><span class="comment">//等等其他就不举例了...</span></span><br></pre></td></tr></table></figure>
+<h3 id="No2-封装一些公共的工具性代码"><a href="#No2-封装一些公共的工具性代码" class="headerlink" title="No2. 封装一些公共的工具性代码"></a>No2. 封装一些公共的工具性代码</h3><p>如各种自定义通知 【用户登录状态、网络状态 … 】</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)handleNotReachableHost;</span><br><span class="line">- (<span class="keyword">void</span>)handleReachableViaWiFi;</span><br><span class="line">- (<span class="keyword">void</span>)handleReachableViaWWAN;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)handleUserNotLogin;</span><br><span class="line">- (<span class="keyword">void</span>)handleUserLogin;</span><br><span class="line">- (<span class="keyword">void</span>)handleUserLogout;</span><br><span class="line">- (<span class="keyword">void</span>)handleUserLoginExpirate;</span><br></pre></td></tr></table></figure>
+<h3 id="No3-统一处理所有控制器对象的push-present"><a href="#No3-统一处理所有控制器对象的push-present" class="headerlink" title="No3. 统一处理所有控制器对象的push/present"></a>No3. 统一处理所有控制器对象的push/present</h3><p>第一步、规定每一个ViewController对应一个数值</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="built_in">NS_ENUM</span>(<span class="built_in">NSInteger</span>, ZSYViewControllerId) &#123;</span><br><span class="line"></span><br><span class="line">ZSYHomePage                         = <span class="number">1</span>,</span><br><span class="line">ZSYCustomerRegistAndLogin ,</span><br><span class="line">ZSYCustomerLogin ,</span><br><span class="line">ZSYCustomerRegist ,</span><br><span class="line">ZSYCustomerFindPwd ,</span><br><span class="line">ZSYCustomerIdentiVery ,</span><br><span class="line"></span><br><span class="line"><span class="comment">//....</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>第二步、写一个封装的push方法</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- (<span class="keyword">id</span>)pushWithControllerId:(ZSYViewControllerId)controllerId</span><br><span class="line">isAnimate:(<span class="built_in">BOOL</span>)isAnimate;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">id</span>)pushWithControllerId:(ZSYViewControllerId)controllerId</span><br><span class="line">Title:(<span class="built_in">NSString</span> *)title</span><br><span class="line">Argument:(<span class="built_in">NSDictionary</span> *)argument</span><br><span class="line">isAnimate:(<span class="built_in">BOOL</span>)isAnimate;</span><br></pre></td></tr></table></figure>
+<p>自定义push方法做的事情:</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">//1. 获取类文件名</span></span><br><span class="line">className = [<span class="keyword">self</span> viewControllerclassNameById:controllerId];</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 获取当前控制器的NavigationController</span></span><br><span class="line">ZSYBaseNavController *nav = [<span class="keyword">self</span> findNavigationControllerByCurrentVC];</span><br><span class="line"></span><br><span class="line"><span class="comment">//3. 查找当前导航控制器是否已经存在该控制</span></span><br><span class="line"><span class="comment">//...就不贴代码了</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//4. 判断使用present 还是 push</span></span><br><span class="line"><span class="comment">//...</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//5. 使用push的情况</span></span><br><span class="line"><span class="comment">//5.1 创建一个控制器对象</span></span><br><span class="line"><span class="comment">//5.2 填充参数值</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//6. push 控制器</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//7. 返回 控制器对象</span></span><br></pre></td></tr></table></figure>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2017/08/09/BaseViewController设计/" data-title="BaseViewController设计 | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2017/08/09/BaseTableViewController设计/" title="BaseTableViewController设计">
+  <strong>上一篇：</strong><br>
+  <span>
+  BaseTableViewController设计</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/07/13/CocoaPods-module-source/" title="CocoaPods module source">
+ <strong>下一篇：</strong><br> 
+ <span>CocoaPods module source
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/08/09/BaseViewController设计/" data-title="BaseViewController设计" data-url="http://yoursite.com/2017/08/09/BaseViewController设计/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#基于OOP的思想，我想所有的控制器根据需要去继承自我们的BaseViewController。"><span class="toc-number">1.</span> <span class="toc-text">基于OOP的思想，我想所有的控制器根据需要去继承自我们的BaseViewController。</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#这么做的好处有"><span class="toc-number">1.1.</span> <span class="toc-text">这么做的好处有:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No1-指定一种代码规范让其他程序员遵守，便于维护代码"><span class="toc-number">1.2.</span> <span class="toc-text">No1. 指定一种代码规范让其他程序员遵守，便于维护代码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No2-封装一些公共的工具性代码"><span class="toc-number">1.3.</span> <span class="toc-text">No2. 封装一些公共的工具性代码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No3-统一处理所有控制器对象的push-present"><span class="toc-number">1.4.</span> <span class="toc-text">No3. 统一处理所有控制器对象的push/present</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

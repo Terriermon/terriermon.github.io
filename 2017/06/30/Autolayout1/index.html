@@ -1,0 +1,506 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>Autolayout1 | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="AutoLayout与Frame系列函数的区别? AutoLayout设置约束中用到的数字和Frame中用到的数字是一样的东西，并没有什么不同  1make.top.mas_equal(100); 等价于 1CGRectMake(x,100,width,height);  使用AutoLayout布局与使用Frame布局的不同      Frame是当View在创建时，我们就自己手动的计算View">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Autolayout1">
+<meta property="og:url" content="http://yoursite.com/2017/06/30/Autolayout1/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="AutoLayout与Frame系列函数的区别? AutoLayout设置约束中用到的数字和Frame中用到的数字是一样的东西，并没有什么不同  1make.top.mas_equal(100); 等价于 1CGRectMake(x,100,width,height);  使用AutoLayout布局与使用Frame布局的不同      Frame是当View在创建时，我们就自己手动的计算View">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-08T14:58:58.342Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Autolayout1">
+<meta name="twitter:description" content="AutoLayout与Frame系列函数的区别? AutoLayout设置约束中用到的数字和Frame中用到的数字是一样的东西，并没有什么不同  1make.top.mas_equal(100); 等价于 1CGRectMake(x,100,width,height);  使用AutoLayout布局与使用Frame布局的不同      Frame是当View在创建时，我们就自己手动的计算View">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/06/30/Autolayout1/" title="Autolayout1" itemprop="url">Autolayout1</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2017-06-30T02:59:57.000Z" itemprop="datePublished"> Published 2017-06-30</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#AutoLayout与Frame系列函数的区别"><span class="toc-number">1.</span> <span class="toc-text">AutoLayout与Frame系列函数的区别?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用AutoLayout，完成九宫格布局"><span class="toc-number">2.</span> <span class="toc-text">使用AutoLayout，完成九宫格布局</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用Frame，完成九宫格布局"><span class="toc-number">3.</span> <span class="toc-text">使用Frame，完成九宫格布局</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用Masonry动态更新view的高度宽度或者size"><span class="toc-number">4.</span> <span class="toc-text">使用Masonry动态更新view的高度宽度或者size.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用Masonry设置View的Size"><span class="toc-number">5.</span> <span class="toc-text">使用Masonry设置View的Size.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用Masonry设置一个View的宽与高成比例"><span class="toc-number">6.</span> <span class="toc-text">使用Masonry设置一个View的宽与高成比例.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用Masonry实现textaView高度动态改变"><span class="toc-number">7.</span> <span class="toc-text">使用Masonry实现textaView高度动态改变</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用AutoLayout完成位置变化、大小变化-在变化过程中的放慢的动画"><span class="toc-number">8.</span> <span class="toc-text">使用AutoLayout完成位置变化、大小变化..在变化过程中的放慢的动画.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用NSLayoutConstraint设置两个同一级别View实例的相对位置约束"><span class="toc-number">9.</span> <span class="toc-text">使用NSLayoutConstraint设置两个同一级别View实例的相对位置约束.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用Masonry简单做一个键盘的遮挡UITextfiled"><span class="toc-number">10.</span> <span class="toc-text">使用Masonry简单做一个键盘的遮挡UITextfiled</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="AutoLayout与Frame系列函数的区别"><a href="#AutoLayout与Frame系列函数的区别" class="headerlink" title="AutoLayout与Frame系列函数的区别?"></a>AutoLayout与Frame系列函数的区别?</h3><ul>
+<li>AutoLayout设置约束中用到的<code>数字</code>和Frame中用到的<code>数字</code>是一样的东西，并没有什么不同</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make.top.mas_equal(100);</span><br></pre></td></tr></table></figure>
+<p>等价于</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CGRectMake(x,100,width,height);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>使用AutoLayout布局与使用Frame布局的不同    </p>
+</li>
+<li><p>Frame是当View在创建时，我们就自己手动的计算View出现的x,y坐标、以及宽高是多少。这些规则，稍后iOS系统自动根这些规则计算得到显示的frame。</p>
+</li>
+<li><p>AutoLayout是当View在创建时，我们给View对象设置一些约束（frame计算的规则）</p>
+</li>
+<li>设置与superView或者兄弟层级View之间的如下</li>
+<li>自己的宽度与高度的比例，与其他人的宽度或高度的比例</li>
+<li>上下左右间距</li>
+<li><p>居中X、居中Y、成比例…</p>
+</li>
+<li><p>注意在Autolayout中，最好不要再试图使用Frame，但是实在不行就写一下，最好不要写…</p>
+</li>
+<li>对一个使用约束布局的View对象，在<code>init执行时</code>是拿不到正确的frame的</li>
+<li>只有在<strong>viewDidLoad、viewDidAppear、layoutSubviews</strong>这些方法调用的时候，才会得到正确的frame</li>
+<li>可以在<code>layoutSubviews</code>和<code>viewDidLayoutSubviews</code>系统重写函数中，完成frame的微调</li>
+</ul>
+<hr>
+<h3 id="使用AutoLayout，完成九宫格布局"><a href="#使用AutoLayout，完成九宫格布局" class="headerlink" title="使用AutoLayout，完成九宫格布局"></a>使用AutoLayout，完成九宫格布局</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">NSInteger Columns = 3;</span><br><span class="line">CGFloat ItemHeight = 80;</span><br><span class="line">CGFloat Gap = 35;</span><br><span class="line"></span><br><span class="line">__block UIView *lastView = nil;</span><br><span class="line">for (int i = 0; i &lt; self.shareList.count; i++) &#123;</span><br><span class="line">ZSYInviteFriendsItemView *item = _shareList[i];</span><br><span class="line">[_shareView addSubview:item];</span><br><span class="line"></span><br><span class="line">[item mas_makeConstraints:^(MASConstraintMaker *make) &#123;</span><br><span class="line"></span><br><span class="line">if (lastView) &#123;</span><br><span class="line">make.width.equalTo(lastView.mas_width);</span><br><span class="line">&#125; else &#123;</span><br><span class="line">make.size.mas_equalTo(CGSizeMake((SCREEN_WIDTH - Gap * (Columns + 1))/Columns, ItemHeight));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">if (i % Columns == 0) &#123;</span><br><span class="line">make.left.equalTo(item.superview).offset(Gap);</span><br><span class="line">&#125;</span><br><span class="line">else&#123;</span><br><span class="line">make.left.equalTo(lastView.mas_right).offset(Gap);</span><br><span class="line">&#125;</span><br><span class="line">if (i % Columns == (Columns -1)) &#123;</span><br><span class="line">make.right.equalTo(item.superview).offset(-Gap);</span><br><span class="line">&#125;</span><br><span class="line">int top = (i / Columns) * Gap + ( i / Columns * ItemHeight);</span><br><span class="line">make.top.equalTo(item.superview).offset(top);</span><br><span class="line"></span><br><span class="line">lastView = item;</span><br><span class="line">&#125;];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="使用Frame，完成九宫格布局"><a href="#使用Frame，完成九宫格布局" class="headerlink" title="使用Frame，完成九宫格布局"></a>使用Frame，完成九宫格布局</h3><ul>
+<li>找了一个封装的比较好的九宫格frame计算的代码</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line">*  按照给定的参数，返回当前index在九宫格布局中的frame</span><br><span class="line">*</span><br><span class="line">*  @param rect              九宫格布局的最大frame</span><br><span class="line">*  @param itemCount         总个数</span><br><span class="line">*  @param perRowItemCount   每一行个数</span><br><span class="line">*  @param perColumItemCount 每一列个数</span><br><span class="line">*  @param itemWidth         每一个具体项的宽度</span><br><span class="line">*  @param itemHeight        每一个具体项的高度</span><br><span class="line">*  @param paddingX          x轴间距</span><br><span class="line">*  @param paddingY          y轴间距</span><br><span class="line">*  @param index             所在下标</span><br><span class="line">*  @param page              所在页，可以有多个页</span><br><span class="line">*/</span><br><span class="line">- (CGRect)getFrameWithRegionRect:(CGRect)rect</span><br><span class="line">ItemCount:(NSInteger)itemCount</span><br><span class="line">perRowItemCount:(NSInteger)perRowItemCount</span><br><span class="line">perColumItemCount:(NSInteger)perColumItemCount</span><br><span class="line">itemWidth:(CGFloat)itemWidth</span><br><span class="line">itemHeight:(NSInteger)itemHeight</span><br><span class="line">paddingX:(CGFloat)paddingX</span><br><span class="line">paddingY:(CGFloat)paddingY</span><br><span class="line">atIndex:(NSInteger)index</span><br><span class="line">onPage:(NSInteger)page</span><br><span class="line">&#123;</span><br><span class="line">//1. 计算得到总共几行</span><br><span class="line">NSUInteger rowCount = itemCount / perRowItemCount + (itemCount % perColumItemCount &gt; 0 ? 1 : 0);</span><br><span class="line"></span><br><span class="line">//2. 得到顶部与底部的多余的高度</span><br><span class="line">CGFloat insetY = (CGRectGetHeight(rect) - (itemHeight + paddingY) * rowCount) / 2.0;</span><br><span class="line"></span><br><span class="line">//3. 获取起点x坐标</span><br><span class="line">CGFloat originX = (index % perRowItemCount) * (itemWidth + paddingX) + paddingX + (page * CGRectGetWidth(rect));</span><br><span class="line"></span><br><span class="line">//4. 获取起点y坐标</span><br><span class="line">CGFloat originY = ((index / perRowItemCount) - perColumItemCount * page) * (itemHeight + paddingY) + paddingY;</span><br><span class="line"></span><br><span class="line">//5. 构造当前index的frame</span><br><span class="line">CGRect itemFrame = CGRectMake(originX, originY + insetY, itemWidth, itemHeight);</span><br><span class="line"></span><br><span class="line">return itemFrame;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>使用例子:</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">- (void)layoutButtonsWithRootViewFrame:(CGRect)rect &#123;</span><br><span class="line"></span><br><span class="line">UIImage *image = [UIImage imageNamed:@&quot;gesture_node_highlighted&quot;];</span><br><span class="line">CGFloat itemH = image.size.height;</span><br><span class="line">CGFloat itemW = image.size.width;</span><br><span class="line"></span><br><span class="line">for (int i = 0; i &lt; 9; i++) &#123;</span><br><span class="line">GestureLockButton *btn = [[_gestureView subviews] objectAtIndex:i];</span><br><span class="line"></span><br><span class="line">CGRect frame = [self getFrameWithRegionRect:_gestureView.frame</span><br><span class="line">ItemCount:9</span><br><span class="line">perRowItemCount:3</span><br><span class="line">perColumItemCount:3</span><br><span class="line">itemWidth:itemW</span><br><span class="line">itemHeight:itemH</span><br><span class="line">paddingX:20</span><br><span class="line">paddingY:20</span><br><span class="line">atIndex:i</span><br><span class="line">onPage:0];</span><br><span class="line"></span><br><span class="line">btn.frame = frame;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="使用Masonry动态更新view的高度宽度或者size"><a href="#使用Masonry动态更新view的高度宽度或者size" class="headerlink" title="使用Masonry动态更新view的高度宽度或者size."></a>使用Masonry动态更新view的高度宽度或者size.</h3><p>第一步、使用一个变量保存变化的 高度或宽度或size</p>
+<p>第二步、在要更新约束的View实例的updateContraints函数中设置view的约束</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">- (void)updateViewConstraints &#123;</span><br><span class="line">@weakify(self);</span><br><span class="line"></span><br><span class="line">//在这里写更改变量的值（改变view的约束值）</span><br><span class="line"></span><br><span class="line">//次句代码必须写</span><br><span class="line">[super updateViewConstraints];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>第三步、某个时刻改变view的属性</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// 做改变属性的代码</span><br><span class="line">//....</span><br><span class="line"></span><br><span class="line">// 后面2句代码，表示马上更新约束</span><br><span class="line">[self.view layoutIfNeeded];</span><br><span class="line">[self.view setNeedsUpdateConstraints];</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="使用Masonry设置View的Size"><a href="#使用Masonry设置View的Size" class="headerlink" title="使用Masonry设置View的Size."></a>使用Masonry设置View的Size.</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[thumbImageView mas_makeConstraints:^(MASConstraintMaker *make) &#123;</span><br><span class="line"></span><br><span class="line">make.size.equls(CGSizeMake(200,300));</span><br><span class="line"></span><br><span class="line">&#125;];</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="使用Masonry设置一个View的宽与高成比例"><a href="#使用Masonry设置一个View的宽与高成比例" class="headerlink" title="使用Masonry设置一个View的宽与高成比例."></a>使用Masonry设置一个View的宽与高成比例.</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[thumbImageView mas_makeConstraints:^(MASConstraintMaker *make) &#123;</span><br><span class="line">make.top.equalTo(@0);</span><br><span class="line">make.left.equalTo(@0);</span><br><span class="line"></span><br><span class="line">//比例约束代码</span><br><span class="line"></span><br><span class="line">//1. 先设置宽度或者高度</span><br><span class="line">make.width.equalTo(superView);</span><br><span class="line"></span><br><span class="line">//2. 在设置另一个是之前的比例.</span><br><span class="line">make.height.equalTo(thumbImageView.mas_width).multipliedBy(0.8);</span><br><span class="line">&#125;];</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="使用Masonry实现textaView高度动态改变"><a href="#使用Masonry实现textaView高度动态改变" class="headerlink" title="使用Masonry实现textaView高度动态改变"></a>使用Masonry实现textaView高度动态改变</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">_labelPwdNotify = [[UILabel alloc] init];</span><br><span class="line">_labelPwdNotify.font = [UIFont flatFontOfSize:13];</span><br><span class="line">_labelPwdNotify.text = ZSYLocalization(@&quot;tip_loginpassword_rule&quot;);</span><br><span class="line">_labelPwdNotify.preferredMaxLayoutWidth = SCREEN_WIDTH - 17.5 * 2;</span><br><span class="line">_labelPwdNotify.numberOfLines = 0;</span><br><span class="line">[self.view addSubview:_labelPwdNotify];</span><br><span class="line"></span><br><span class="line">[_labelPwdNotify mas_makeConstraints:^(MASConstraintMaker *make) &#123;</span><br><span class="line">@strongify(self);</span><br><span class="line">make.top.mas_equalTo(self.loginPasswordView.mas_bottom).offset(16);</span><br><span class="line">make.left.mas_equalTo(self.view.mas_left).offset(17.5);</span><br><span class="line">make.right.mas_equalTo(self.view.mas_right).offset(-17.5);</span><br><span class="line">&#125;];</span><br></pre></td></tr></table></figure>
+<h3 id="使用AutoLayout完成位置变化、大小变化-在变化过程中的放慢的动画"><a href="#使用AutoLayout完成位置变化、大小变化-在变化过程中的放慢的动画" class="headerlink" title="使用AutoLayout完成位置变化、大小变化..在变化过程中的放慢的动画."></a>使用AutoLayout完成位置变化、大小变化..在变化过程中的放慢的动画.</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">第一步: 修改约束的值</span><br><span class="line">self.heightConstraint.constant += 100; //举个例子</span><br><span class="line"></span><br><span class="line">第二步: 执行动画，让使用更改后的约束值重新计算frame</span><br><span class="line">[UIView animateWithDuration:1.0 animations:^&#123;</span><br><span class="line">[被修改约束的View实例 layoytIfNeed];</span><br><span class="line">&#125;];</span><br></pre></td></tr></table></figure>
+<p>如上第二步中，表示重新计算</p>
+<ol>
+<li>被修改约束的View本身</li>
+<li>以及这个View的所有subviews的</li>
+</ol>
+<p>这些UIView实例的frame，并在一个时间内完成变化过程.</p>
+<hr>
+<h3 id="使用NSLayoutConstraint设置两个同一级别View实例的相对位置约束"><a href="#使用NSLayoutConstraint设置两个同一级别View实例的相对位置约束" class="headerlink" title="使用NSLayoutConstraint设置两个同一级别View实例的相对位置约束."></a>使用NSLayoutConstraint设置两个同一级别View实例的相对位置约束.</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">constraint = [  </span><br><span class="line">NSLayoutConstraint  </span><br><span class="line">constraintWithItem:button1  </span><br><span class="line">attribute:NSLayoutAttributeBottom  </span><br><span class="line">relatedBy:NSLayoutRelationEqual  </span><br><span class="line">toItem:self.view  </span><br><span class="line">attribute:NSLayoutAttributeBottom  </span><br><span class="line">multiplier:1.0f  </span><br><span class="line">constant:-20.0f  </span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+<p>如上的意思是:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">button1.底部y值 = self.view.底部y值 * 1 - 20;</span><br></pre></td></tr></table></figure>
+<p>顺便总结下使用VFL使用autolayout的步骤:</p>
+<ol>
+<li>从superview的上部到底部.</li>
+<li>从superview的左边到右边.</li>
+<li>再设置相邻View之间的约束.</li>
+</ol>
+<hr>
+<h3 id="使用Masonry简单做一个键盘的遮挡UITextfiled"><a href="#使用Masonry简单做一个键盘的遮挡UITextfiled" class="headerlink" title="使用Masonry简单做一个键盘的遮挡UITextfiled"></a>使用Masonry简单做一个键盘的遮挡UITextfiled</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;Masonry.h&gt;</span><br><span class="line"></span><br><span class="line">@interface ViewController () &lt;UITextFieldDelegate&gt;</span><br><span class="line"></span><br><span class="line">@property (nonatomic, strong) UITextField *txtfiled;</span><br><span class="line"></span><br><span class="line">//保存设置过的约束，方便后面修改</span><br><span class="line">@property (nonatomic, assign) MASConstraint *constraint;</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@implementation ViewController</span><br><span class="line"></span><br><span class="line">- (UITextField *)txtfiled &#123;</span><br><span class="line">if (!_txtfiled) &#123;</span><br><span class="line">_txtfiled = [[UITextField alloc] init];</span><br><span class="line">_txtfiled.layer.borderWidth = 1;</span><br><span class="line">_txtfiled.text = @&quot;请输入....&quot;;</span><br><span class="line">&#125;</span><br><span class="line">return _txtfiled;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)viewDidLoad &#123;</span><br><span class="line">[super viewDidLoad];</span><br><span class="line"></span><br><span class="line">//注册键盘弹起和隐藏的通知</span><br><span class="line">[self addNotifications];</span><br><span class="line"></span><br><span class="line">//初始化UITextfiled</span><br><span class="line">self.txtfiled.delegate = self;</span><br><span class="line">[self.view addSubview:self.txtfiled];</span><br><span class="line"></span><br><span class="line">//设置约束</span><br><span class="line">[self.txtfiled mas_makeConstraints:^(MASConstraintMaker *make) &#123;</span><br><span class="line">make.centerX.mas_equalTo(self.view);</span><br><span class="line">make.width.mas_equalTo(self.view.mas_width);</span><br><span class="line">make.height.mas_equalTo(44);</span><br><span class="line"></span><br><span class="line">//保存底部约束的引用</span><br><span class="line">self.constraint = make.bottom.mas_equalTo(self.view.mas_bottom);</span><br><span class="line">&#125;];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)addNotifications &#123;</span><br><span class="line"></span><br><span class="line">NSNotificationCenter *center  = [NSNotificationCenter defaultCenter];</span><br><span class="line"></span><br><span class="line">//1. </span><br><span class="line">[center addObserver:self selector:@selector(handleKeyBoardWillShow:) name:UIKeyboardWillShowNotification object:nil];</span><br><span class="line"></span><br><span class="line">//2. </span><br><span class="line">[center addObserver:self selector:@selector(handleKeyBoardWillHide:) name:UIKeyboardWillHideNotification object:nil];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//处理键盘弹起</span><br><span class="line">- (void)handleKeyBoardWillShow:(NSNotification *)notify &#123;</span><br><span class="line"></span><br><span class="line">//1. 获取弹出的键盘View的高度</span><br><span class="line">CGFloat h = [notify.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue].size.height;</span><br><span class="line"></span><br><span class="line">//2. 改变底部View的底部距离约束</span><br><span class="line">self.constraint.offset(-h);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//处理键盘弹回</span><br><span class="line">- (void)handleKeyBoardWillHide:(NSNotification *)notify &#123;</span><br><span class="line"></span><br><span class="line">// 改变底部View的底部距离约束</span><br><span class="line">self.constraint.offset(0);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#pragma mark - text filed delegate</span><br><span class="line"></span><br><span class="line">//点击return 按钮 去掉</span><br><span class="line">-(BOOL)textFieldShouldReturn:(UITextField *)textField</span><br><span class="line">&#123;</span><br><span class="line">//取消输入框选中，让键盘弹回</span><br><span class="line">[self.txtfiled resignFirstResponder];</span><br><span class="line"></span><br><span class="line">return YES;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2017/06/30/Autolayout1/" data-title="Autolayout1 | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2017/07/01/Autolayout2/" title="Autolayout2">
+  <strong>上一篇：</strong><br>
+  <span>
+  Autolayout2</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/05/16/Callbacks回调方式/" title="Callbacks回调方式">
+ <strong>下一篇：</strong><br> 
+ <span>Callbacks回调方式
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/06/30/Autolayout1/" data-title="Autolayout1" data-url="http://yoursite.com/2017/06/30/Autolayout1/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#AutoLayout与Frame系列函数的区别"><span class="toc-number">1.</span> <span class="toc-text">AutoLayout与Frame系列函数的区别?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用AutoLayout，完成九宫格布局"><span class="toc-number">2.</span> <span class="toc-text">使用AutoLayout，完成九宫格布局</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用Frame，完成九宫格布局"><span class="toc-number">3.</span> <span class="toc-text">使用Frame，完成九宫格布局</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用Masonry动态更新view的高度宽度或者size"><span class="toc-number">4.</span> <span class="toc-text">使用Masonry动态更新view的高度宽度或者size.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用Masonry设置View的Size"><span class="toc-number">5.</span> <span class="toc-text">使用Masonry设置View的Size.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用Masonry设置一个View的宽与高成比例"><span class="toc-number">6.</span> <span class="toc-text">使用Masonry设置一个View的宽与高成比例.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用Masonry实现textaView高度动态改变"><span class="toc-number">7.</span> <span class="toc-text">使用Masonry实现textaView高度动态改变</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用AutoLayout完成位置变化、大小变化-在变化过程中的放慢的动画"><span class="toc-number">8.</span> <span class="toc-text">使用AutoLayout完成位置变化、大小变化..在变化过程中的放慢的动画.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用NSLayoutConstraint设置两个同一级别View实例的相对位置约束"><span class="toc-number">9.</span> <span class="toc-text">使用NSLayoutConstraint设置两个同一级别View实例的相对位置约束.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用Masonry简单做一个键盘的遮挡UITextfiled"><span class="toc-number">10.</span> <span class="toc-text">使用Masonry简单做一个键盘的遮挡UITextfiled</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

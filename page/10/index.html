@@ -74,20 +74,28 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2015/08/22/Kache、KQueue/" title="Kache、KQueue" itemprop="url">
+    <a href="/2016/01/02/设计模式-抽象工厂模式/" title="设计模式-抽象工厂模式" itemprop="url">
   
-    <h1 itemprop="name">Kache、KQueue</h1>
+    <h1 itemprop="name">设计模式-抽象工厂模式</h1>
     
      
-           <p itemprop="description">KQueue对象
-提供队列机制来缓存传入的对象
-最终借助KHolder对象完成对象的缓存与读取
+           <p itemprop="description">抽象工厂、简单工厂的升级版，解决简单工厂只针对一个抽象接口
+同时有多个 抽象接口
+每个抽象接口，有多种实现情况
 
 
-KQueue.h 暴露的api123456789101112131415161718192021222324252627282930313233343536373839404142</p>
+抽象工厂模式结构 &amp;gt;&amp;gt;&amp;gt; 延伸至类簇模式
+两种抽象产品标准
+ProductA
+ProductB
+
+抽象工厂
+
+生产ProductA类型的具体产品
+</p>
         
     
-    <time datetime="2015-08-22T11:26:41.000Z" itemprop="datePublished">2015-08-22</time>
+    <time datetime="2016-01-02T09:49:47.000Z" itemprop="datePublished">2016-01-02</time>
   </a>
 </section>
 
@@ -99,16 +107,22 @@ KQueue.h 暴露的api12345678910111213141516171819202122232425262728293031323334
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2015/08/12/NSMutableAttributedString/" title="NSMutableAttributedString" itemprop="url">
+    <a href="/2016/01/01/设计模式-工厂模式/" title="设计模式-工厂模式" itemprop="url">
   
-    <h1 itemprop="name">NSMutableAttributedString</h1>
+    <h1 itemprop="name">设计模式-工厂模式</h1>
     
      
-           <p itemprop="description">NSAttributedString、NSMutableAttributedString是由&amp;lt;CoreText/CoreText.h&amp;gt;提供，可以让我们使一个字符串内部同时可以有很多不同颜色、不同大小、下划线、间距…等等丰富的显示样式设置。
-列举下可用的 富文本字符串设</p>
+           <p itemprop="description">工厂模式（简单工厂）、获取一个抽象接口所有实现类的实例
+一个抽象接口
+多个实现类
+工厂提供所有实现类的对象
+
+重点是只有 一个抽象接口
+
+抽象接口（标准）的定义1234567891011#import &amp;lt;Foundation/Foundation.h&amp;gt;@protoco</p>
         
     
-    <time datetime="2015-08-12T13:50:14.000Z" itemprop="datePublished">2015-08-12</time>
+    <time datetime="2016-01-01T09:42:28.000Z" itemprop="datePublished">2016-01-01</time>
   </a>
 </section>
 
@@ -120,19 +134,46 @@ KQueue.h 暴露的api12345678910111213141516171819202122232425262728293031323334
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2015/08/09/BaseViewController设计/" title="BaseViewController设计" itemprop="url">
+    <a href="/2015/12/30/reachability源码学习/" title="Reachability源码学习" itemprop="url">
   
-    <h1 itemprop="name">BaseViewController设计</h1>
+    <h1 itemprop="name">Reachability源码学习</h1>
     
      
-           <p itemprop="description">基于OOP的思想，我想所有的控制器根据需要去继承自我们的BaseViewController。这么做的好处有:
-很多都要用的功能代码不会散落到每一个ViewController
-可以提供一些模板方法（代码规则）让其他子类去遵守
-便于统一添加/移除一些UI效果、网络状态监听
-统一管</p>
+           <p itemprop="description">实时监测手机的联网状态，并作出对应的回调处理，源码学习子AFNetworkReachabilityManager.
+
+首先定义网络状态的所有可能的状态的枚举
+
+12345678910111213typedef NS_ENUM(NSInteger, AFNetworkReachab</p>
         
     
-    <time datetime="2015-08-09T10:21:00.000Z" itemprop="datePublished">2015-08-09</time>
+    <time datetime="2015-12-30T04:08:22.000Z" itemprop="datePublished">2015-12-30</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2015/12/10/lldb命令/" title="lldb命令" itemprop="url">
+  
+    <h1 itemprop="name">lldb命令</h1>
+    
+     
+           <p itemprop="description">###常用断点调试命令
+1c : 过掉当前断点
+1n: 逐行执行代码
+1s: 进入当前行要调用的方法
+1finish: 跳出结束执行执行当前方法
+1continue: 结束当前次循环
+1po: 输出对象的值
+1frame variable（fr v）: 输出当前块的所有变量的信息</p>
+        
+    
+    <time datetime="2015-12-10T04:09:33.000Z" itemprop="datePublished">2015-12-10</time>
   </a>
 </section>
 
@@ -153,33 +194,6 @@ KQueue.h 暴露的api12345678910111213141516171819202122232425262728293031323334
         
     
     <time datetime="2015-07-01T15:17:21.000Z" itemprop="datePublished">2015-07-01</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2015/06/30/Autolayout1/" title="Autolayout1" itemprop="url">
-  
-    <h1 itemprop="name">Autolayout1</h1>
-    
-     
-           <p itemprop="description">AutoLayout与Frame系列函数的区别?
-AutoLayout设置约束中用到的数字和Frame中用到的数字是一样的东西，并没有什么不同
-
-1make.top.mas_equal(100);
-等价于
-1CGRectMake(x,100,width,height);
-
-使用A</p>
-        
-    
-    <time datetime="2015-06-30T02:59:57.000Z" itemprop="datePublished">2015-06-30</time>
   </a>
 </section>
 
