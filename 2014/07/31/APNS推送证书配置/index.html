@@ -1,0 +1,467 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>APNS推送证书配置 | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="好久以前弄过APNS推送证书的配置，忘记了…今天又要搞，弄了好久才搞定，做个笔记. 主要关键:  Xcode工程的Bundle Id Apple开发中中心配置的App Id 推送证书对应的App Id  这三个Id必须一致.  下面给出操作步骤截图: No1. 进入Applde开发中中心，选择Xcode工程配置的Bundle Id一致的App Id. No2. 启用选中App Id证书中的Push">
+<meta property="og:type" content="article">
+<meta property="og:title" content="APNS推送证书配置">
+<meta property="og:url" content="http://yoursite.com/2014/07/31/APNS推送证书配置/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="好久以前弄过APNS推送证书的配置，忘记了…今天又要搞，弄了好久才搞定，做个笔记. 主要关键:  Xcode工程的Bundle Id Apple开发中中心配置的App Id 推送证书对应的App Id  这三个Id必须一致.  下面给出操作步骤截图: No1. 进入Applde开发中中心，选择Xcode工程配置的Bundle Id一致的App Id. No2. 启用选中App Id证书中的Push">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://i1.tietuku.com/9fb84b551ba15dc8.png">
+<meta property="og:image" content="http://i1.tietuku.com/8904c229e6512d57.png">
+<meta property="og:image" content="http://i1.tietuku.com/fcae521e500c2579.png">
+<meta property="og:image" content="http://i1.tietuku.com/d2ef522293159f4d.png">
+<meta property="og:image" content="http://i1.tietuku.com/4fc03d22aebd04dc.png">
+<meta property="og:image" content="http://i1.tietuku.com/09ce52e7074177c2.png">
+<meta property="og:image" content="http://i1.tietuku.com/b4f2b03a53478348.png">
+<meta property="og:image" content="http://i1.tietuku.com/c5ab816a5bb8e504.png">
+<meta property="og:image" content="http://i1.tietuku.com/a4730177c91cb194.png">
+<meta property="og:image" content="http://i1.tietuku.com/9dcfc2287c0328f8.png">
+<meta property="og:image" content="http://i3.tietuku.com/4fa21fef05bc7c76.png">
+<meta property="og:updated_time" content="2019-04-08T12:30:33.938Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="APNS推送证书配置">
+<meta name="twitter:description" content="好久以前弄过APNS推送证书的配置，忘记了…今天又要搞，弄了好久才搞定，做个笔记. 主要关键:  Xcode工程的Bundle Id Apple开发中中心配置的App Id 推送证书对应的App Id  这三个Id必须一致.  下面给出操作步骤截图: No1. 进入Applde开发中中心，选择Xcode工程配置的Bundle Id一致的App Id. No2. 启用选中App Id证书中的Push">
+<meta name="twitter:image" content="http://i1.tietuku.com/9fb84b551ba15dc8.png">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2014/07/31/APNS推送证书配置/" title="APNS推送证书配置" itemprop="url">APNS推送证书配置</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2014-07-31T14:13:18.000Z" itemprop="datePublished"> Published 2014-07-31</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#好久以前弄过APNS推送证书的配置，忘记了…今天又要搞，弄了好久才搞定，做个笔记"><span class="toc-number">1.</span> <span class="toc-text">好久以前弄过APNS推送证书的配置，忘记了…今天又要搞，弄了好久才搞定，做个笔记.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No1-进入Applde开发中中心，选择Xcode工程配置的Bundle-Id一致的App-Id"><span class="toc-number">2.</span> <span class="toc-text">No1. 进入Applde开发中中心，选择Xcode工程配置的Bundle Id一致的App Id.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No2-启用选中App-Id证书中的Push-Notification"><span class="toc-number">3.</span> <span class="toc-text">No2. 启用选中App Id证书中的Push Notification.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No3-分别创建用于【调试的开发推送证书】和用于【产品发布的推送证书】，二者创建过程是一样的"><span class="toc-number">4.</span> <span class="toc-text">No3. 分别创建用于【调试的开发推送证书】和用于【产品发布的推送证书】，二者创建过程是一样的.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#然后返回之前的步骤，选择本机申请的证书，即可完成创建配置推送证书"><span class="toc-number">5.</span> <span class="toc-text">然后返回之前的步骤，选择本机申请的证书，即可完成创建配置推送证书.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No4-创建包含【推送调试】和【推送发布】的证书的描述文件"><span class="toc-number">6.</span> <span class="toc-text">No4. 创建包含【推送调试】和【推送发布】的证书的描述文件.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No5-下载证书描述文件安装"><span class="toc-number">7.</span> <span class="toc-text">No5. 下载证书描述文件安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No6-将安装的证书导出为p12交换证书，能够在其他电脑调试推送通知"><span class="toc-number">8.</span> <span class="toc-text">No6. 将安装的证书导出为p12交换证书，能够在其他电脑调试推送通知.</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="好久以前弄过APNS推送证书的配置，忘记了…今天又要搞，弄了好久才搞定，做个笔记"><a href="#好久以前弄过APNS推送证书的配置，忘记了…今天又要搞，弄了好久才搞定，做个笔记" class="headerlink" title="好久以前弄过APNS推送证书的配置，忘记了…今天又要搞，弄了好久才搞定，做个笔记."></a>好久以前弄过APNS推送证书的配置，忘记了…今天又要搞，弄了好久才搞定，做个笔记.</h3><hr>
+<p>主要关键:</p>
+<ol>
+<li>Xcode工程的Bundle Id</li>
+<li>Apple开发中中心配置的App Id</li>
+<li>推送证书对应的App Id</li>
+</ol>
+<p>这三个Id必须一致.</p>
+<hr>
+<p>下面给出操作步骤截图:</p>
+<h3 id="No1-进入Applde开发中中心，选择Xcode工程配置的Bundle-Id一致的App-Id"><a href="#No1-进入Applde开发中中心，选择Xcode工程配置的Bundle-Id一致的App-Id" class="headerlink" title="No1. 进入Applde开发中中心，选择Xcode工程配置的Bundle Id一致的App Id."></a>No1. 进入Applde开发中中心，选择Xcode工程配置的Bundle Id一致的App Id.</h3><p><img src="http://i1.tietuku.com/9fb84b551ba15dc8.png" alt="截图"></p>
+<h3 id="No2-启用选中App-Id证书中的Push-Notification"><a href="#No2-启用选中App-Id证书中的Push-Notification" class="headerlink" title="No2. 启用选中App Id证书中的Push Notification."></a>No2. 启用选中App Id证书中的Push Notification.</h3><p><img src="http://i1.tietuku.com/8904c229e6512d57.png" alt="截图"></p>
+<p><img src="http://i1.tietuku.com/fcae521e500c2579.png" alt="截图"></p>
+<h3 id="No3-分别创建用于【调试的开发推送证书】和用于【产品发布的推送证书】，二者创建过程是一样的"><a href="#No3-分别创建用于【调试的开发推送证书】和用于【产品发布的推送证书】，二者创建过程是一样的" class="headerlink" title="No3. 分别创建用于【调试的开发推送证书】和用于【产品发布的推送证书】，二者创建过程是一样的."></a>No3. 分别创建用于【调试的开发推送证书】和用于【产品发布的推送证书】，二者创建过程是一样的.</h3><p>举例创建开发推送证书.</p>
+<p><img src="http://i1.tietuku.com/d2ef522293159f4d.png" alt="截图"></p>
+<p><img src="http://i1.tietuku.com/4fc03d22aebd04dc.png" alt="截图"></p>
+<p><img src="http://i1.tietuku.com/09ce52e7074177c2.png" alt="截图"><br><strong>这一步的作用:将当前Mac机器可以推送远程通知到手机.</strong></p>
+<p><img src="http://i1.tietuku.com/b4f2b03a53478348.png" alt="截图"></p>
+<p><img src="http://i1.tietuku.com/c5ab816a5bb8e504.png" alt="截图"><br><strong>保存到本地</strong></p>
+<h3 id="然后返回之前的步骤，选择本机申请的证书，即可完成创建配置推送证书"><a href="#然后返回之前的步骤，选择本机申请的证书，即可完成创建配置推送证书" class="headerlink" title="然后返回之前的步骤，选择本机申请的证书，即可完成创建配置推送证书."></a>然后返回之前的步骤，选择本机申请的证书，即可完成创建配置推送证书.</h3><h3 id="No4-创建包含【推送调试】和【推送发布】的证书的描述文件"><a href="#No4-创建包含【推送调试】和【推送发布】的证书的描述文件" class="headerlink" title="No4. 创建包含【推送调试】和【推送发布】的证书的描述文件."></a>No4. 创建包含【推送调试】和【推送发布】的证书的描述文件.</h3><p><img src="http://i1.tietuku.com/a4730177c91cb194.png" alt="截图"></p>
+<p><img src="http://i1.tietuku.com/9dcfc2287c0328f8.png" alt="截图"></p>
+<h3 id="No5-下载证书描述文件安装"><a href="#No5-下载证书描述文件安装" class="headerlink" title="No5. 下载证书描述文件安装"></a>No5. 下载证书描述文件安装</h3><h3 id="No6-将安装的证书导出为p12交换证书，能够在其他电脑调试推送通知"><a href="#No6-将安装的证书导出为p12交换证书，能够在其他电脑调试推送通知" class="headerlink" title="No6. 将安装的证书导出为p12交换证书，能够在其他电脑调试推送通知."></a>No6. 将安装的证书导出为p12交换证书，能够在其他电脑调试推送通知.</h3><p>总结: 1)推送证书的作用  2)描述文件profile作用</p>
+<p><img src="http://i3.tietuku.com/4fa21fef05bc7c76.png" alt></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2014/07/31/APNS推送证书配置/" data-title="APNS推送证书配置 | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2015/07/01/kvc/" title="kvc">
+  <strong>上一篇：</strong><br>
+  <span>
+  kvc</span>
+</a>
+</div>
+
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2014/07/31/APNS推送证书配置/" data-title="APNS推送证书配置" data-url="http://yoursite.com/2014/07/31/APNS推送证书配置/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#好久以前弄过APNS推送证书的配置，忘记了…今天又要搞，弄了好久才搞定，做个笔记"><span class="toc-number">1.</span> <span class="toc-text">好久以前弄过APNS推送证书的配置，忘记了…今天又要搞，弄了好久才搞定，做个笔记.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No1-进入Applde开发中中心，选择Xcode工程配置的Bundle-Id一致的App-Id"><span class="toc-number">2.</span> <span class="toc-text">No1. 进入Applde开发中中心，选择Xcode工程配置的Bundle Id一致的App Id.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No2-启用选中App-Id证书中的Push-Notification"><span class="toc-number">3.</span> <span class="toc-text">No2. 启用选中App Id证书中的Push Notification.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No3-分别创建用于【调试的开发推送证书】和用于【产品发布的推送证书】，二者创建过程是一样的"><span class="toc-number">4.</span> <span class="toc-text">No3. 分别创建用于【调试的开发推送证书】和用于【产品发布的推送证书】，二者创建过程是一样的.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#然后返回之前的步骤，选择本机申请的证书，即可完成创建配置推送证书"><span class="toc-number">5.</span> <span class="toc-text">然后返回之前的步骤，选择本机申请的证书，即可完成创建配置推送证书.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No4-创建包含【推送调试】和【推送发布】的证书的描述文件"><span class="toc-number">6.</span> <span class="toc-text">No4. 创建包含【推送调试】和【推送发布】的证书的描述文件.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No5-下载证书描述文件安装"><span class="toc-number">7.</span> <span class="toc-text">No5. 下载证书描述文件安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No6-将安装的证书导出为p12交换证书，能够在其他电脑调试推送通知"><span class="toc-number">8.</span> <span class="toc-text">No6. 将安装的证书导出为p12交换证书，能够在其他电脑调试推送通知.</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

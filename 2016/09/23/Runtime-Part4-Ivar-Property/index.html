@@ -1,0 +1,634 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>Runtime Part4 Ivar Property | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="成员变量 与 属性 是不同的 成员变量 Ivar   仅仅只是一个对象的内部使用的 变量   属性 Property   首先包括成员变量，并且还包括对成员变量操作的 setter方法与getter方法   成员变量的相关操作#Ivar 结构体定义1typedef struct objc_ivar *Ivar; 12345678struct objc_ivar &amp;#123;char *ivar_n">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Runtime Part4 Ivar Property">
+<meta property="og:url" content="http://yoursite.com/2016/09/23/Runtime-Part4-Ivar-Property/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="成员变量 与 属性 是不同的 成员变量 Ivar   仅仅只是一个对象的内部使用的 变量   属性 Property   首先包括成员变量，并且还包括对成员变量操作的 setter方法与getter方法   成员变量的相关操作#Ivar 结构体定义1typedef struct objc_ivar *Ivar; 12345678struct objc_ivar &amp;#123;char *ivar_n">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-08T12:38:46.433Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Runtime Part4 Ivar Property">
+<meta name="twitter:description" content="成员变量 与 属性 是不同的 成员变量 Ivar   仅仅只是一个对象的内部使用的 变量   属性 Property   首先包括成员变量，并且还包括对成员变量操作的 setter方法与getter方法   成员变量的相关操作#Ivar 结构体定义1typedef struct objc_ivar *Ivar; 12345678struct objc_ivar &amp;#123;char *ivar_n">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/09/23/Runtime-Part4-Ivar-Property/" title="Runtime Part4 Ivar Property" itemprop="url">Runtime Part4 Ivar Property</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2016-09-23T11:21:10.000Z" itemprop="datePublished"> Published 2016-09-23</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#成员变量-与-属性-是不同的"><span class="toc-number">1.</span> <span class="toc-text">成员变量 与 属性 是不同的</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#成员变量的相关操作"><span class="toc-number">2.</span> <span class="toc-text">成员变量的相关操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Ivar-结构体定义"><span class="toc-number">3.</span> <span class="toc-text">#Ivar 结构体定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#属性的相关操作"><span class="toc-number">4.</span> <span class="toc-text">属性的相关操作</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Property-结构体定义"><span class="toc-number">4.1.</span> <span class="toc-text">Property 结构体定义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#获取类实例的属性列表"><span class="toc-number">4.2.</span> <span class="toc-text">获取类实例的属性列表</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#关于属性的attributes类型"><span class="toc-number">5.</span> <span class="toc-text">关于属性的attributes类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#安全的使用KVC"><span class="toc-number">6.</span> <span class="toc-text">安全的使用KVC</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Type-Encodings，之前输出的类似T-quot-Car-quot-amp-N-V-car"><span class="toc-number">7.</span> <span class="toc-text">Type Encodings，之前输出的类似T@&quot;Car&quot;,&amp;,N,V_car</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#我们使用的一些数据类型，实际上最终编译器会解析成类似T-quot-Car-quot-amp-N-V-car这样的一串字符"><span class="toc-number">7.1.</span> <span class="toc-text">我们使用的一些数据类型，实际上最终编译器会解析成类似T@&quot;Car&quot;,&amp;,N,V_car这样的一串字符</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Objective-C-中的所有的-数据类型-的系统编码格式"><span class="toc-number">7.2.</span> <span class="toc-text">Objective-C 中的所有的 数据类型 的系统编码格式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#举例编码格式"><span class="toc-number">7.3.</span> <span class="toc-text">举例编码格式</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Objective-C-method-方法-encodings"><span class="toc-number">8.</span> <span class="toc-text">#Objective-C method 方法 encodings</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="成员变量-与-属性-是不同的"><a href="#成员变量-与-属性-是不同的" class="headerlink" title="成员变量 与 属性 是不同的"></a>成员变量 与 属性 是不同的</h3><ul>
+<li>成员变量 Ivar</li>
+</ul>
+<blockquote>
+<p>仅仅只是一个对象的内部使用的 变量</p>
+</blockquote>
+<ul>
+<li>属性 Property</li>
+</ul>
+<blockquote>
+<p>首先包括成员变量，并且还包括对成员变量操作的 setter方法与getter方法</p>
+</blockquote>
+<hr>
+<h3 id="成员变量的相关操作"><a href="#成员变量的相关操作" class="headerlink" title="成员变量的相关操作"></a>成员变量的相关操作</h3><h3 id="Ivar-结构体定义"><a href="#Ivar-结构体定义" class="headerlink" title="#Ivar 结构体定义"></a>#Ivar 结构体定义</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">typedef struct objc_ivar *Ivar;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">struct objc_ivar &#123;</span><br><span class="line">char *ivar_name OBJC2_UNAVAILABLE; // 变量名</span><br><span class="line">char *ivar_type OBJC2_UNAVAILABLE; // 变量类型</span><br><span class="line">int ivar_offset OBJC2_UNAVAILABLE; // 基地址偏移字节</span><br><span class="line">#ifdef __LP64__</span><br><span class="line">int space OBJC2_UNAVAILABLE;</span><br><span class="line">#endif</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="属性的相关操作"><a href="#属性的相关操作" class="headerlink" title="属性的相关操作"></a>属性的相关操作</h3><h4 id="Property-结构体定义"><a href="#Property-结构体定义" class="headerlink" title="Property 结构体定义"></a>Property 结构体定义</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">typedef struct objc_property *objc_property_t;</span><br></pre></td></tr></table></figure>
+<h4 id="获取类实例的属性列表"><a href="#获取类实例的属性列表" class="headerlink" title="获取类实例的属性列表"></a>获取类实例的<code>属性列表</code></h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">id PersonClass = objc_getClass(&quot;Person&quot;);</span><br><span class="line"></span><br><span class="line">unsigned int outCount;</span><br><span class="line">objc_property_t *properties = class_copyPropertyList(PersonClass, &amp;outCount);</span><br><span class="line"></span><br><span class="line">for (int i = 0; i &lt; outCount; i++) &#123;</span><br><span class="line"></span><br><span class="line">objc_property_t property = properties[i];</span><br><span class="line"></span><br><span class="line">const char* propertyName = property_getName(property);</span><br><span class="line">const char* propertyAttribute = property_getAttributes(property);</span><br><span class="line"></span><br><span class="line">fprintf(stdout, &quot;属性名 = %s , 属性类型 = %s\n&quot;, propertyName, propertyAttribute);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">如上代码执行结果:</span><br><span class="line"></span><br><span class="line">属性名 = car  , 属性类型 = T@&quot;Car&quot;,&amp;,N,V_car</span><br><span class="line">属性名 = name , 属性类型 = T@&quot;NSString&quot;,C,N,V_name</span><br><span class="line">属性名 = age  , 属性类型 = Tq,N,V_age</span><br></pre></td></tr></table></figure>
+<h3 id="关于属性的attributes类型"><a href="#关于属性的attributes类型" class="headerlink" title="关于属性的attributes类型"></a>关于属性的attributes类型</h3><p>常见属性的编码字符串</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">属性类型 = T@&quot;Car&quot;,&amp;,N,V_car</span><br><span class="line">属性类型 = T@&quot;NSString&quot;,C,N,V_name</span><br><span class="line">属性类型 = Tq,N,V_age</span><br></pre></td></tr></table></figure>
+<p>一个属性的编码结构体（编码字符串的拆分结构）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *name; <span class="comment">// 特性名</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *value; <span class="comment">// 特性值</span></span><br><span class="line">&#125; <span class="keyword">objc_property_attribute_t</span>;</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="安全的使用KVC"><a href="#安全的使用KVC" class="headerlink" title="安全的使用KVC"></a>安全的使用KVC</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  NSObject+Properties.h</span></span><br><span class="line"><span class="comment">//  XControllerManager</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by xiongzenghui on 16/1/25.</span></span><br><span class="line"><span class="comment">//  Copyright © 2016年 xiongzenghui. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  控制key与value的安全使用KVC</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">NSObject</span> (<span class="title">Properties</span>)</span></span><br><span class="line"></span><br><span class="line">- (<span class="built_in">BOOL</span>)hasPropertyWithName:(<span class="built_in">NSString</span> *)name;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">BOOL</span>)canSetValueForPropertyWithName:(<span class="built_in">NSString</span> *)name;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)setValuesAndKeys:(<span class="built_in">NSDictionary</span> *)valuesAndKeys;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  NSObject+Properties.m</span></span><br><span class="line"><span class="comment">//  XControllerManager</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by xiongzenghui on 14/1/25.</span></span><br><span class="line"><span class="comment">//  Copyright © 2014年 xiongzenghui. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"NSObject+Properties.h"</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;objc/runtime.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">NSObject</span> (<span class="title">Properties</span>)</span></span><br><span class="line"></span><br><span class="line">- (<span class="built_in">BOOL</span>)hasPropertyWithName:(<span class="built_in">NSString</span> *)name</span><br><span class="line">&#123;</span><br><span class="line">objc_property_t property = [<span class="keyword">self</span> _propertyWithName:name];</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (property == <span class="literal">NULL</span>) &#123;</span><br><span class="line"><span class="keyword">return</span> <span class="literal">NO</span>;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"><span class="keyword">return</span> <span class="literal">YES</span>;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">BOOL</span>)canSetValueForPropertyWithName:(<span class="built_in">NSString</span> *)name</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">if</span> (![<span class="keyword">self</span> hasPropertyWithName:name]) &#123;</span><br><span class="line"><span class="keyword">return</span> <span class="literal">NO</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//1. 获取指定名字的属性</span></span><br><span class="line">objc_property_t property = [<span class="keyword">self</span> _propertyWithName:name];</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 获取属性的 编码字符串 中是否包含 "R" （只读readonly）</span></span><br><span class="line"><span class="keyword">char</span> *attr = property_copyAttributeValue(property, <span class="string">"R"</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> !attr;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)setValuesAndKeys:(<span class="built_in">NSDictionary</span> *)valuesAndKeys</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">id</span> key <span class="keyword">in</span> valuesAndKeys) &#123;</span><br><span class="line"></span><br><span class="line"><span class="keyword">id</span> value = [valuesAndKeys objectForKey:key];</span><br><span class="line"></span><br><span class="line"><span class="comment">//判断属性是否存在、是否可写</span></span><br><span class="line"><span class="keyword">if</span> (![<span class="keyword">self</span> canSetValueForPropertyWithName:key]) &#123;</span><br><span class="line"><span class="keyword">continue</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//KVC赋值</span></span><br><span class="line">[<span class="keyword">self</span> setValue:value forKey:key];</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (objc_property_t)_propertyWithName:(<span class="built_in">NSString</span> *)name</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">if</span> (!name || [name isEqualToString:<span class="string">@""</span>])</span><br><span class="line"><span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">objc_property_t property = class_getProperty([<span class="keyword">self</span> <span class="keyword">class</span>], [name UTF8String]);</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> property;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="Type-Encodings，之前输出的类似T-quot-Car-quot-amp-N-V-car"><a href="#Type-Encodings，之前输出的类似T-quot-Car-quot-amp-N-V-car" class="headerlink" title="Type Encodings，之前输出的类似T@&quot;Car&quot;,&amp;,N,V_car"></a>Type Encodings，之前输出的类似<code>T@&quot;Car&quot;,&amp;,N,V_car</code></h3><blockquote>
+<p><a href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtTypeEncodings.html" target="_blank" rel="noopener">https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtTypeEncodings.html</a></p>
+</blockquote>
+<h4 id="我们使用的一些数据类型，实际上最终编译器会解析成类似T-quot-Car-quot-amp-N-V-car这样的一串字符"><a href="#我们使用的一些数据类型，实际上最终编译器会解析成类似T-quot-Car-quot-amp-N-V-car这样的一串字符" class="headerlink" title="我们使用的一些数据类型，实际上最终编译器会解析成类似T@&quot;Car&quot;,&amp;,N,V_car这样的一串字符"></a>我们使用的一些<code>数据类型</code>，实际上最终编译器会解析成类似<code>T@&quot;Car&quot;,&amp;,N,V_car</code>这样的一串字符</h4><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Person类的所有属性（Ivar）的 `最终数据类型` 由编译器编译成一串特定格式的字符</span><br><span class="line"></span><br><span class="line">属性名 = car  , 属性类型 = T<span class="string">@"Car"</span>,&amp;,N,V_car</span><br><span class="line">属性名 = name , 属性类型 = T<span class="string">@"NSString"</span>,C,N,V_name</span><br><span class="line">属性名 = age  , 属性类型 = Tq,N,V_age</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Car *car;自定义类型 ---&gt; T@&quot;Car&quot;,&amp;,N,V_car</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">NSString *name; ----&gt; T@&quot;NSString&quot;,C,N,V_name</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">NSInteger age; ----&gt; Tq,N,V_age</span><br></pre></td></tr></table></figure>
+<p>总而言之，苹果会对我们在代码中使用的所有数据类型，进行额外的一次编码，编码成最终iOS系统所能识别的数据类型.</p>
+<h4 id="Objective-C-中的所有的-数据类型-的系统编码格式"><a href="#Objective-C-中的所有的-数据类型-的系统编码格式" class="headerlink" title="Objective-C 中的所有的 数据类型 的系统编码格式"></a>Objective-C 中的所有的 <code>数据类型</code> 的系统编码格式</h4><table>
+<thead>
+<tr>
+<th style="text-align:center">最终苹果的编码格式</th>
+<th style="text-align:center">iOS代码中对应的数据类型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">c</td>
+<td style="text-align:center">char</td>
+</tr>
+<tr>
+<td style="text-align:center">i</td>
+<td style="text-align:center">int</td>
+</tr>
+<tr>
+<td style="text-align:center">s</td>
+<td style="text-align:center">short</td>
+</tr>
+<tr>
+<td style="text-align:center">l</td>
+<td style="text-align:center">long (注意: long is treated as a 32-bit quantity on 64-bit programs)</td>
+</tr>
+<tr>
+<td style="text-align:center">q</td>
+<td style="text-align:center">long long</td>
+</tr>
+<tr>
+<td style="text-align:center">C</td>
+<td style="text-align:center">unsigned char</td>
+</tr>
+<tr>
+<td style="text-align:center">I</td>
+<td style="text-align:center">unsigned int</td>
+</tr>
+<tr>
+<td style="text-align:center">S</td>
+<td style="text-align:center">unsigned short</td>
+</tr>
+<tr>
+<td style="text-align:center">L</td>
+<td style="text-align:center">unsigned long</td>
+</tr>
+<tr>
+<td style="text-align:center">Q</td>
+<td style="text-align:center">unsigned long long</td>
+</tr>
+<tr>
+<td style="text-align:center">f</td>
+<td style="text-align:center">float</td>
+</tr>
+<tr>
+<td style="text-align:center">d</td>
+<td style="text-align:center">double</td>
+</tr>
+<tr>
+<td style="text-align:center">B</td>
+<td style="text-align:center">C++ bool or a C99 _Bool</td>
+</tr>
+<tr>
+<td style="text-align:center">v （小写）</td>
+<td style="text-align:center">void</td>
+</tr>
+<tr>
+<td style="text-align:center">*</td>
+<td style="text-align:center">character string (char *)</td>
+</tr>
+<tr>
+<td style="text-align:center">@</td>
+<td style="text-align:center">自定义类型的对象，An object (whether statically typed or typed id)</td>
+</tr>
+<tr>
+<td style="text-align:center">#</td>
+<td style="text-align:center">class object (Class)</td>
+</tr>
+<tr>
+<td style="text-align:center">:</td>
+<td style="text-align:center">A method selector (SEL)</td>
+</tr>
+<tr>
+<td style="text-align:center">[array type]</td>
+<td style="text-align:center">array数组</td>
+</tr>
+<tr>
+<td style="text-align:center">{name=type…}</td>
+<td style="text-align:center">structure 结构体</td>
+</tr>
+<tr>
+<td style="text-align:center">(name=type…)</td>
+<td style="text-align:center">union 共用体</td>
+</tr>
+<tr>
+<td style="text-align:center">bnum</td>
+<td style="text-align:center">A bit field of num bits</td>
+</tr>
+<tr>
+<td style="text-align:center">^type</td>
+<td style="text-align:center">A <code>pointer</code> to type</td>
+</tr>
+<tr>
+<td style="text-align:center">?</td>
+<td style="text-align:center">An unknown type (among other things, this code is used for <code>function pointers 函数指针</code>)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="举例编码格式"><a href="#举例编码格式" class="headerlink" title="举例编码格式"></a>举例编码格式</h4><ul>
+<li>假设存在如下的结构体</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">typedef struct example &#123;</span><br><span class="line">id   anObject;</span><br><span class="line">char *aString;</span><br><span class="line">int  anInt;</span><br><span class="line">&#125; Example;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>使用@encode()快速获取数据类型的编码格式</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@encode(Example);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>结构体Example 的数据类型编码</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;example=@*i&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>结构体Example  <code>指针</code> 的数据类型编码</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">^&#123;example=@*i&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Objective-C-method-方法-encodings"><a href="#Objective-C-method-方法-encodings" class="headerlink" title="#Objective-C method 方法 encodings"></a>#Objective-C <code>method 方法</code> encodings</h3><table>
+<thead>
+<tr>
+<th style="text-align:center">最终苹果的编码格式</th>
+<th style="text-align:center">iOS代码中对应的数据类型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">r</td>
+<td style="text-align:center">const</td>
+</tr>
+<tr>
+<td style="text-align:center">n</td>
+<td style="text-align:center">in</td>
+</tr>
+<tr>
+<td style="text-align:center">N</td>
+<td style="text-align:center">inout</td>
+</tr>
+<tr>
+<td style="text-align:center">o</td>
+<td style="text-align:center">out</td>
+</tr>
+<tr>
+<td style="text-align:center">O</td>
+<td style="text-align:center">bycopy</td>
+</tr>
+<tr>
+<td style="text-align:center">R</td>
+<td style="text-align:center">byref</td>
+</tr>
+<tr>
+<td style="text-align:center">V</td>
+<td style="text-align:center">oneway</td>
+</tr>
+</tbody>
+</table>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2016/09/23/Runtime-Part4-Ivar-Property/" data-title="Runtime Part4 Ivar Property | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2016/09/23/Runtime-Part5-Class/" title="Runtime Part5 Class">
+  <strong>上一篇：</strong><br>
+  <span>
+  Runtime Part5 Class</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/09/22/Runtime-Part3-IMP/" title="Runtime Part3 IMP">
+ <strong>下一篇：</strong><br> 
+ <span>Runtime Part3 IMP
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2016/09/23/Runtime-Part4-Ivar-Property/" data-title="Runtime Part4 Ivar Property" data-url="http://yoursite.com/2016/09/23/Runtime-Part4-Ivar-Property/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#成员变量-与-属性-是不同的"><span class="toc-number">1.</span> <span class="toc-text">成员变量 与 属性 是不同的</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#成员变量的相关操作"><span class="toc-number">2.</span> <span class="toc-text">成员变量的相关操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Ivar-结构体定义"><span class="toc-number">3.</span> <span class="toc-text">#Ivar 结构体定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#属性的相关操作"><span class="toc-number">4.</span> <span class="toc-text">属性的相关操作</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Property-结构体定义"><span class="toc-number">4.1.</span> <span class="toc-text">Property 结构体定义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#获取类实例的属性列表"><span class="toc-number">4.2.</span> <span class="toc-text">获取类实例的属性列表</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#关于属性的attributes类型"><span class="toc-number">5.</span> <span class="toc-text">关于属性的attributes类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#安全的使用KVC"><span class="toc-number">6.</span> <span class="toc-text">安全的使用KVC</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Type-Encodings，之前输出的类似T-quot-Car-quot-amp-N-V-car"><span class="toc-number">7.</span> <span class="toc-text">Type Encodings，之前输出的类似T@&quot;Car&quot;,&amp;,N,V_car</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#我们使用的一些数据类型，实际上最终编译器会解析成类似T-quot-Car-quot-amp-N-V-car这样的一串字符"><span class="toc-number">7.1.</span> <span class="toc-text">我们使用的一些数据类型，实际上最终编译器会解析成类似T@&quot;Car&quot;,&amp;,N,V_car这样的一串字符</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Objective-C-中的所有的-数据类型-的系统编码格式"><span class="toc-number">7.2.</span> <span class="toc-text">Objective-C 中的所有的 数据类型 的系统编码格式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#举例编码格式"><span class="toc-number">7.3.</span> <span class="toc-text">举例编码格式</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Objective-C-method-方法-encodings"><span class="toc-number">8.</span> <span class="toc-text">#Objective-C method 方法 encodings</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

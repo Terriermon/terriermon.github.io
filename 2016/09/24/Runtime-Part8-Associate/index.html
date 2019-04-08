@@ -1,0 +1,470 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>Runtime Part8 Associate | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="在运行时，给对象关联一个其他对象，解决分类无法添加变量的缺陷. Category只能添加方法，而不能添加成员变量  动态添加成员变量，只能由object associate完成  主要是两个c函数   123456789101. 把一个对象与另外一个对象进行关联objc_setAssociatedObject的四个参数含义&amp;gt; id object，给谁设置关联对象。&amp;gt; const voi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Runtime Part8 Associate">
+<meta property="og:url" content="http://yoursite.com/2016/09/24/Runtime-Part8-Associate/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="在运行时，给对象关联一个其他对象，解决分类无法添加变量的缺陷. Category只能添加方法，而不能添加成员变量  动态添加成员变量，只能由object associate完成  主要是两个c函数   123456789101. 把一个对象与另外一个对象进行关联objc_setAssociatedObject的四个参数含义&amp;gt; id object，给谁设置关联对象。&amp;gt; const voi">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-08T12:44:16.706Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Runtime Part8 Associate">
+<meta name="twitter:description" content="在运行时，给对象关联一个其他对象，解决分类无法添加变量的缺陷. Category只能添加方法，而不能添加成员变量  动态添加成员变量，只能由object associate完成  主要是两个c函数   123456789101. 把一个对象与另外一个对象进行关联objc_setAssociatedObject的四个参数含义&amp;gt; id object，给谁设置关联对象。&amp;gt; const voi">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/09/24/Runtime-Part8-Associate/" title="Runtime Part8 Associate" itemprop="url">Runtime Part8 Associate</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2016-09-23T16:13:26.000Z" itemprop="datePublished"> Published 2016-09-24</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#在运行时，给对象关联一个其他对象，解决分类无法添加变量的缺陷"><span class="toc-number">1.</span> <span class="toc-text">在运行时，给对象关联一个其他对象，解决分类无法添加变量的缺陷.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用Category-objc-associate结合使用的例子，给类动态添加成员变量-setter与getter"><span class="toc-number">2.</span> <span class="toc-text">使用Category+objc_associate结合使用的例子，给类动态添加成员变量+setter与getter</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#eg1-给Person类动态关联一个对象"><span class="toc-number">3.</span> <span class="toc-text">eg1. 给Person类动态关联一个对象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#eg2-使用UIView分类，完成给任意UIView对象，添加手势点击操作，并接受Block回调"><span class="toc-number">4.</span> <span class="toc-text">eg2. 使用UIView分类，完成给任意UIView对象，添加手势点击操作，并接受Block回调</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="在运行时，给对象关联一个其他对象，解决分类无法添加变量的缺陷"><a href="#在运行时，给对象关联一个其他对象，解决分类无法添加变量的缺陷" class="headerlink" title="在运行时，给对象关联一个其他对象，解决分类无法添加变量的缺陷."></a>在运行时，给对象关联一个其他对象，解决分类无法添加变量的缺陷.</h3><ul>
+<li><p>Category只能添加<code>方法</code>，而不能添加成员变量</p>
+</li>
+<li><p>动态添加成员变量，只能由<code>object associate</code>完成</p>
+</li>
+<li><p>主要是两个c函数</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">1. 把一个对象与另外一个对象进行关联</span><br><span class="line"></span><br><span class="line">objc_setAssociatedObject的四个参数含义</span><br><span class="line">&gt; id object，给谁设置关联对象。</span><br><span class="line">&gt; const void *key，关联对象唯一的key，获取时会用到。</span><br><span class="line">&gt; id value，被关联对象。</span><br><span class="line">&gt; objc_AssociationPolicy，关联策略</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">void objc_setAssociatedObject(id object, const void *key, id value, objc_AssociationPolicy policy)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">2. 获取相关联的对象</span><br><span class="line"></span><br><span class="line">id objc_getAssociatedObject(id object, const void *key)</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="使用Category-objc-associate结合使用的例子，给类动态添加成员变量-setter与getter"><a href="#使用Category-objc-associate结合使用的例子，给类动态添加成员变量-setter与getter" class="headerlink" title="使用Category+objc_associate结合使用的例子，给类动态添加成员变量+setter与getter"></a>使用Category+objc_associate结合使用的例子，给类动态添加成员变量+setter与getter</h3><ul>
+<li><p><code>objc_associate</code>让一个对象A能够在运行时，使用一个key来绑定另一个对象B。</p>
+</li>
+<li><p><code>Category分类</code>提供<code>操作被绑定的对象</code>的函数入口</p>
+</li>
+</ul>
+<hr>
+<h3 id="eg1-给Person类动态关联一个对象"><a href="#eg1-给Person类动态关联一个对象" class="headerlink" title="eg1. 给Person类动态关联一个对象"></a>eg1. 给Person类动态关联一个对象</h3><ul>
+<li>原始 Person类 </li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;Foundation/Foundation.h&gt;</span><br><span class="line"></span><br><span class="line">@interface Person : NSObject</span><br><span class="line"></span><br><span class="line">@property (nonatomic, copy) NSString *name;</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@implementation Person</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>Person+Associate分类</code>，完成给原始类Person，动态添加成员变量，以及setter与getter</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;Person.h&quot;</span><br><span class="line"></span><br><span class="line">@interface Person (Associate)</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">*    提供设置动态添加的变量值的入口</span><br><span class="line">*/</span><br><span class="line">- (void)setAddress:(NSString *)addr;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">*    提供获取动态添加的变量值的入口</span><br><span class="line">*/</span><br><span class="line">- (NSString *)getAddress;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;Person+Associate.h&quot;</span><br><span class="line">#import &lt;objc/runtime.h&gt;</span><br><span class="line"></span><br><span class="line">static NSString *addressKey = nil;</span><br><span class="line"></span><br><span class="line">@implementation Person (Associate)</span><br><span class="line"></span><br><span class="line">- (void)setAddress:(NSString *)addr &#123;</span><br><span class="line"></span><br><span class="line">objc_setAssociatedObject(self,</span><br><span class="line">&amp;addressKey,</span><br><span class="line">addr,</span><br><span class="line">OBJC_ASSOCIATION_RETAIN_NONATOMIC);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (NSString *)getAddress &#123;</span><br><span class="line">return objc_getAssociatedObject(self, &amp;addressKey);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="eg2-使用UIView分类，完成给任意UIView对象，添加手势点击操作，并接受Block回调"><a href="#eg2-使用UIView分类，完成给任意UIView对象，添加手势点击操作，并接受Block回调" class="headerlink" title="eg2. 使用UIView分类，完成给任意UIView对象，添加手势点击操作，并接受Block回调"></a>eg2. 使用UIView分类，完成给任意UIView对象，添加手势点击操作，并接受Block回调</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">UIView+Associate.h</span><br><span class="line"></span><br><span class="line">#import &lt;UIKit/UIKit.h&gt;</span><br><span class="line"></span><br><span class="line">@interface UIView (Associate)</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">*  动态的给UIView实例，添加一个TapGesture操作</span><br><span class="line">*/</span><br><span class="line">- (void)x_setTapActionWithBlock:(void (^)(void))block;</span><br><span class="line"></span><br><span class="line">//注意，没有写get TapGesture的函数入口，是因为不需要得到手势对象，只需要点击回调即可</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line">UIView+Associate.m</span><br><span class="line"></span><br><span class="line">#import &quot;UIView+Associate.h&quot;</span><br><span class="line">#import &lt;objc/runtime.h&gt;</span><br><span class="line"></span><br><span class="line">//用来绑定Block成员变量的key</span><br><span class="line">static NSString *kXActionHandlerTapBlockKey;</span><br><span class="line"></span><br><span class="line">//用来绑定TapGesture成员变量的key</span><br><span class="line">static NSString *kXActionHandlerTapGestureKey;</span><br><span class="line"></span><br><span class="line">@implementation UIView (Associate)</span><br><span class="line"></span><br><span class="line">- (void)x_setTapActionWithBlock:(void (^)(void))block &#123;</span><br><span class="line"></span><br><span class="line">//1. 先获取与当前UIView实例绑定的手势对象</span><br><span class="line">UITapGestureRecognizer *gesture = objc_getAssociatedObject(self, &amp;kXActionHandlerTapBlockKey);</span><br><span class="line"></span><br><span class="line">//2. 如果还没有绑定一个手势对象，那么先创建手势，后绑定给当前UIView实例</span><br><span class="line">if (!gesture) &#123;</span><br><span class="line"></span><br><span class="line">//创建手势对象</span><br><span class="line">gesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(x_handleActionForTapGesture:)];</span><br><span class="line"></span><br><span class="line">//将手势添加到当前UIView实例</span><br><span class="line">[self addGestureRecognizer:gesture];</span><br><span class="line"></span><br><span class="line">//绑定给当前UIView实例</span><br><span class="line">objc_setAssociatedObject(self,</span><br><span class="line">&amp;kXActionHandlerTapGestureKey,</span><br><span class="line">gesture,</span><br><span class="line">OBJC_ASSOCIATION_RETAIN);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//3. 将传入的Block绑定给当前UIView实例</span><br><span class="line">objc_setAssociatedObject(self,</span><br><span class="line">&amp;kXActionHandlerTapBlockKey,</span><br><span class="line">block,</span><br><span class="line">OBJC_ASSOCIATION_COPY_NONATOMIC);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">*  手势识别对象的target和action</span><br><span class="line">*/</span><br><span class="line">- (void)x_handleActionForTapGesture:(UITapGestureRecognizer *)gesture &#123;</span><br><span class="line"></span><br><span class="line">//判断手势操作结束</span><br><span class="line">if (gesture.state == UIGestureRecognizerStateRecognized) &#123;</span><br><span class="line"></span><br><span class="line">//获取与当前UIView实例绑定的Block</span><br><span class="line">void (^block)(void) = objc_getAssociatedObject(self, &amp;kXActionHandlerTapBlockKey);</span><br><span class="line"></span><br><span class="line">if (block) &#123;</span><br><span class="line">block();</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2016/09/24/Runtime-Part8-Associate/" data-title="Runtime Part8 Associate | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2016/09/24/Runtime-Part9-Resolve/" title="Runtime Part9  Resolve">
+  <strong>上一篇：</strong><br>
+  <span>
+  Runtime Part9  Resolve</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/09/23/Runtime-Part7-Method/" title="Runtime Part7 Method">
+ <strong>下一篇：</strong><br> 
+ <span>Runtime Part7 Method
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2016/09/24/Runtime-Part8-Associate/" data-title="Runtime Part8 Associate" data-url="http://yoursite.com/2016/09/24/Runtime-Part8-Associate/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#在运行时，给对象关联一个其他对象，解决分类无法添加变量的缺陷"><span class="toc-number">1.</span> <span class="toc-text">在运行时，给对象关联一个其他对象，解决分类无法添加变量的缺陷.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用Category-objc-associate结合使用的例子，给类动态添加成员变量-setter与getter"><span class="toc-number">2.</span> <span class="toc-text">使用Category+objc_associate结合使用的例子，给类动态添加成员变量+setter与getter</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#eg1-给Person类动态关联一个对象"><span class="toc-number">3.</span> <span class="toc-text">eg1. 给Person类动态关联一个对象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#eg2-使用UIView分类，完成给任意UIView对象，添加手势点击操作，并接受Block回调"><span class="toc-number">4.</span> <span class="toc-text">eg2. 使用UIView分类，完成给任意UIView对象，添加手势点击操作，并接受Block回调</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

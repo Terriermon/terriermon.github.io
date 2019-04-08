@@ -1,0 +1,457 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>设计模式-观察者模式 | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="观察者、某个对象的值改变时，通知所有注册过的对象做出处理，类似响应式. 假设某个页面获取了钱包的最新钱数量，那么返回到其他页面同样也需要保持这个最新钱数量，要不然就造成钱数量不统一。 那么在多个页面同步最新网络数据办法: 每个页面都发一次请求，获取最新数据  一个页面触发请求，获取最新数据，然后通知其他页面自动更新为最新状态数据   #显然第二种方式更好，可以让其他页面自动更新为最新数据 – 响应">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计模式-观察者模式">
+<meta property="og:url" content="http://yoursite.com/2016/01/15/设计模式-观察者模式/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="观察者、某个对象的值改变时，通知所有注册过的对象做出处理，类似响应式. 假设某个页面获取了钱包的最新钱数量，那么返回到其他页面同样也需要保持这个最新钱数量，要不然就造成钱数量不统一。 那么在多个页面同步最新网络数据办法: 每个页面都发一次请求，获取最新数据  一个页面触发请求，获取最新数据，然后通知其他页面自动更新为最新状态数据   #显然第二种方式更好，可以让其他页面自动更新为最新数据 – 响应">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-08T12:19:42.109Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="设计模式-观察者模式">
+<meta name="twitter:description" content="观察者、某个对象的值改变时，通知所有注册过的对象做出处理，类似响应式. 假设某个页面获取了钱包的最新钱数量，那么返回到其他页面同样也需要保持这个最新钱数量，要不然就造成钱数量不统一。 那么在多个页面同步最新网络数据办法: 每个页面都发一次请求，获取最新数据  一个页面触发请求，获取最新数据，然后通知其他页面自动更新为最新状态数据   #显然第二种方式更好，可以让其他页面自动更新为最新数据 – 响应">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/01/15/设计模式-观察者模式/" title="设计模式-观察者模式" itemprop="url">设计模式-观察者模式</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2016-01-15T07:42:40.000Z" itemprop="datePublished"> Published 2016-01-15</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#观察者、某个对象的值改变时，通知所有注册过的对象做出处理，类似响应式"><span class="toc-number">1.</span> <span class="toc-text">观察者、某个对象的值改变时，通知所有注册过的对象做出处理，类似响应式.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#假设某个页面获取了钱包的最新钱数量，那么返回到其他页面同样也需要保持这个最新钱数量，要不然就造成钱数量不统一。"><span class="toc-number">2.</span> <span class="toc-text">假设某个页面获取了钱包的最新钱数量，那么返回到其他页面同样也需要保持这个最新钱数量，要不然就造成钱数量不统一。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#那么在多个页面同步最新网络数据办法"><span class="toc-number">3.</span> <span class="toc-text">那么在多个页面同步最新网络数据办法:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#显然第二种方式更好，可以让其他页面自动更新为最新数据-–-响应式"><span class="toc-number">4.</span> <span class="toc-text">#显然第二种方式更好，可以让其他页面自动更新为最新数据 – 响应式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#下面举一个简单的例子，某个页面触发请求网络最新数据之后，立刻通知其他监听者（页面、业务对象）跟着更新数据"><span class="toc-number">5.</span> <span class="toc-text">下面举一个简单的例子，某个页面触发请求网络最新数据之后，立刻通知其他监听者（页面、业务对象）跟着更新数据.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#h-文件"><span class="toc-number">6.</span> <span class="toc-text">.h 文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#m-文件"><span class="toc-number">7.</span> <span class="toc-text">.m 文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#测试，假设在某个ViewController中"><span class="toc-number">8.</span> <span class="toc-text">测试，假设在某个ViewController中</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="观察者、某个对象的值改变时，通知所有注册过的对象做出处理，类似响应式"><a href="#观察者、某个对象的值改变时，通知所有注册过的对象做出处理，类似响应式" class="headerlink" title="观察者、某个对象的值改变时，通知所有注册过的对象做出处理，类似响应式."></a>观察者、某个对象的值改变时，通知所有注册过的对象做出处理，类似<code>响应式</code>.</h3><hr>
+<h3 id="假设某个页面获取了钱包的最新钱数量，那么返回到其他页面同样也需要保持这个最新钱数量，要不然就造成钱数量不统一。"><a href="#假设某个页面获取了钱包的最新钱数量，那么返回到其他页面同样也需要保持这个最新钱数量，要不然就造成钱数量不统一。" class="headerlink" title="假设某个页面获取了钱包的最新钱数量，那么返回到其他页面同样也需要保持这个最新钱数量，要不然就造成钱数量不统一。"></a>假设某个页面获取了钱包的最新钱数量，那么返回到其他页面同样也需要保持这个最新钱数量，要不然就造成钱数量不统一。</h3><hr>
+<h3 id="那么在多个页面同步最新网络数据办法"><a href="#那么在多个页面同步最新网络数据办法" class="headerlink" title="那么在多个页面同步最新网络数据办法:"></a>那么在多个页面同步最新网络数据办法:</h3><ul>
+<li><p>每个页面都发一次请求，获取最新数据</p>
+</li>
+<li><p>一个页面触发请求，获取最新数据，然后<code>通知</code>其他页面自动更新为最新状态数据</p>
+</li>
+</ul>
+<h3 id="显然第二种方式更好，可以让其他页面自动更新为最新数据-–-响应式"><a href="#显然第二种方式更好，可以让其他页面自动更新为最新数据-–-响应式" class="headerlink" title="#显然第二种方式更好，可以让其他页面自动更新为最新数据 – 响应式"></a>#显然第二种方式更好，可以让其他页面自动更新为最新数据 – 响应式</h3><hr>
+<h3 id="下面举一个简单的例子，某个页面触发请求网络最新数据之后，立刻通知其他监听者（页面、业务对象）跟着更新数据"><a href="#下面举一个简单的例子，某个页面触发请求网络最新数据之后，立刻通知其他监听者（页面、业务对象）跟着更新数据" class="headerlink" title="下面举一个简单的例子，某个页面触发请求网络最新数据之后，立刻通知其他监听者（页面、业务对象）跟着更新数据."></a>下面举一个简单的例子，某个页面触发请求网络最新数据之后，立刻通知其他监听者（页面、业务对象）跟着更新数据.</h3><hr>
+<h3 id="h-文件"><a href="#h-文件" class="headerlink" title=".h 文件"></a>.h 文件</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;Foundation/Foundation.h&gt;</span><br><span class="line"></span><br><span class="line">@class UserInfoManager;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">*  定义协议，让其他对象实现，回传最新数据</span><br><span class="line">*/</span><br><span class="line">@protocol UserInfoManagerProtocol &lt;NSObject&gt;</span><br><span class="line"></span><br><span class="line">- (void)userInfoDidChanged:(UserInfoManager *)manager;</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@interface UserInfoManager : NSObject</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">*  回传的参数值: 待支付数量</span><br><span class="line">*/</span><br><span class="line">@property(nonatomic, readonly) NSInteger repayNumber;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">*  回传的参数值: 待收货数量</span><br><span class="line">*/</span><br><span class="line">@property(nonatomic, readonly) NSInteger recieveNumber;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">*  获取Manager单例</span><br><span class="line">*/</span><br><span class="line">+ (instancetype)sharedInstance;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">*  同步服务器上的最新数据</span><br><span class="line">*/</span><br><span class="line">- (void)synchronServerData;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">*  添加实现了UserInfoManagerProtocol协议的监听者</span><br><span class="line">*  可以添加多个监听者，使用数组保存，并且使用同步多线程</span><br><span class="line">*/</span><br><span class="line">- (void)addObserver:(id&lt;UserInfoManagerProtocol&gt;) observer;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">*  移除监听者</span><br><span class="line">*/</span><br><span class="line">- (void)removeObserver:(id&lt;UserInfoManagerProtocol&gt;) observer;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<h3 id="m-文件"><a href="#m-文件" class="headerlink" title=".m 文件"></a>.m 文件</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;UserInfoManager.h&quot;</span><br><span class="line"></span><br><span class="line">@interface UserInfoManager ()</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">*  保存所有的监听者数组</span><br><span class="line">*/</span><br><span class="line">@property (nonatomic, strong) NSMutableArray *observerArray;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">*  使用一个串行队列执行多线程</span><br><span class="line">*/</span><br><span class="line">@property (nonatomic, strong) dispatch_queue_t serialQueue;</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@implementation UserInfoManager</span><br><span class="line"></span><br><span class="line">- (void)dealloc &#123;</span><br><span class="line"></span><br><span class="line">//1. 释放对象</span><br><span class="line">_serialQueue = nil;</span><br><span class="line"></span><br><span class="line">//2. 取消网络请求</span><br><span class="line">//...</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">+ (instancetype)sharedInstance &#123;</span><br><span class="line">static UserInfoManager *manager = nil;</span><br><span class="line">static dispatch_once_t onceToken;</span><br><span class="line">dispatch_once(&amp;onceToken, ^&#123;</span><br><span class="line">manager = [[self alloc] init];</span><br><span class="line">&#125;);</span><br><span class="line">return manager;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (NSMutableArray *)observerArray &#123;</span><br><span class="line">if (!_observerArray) &#123;</span><br><span class="line">_observerArray = [[NSMutableArray alloc] init];</span><br><span class="line">&#125;</span><br><span class="line">return _observerArray;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (dispatch_queue_t)serialQueue &#123;</span><br><span class="line">if (!_serialQueue) &#123;</span><br><span class="line">_serialQueue = dispatch_queue_create(&quot;com.cn.UserInfoManager&quot;, DISPATCH_QUEUE_SERIAL);</span><br><span class="line">&#125;</span><br><span class="line">return _serialQueue;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)synchronServerData &#123;</span><br><span class="line"></span><br><span class="line">//1. 请求服务器最新数据</span><br><span class="line">//...</span><br><span class="line"></span><br><span class="line">//2. 然后通知所有监听者，更新最新数据</span><br><span class="line">[self _notifyAllObservers];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)addObserver:(id&lt;UserInfoManagerProtocol&gt;)observer &#123;</span><br><span class="line"></span><br><span class="line">//异步执行+串行队列调度，同步多线程</span><br><span class="line">dispatch_async(self.serialQueue, ^&#123;</span><br><span class="line">[self.observerArray addObject:observer];</span><br><span class="line">&#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)removeObserver:(id&lt;UserInfoManagerProtocol&gt;)observer &#123;</span><br><span class="line"></span><br><span class="line">//异步执行+串行队列调度，同步多线程</span><br><span class="line">dispatch_async(self.serialQueue, ^&#123;</span><br><span class="line">[self.observerArray removeObject:observer];</span><br><span class="line">&#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)_notifyAllObservers &#123;</span><br><span class="line"></span><br><span class="line">//让所有监听者执行实现的代理函数，获取最新数据</span><br><span class="line"></span><br><span class="line">[self.observerArray makeObjectsPerformSelector:@selector(userInfoDidChanged:)</span><br><span class="line">withObject:self];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<h3 id="测试，假设在某个ViewController中"><a href="#测试，假设在某个ViewController中" class="headerlink" title="测试，假设在某个ViewController中"></a>测试，假设在某个ViewController中</h3><ul>
+<li>要想成为监听者，必须实现协议方法</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;UserInfoManager.h&quot;</span><br><span class="line"></span><br><span class="line">@interface ViewController () &lt;UserInfoManagerProtocol&gt;</span><br><span class="line"></span><br><span class="line">//...</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">@implementation ViewController</span><br><span class="line"></span><br><span class="line">//4.</span><br><span class="line">- (void)dealloc &#123;</span><br><span class="line"></span><br><span class="line">[[UserInfoManager sharedInstance] removeObserver:self];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)viewDidLoad &#123;</span><br><span class="line">[super viewDidLoad];</span><br><span class="line"></span><br><span class="line">//1. 添加监听者</span><br><span class="line">[[UserInfoManager sharedInstance] addObserver:self];</span><br><span class="line"></span><br><span class="line">//2. 开始同步数据</span><br><span class="line">[[UserInfoManager sharedInstance] synchronServerData];</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//3.</span><br><span class="line">- (void)userInfoDidChanged:(UserInfoManager *)manager &#123;</span><br><span class="line"></span><br><span class="line">//回调方法中，读取UserInfoManager实例的最新数据</span><br><span class="line"></span><br><span class="line">NSLog(@&quot;待支付数量 = %ld&quot;, manager.repayNumber);</span><br><span class="line">NSLog(@&quot;待收货数量 = %ld&quot;, manager.recieveNumber);</span><br><span class="line"></span><br><span class="line">//还可以更新UI上的数据</span><br><span class="line">//...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2016/01/15/设计模式-观察者模式/" data-title="设计模式-观察者模式 | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2016/01/16/设计模式-状态模式/" title="设计模式-状态模式">
+  <strong>上一篇：</strong><br>
+  <span>
+  设计模式-状态模式</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/01/14/设计模式-中介者模式/" title="设计模式-中介者模式">
+ <strong>下一篇：</strong><br> 
+ <span>设计模式-中介者模式
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2016/01/15/设计模式-观察者模式/" data-title="设计模式-观察者模式" data-url="http://yoursite.com/2016/01/15/设计模式-观察者模式/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#观察者、某个对象的值改变时，通知所有注册过的对象做出处理，类似响应式"><span class="toc-number">1.</span> <span class="toc-text">观察者、某个对象的值改变时，通知所有注册过的对象做出处理，类似响应式.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#假设某个页面获取了钱包的最新钱数量，那么返回到其他页面同样也需要保持这个最新钱数量，要不然就造成钱数量不统一。"><span class="toc-number">2.</span> <span class="toc-text">假设某个页面获取了钱包的最新钱数量，那么返回到其他页面同样也需要保持这个最新钱数量，要不然就造成钱数量不统一。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#那么在多个页面同步最新网络数据办法"><span class="toc-number">3.</span> <span class="toc-text">那么在多个页面同步最新网络数据办法:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#显然第二种方式更好，可以让其他页面自动更新为最新数据-–-响应式"><span class="toc-number">4.</span> <span class="toc-text">#显然第二种方式更好，可以让其他页面自动更新为最新数据 – 响应式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#下面举一个简单的例子，某个页面触发请求网络最新数据之后，立刻通知其他监听者（页面、业务对象）跟着更新数据"><span class="toc-number">5.</span> <span class="toc-text">下面举一个简单的例子，某个页面触发请求网络最新数据之后，立刻通知其他监听者（页面、业务对象）跟着更新数据.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#h-文件"><span class="toc-number">6.</span> <span class="toc-text">.h 文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#m-文件"><span class="toc-number">7.</span> <span class="toc-text">.m 文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#测试，假设在某个ViewController中"><span class="toc-number">8.</span> <span class="toc-text">测试，假设在某个ViewController中</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

@@ -1,0 +1,521 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>UIControl | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="UIControl是继承自UIView，所以其实UIControl也是一个UI控件  UIControl就是一个最简单的UIView子类，只具备接收事件的功能，其他显示的子控件什么的都没有  UIControl适用于自定义一些接收事件、内部非常规的subviews的自定义UI控件  继承自UIControl的子控件  UISwitch开关 UIButton按钮 UISegmentedContro">
+<meta property="og:type" content="article">
+<meta property="og:title" content="UIControl">
+<meta property="og:url" content="http://yoursite.com/2016/03/01/UIControl/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="UIControl是继承自UIView，所以其实UIControl也是一个UI控件  UIControl就是一个最简单的UIView子类，只具备接收事件的功能，其他显示的子控件什么的都没有  UIControl适用于自定义一些接收事件、内部非常规的subviews的自定义UI控件  继承自UIControl的子控件  UISwitch开关 UIButton按钮 UISegmentedContro">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-08T12:26:58.904Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="UIControl">
+<meta name="twitter:description" content="UIControl是继承自UIView，所以其实UIControl也是一个UI控件  UIControl就是一个最简单的UIView子类，只具备接收事件的功能，其他显示的子控件什么的都没有  UIControl适用于自定义一些接收事件、内部非常规的subviews的自定义UI控件  继承自UIControl的子控件  UISwitch开关 UIButton按钮 UISegmentedContro">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/03/01/UIControl/" title="UIControl" itemprop="url">UIControl</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2016-02-29T16:59:13.000Z" itemprop="datePublished"> Published 2016-03-01</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#UIControl接收事件，如下这些属性"><span class="toc-number">1.</span> <span class="toc-text">UIControl接收事件，如下这些属性</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#enabled属性"><span class="toc-number">1.1.</span> <span class="toc-text">enabled属性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#selected属性"><span class="toc-number">1.2.</span> <span class="toc-text">selected属性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#contentVerticalAlignment属性"><span class="toc-number">1.3.</span> <span class="toc-text">contentVerticalAlignment属性</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#contentHorizontalAlignment属性"><span class="toc-number">2.</span> <span class="toc-text">#contentHorizontalAlignment属性</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#事件通知"><span class="toc-number">2.1.</span> <span class="toc-text">事件通知</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<ul>
+<li><p>UIControl是继承自<code>UIView</code>，所以其实UIControl也是一个UI控件</p>
+</li>
+<li><p>UIControl就是一个<code>最简单的UIView子类</code>，<strong>只具备接收事件的功能</strong>，其他显示的子控件什么的都没有</p>
+</li>
+<li><p>UIControl适用于自定义一些<code>接收事件</code>、内部非常规的subviews的自定义UI控件</p>
+</li>
+<li><p>继承自<code>UIControl</code>的子控件</p>
+</li>
+<li>UISwitch开关</li>
+<li>UIButton按钮</li>
+<li>UISegmentedControl分段控件</li>
+<li>UISlider滑块</li>
+<li>UITextField文本输入框</li>
+<li><p>UIPageControl分页控件</p>
+</li>
+<li><p>大多数UI控件是继承自<code>UIView</code>.</p>
+</li>
+<li><p>UIView是继承自<code>UIResponder</code></p>
+</li>
+</ul>
+<hr>
+<h3 id="UIControl接收事件，如下这些属性"><a href="#UIControl接收事件，如下这些属性" class="headerlink" title="UIControl接收事件，如下这些属性"></a>UIControl接收事件，如下这些属性</h3><h4 id="enabled属性"><a href="#enabled属性" class="headerlink" title="enabled属性"></a>enabled属性</h4><ul>
+<li>控件默认是启用的</li>
+<li>要禁用控件，可以将enabled属性设置为NO，这将导致控件忽略任何触摸事件</li>
+<li>被禁用后，控件还可以用不同的方式显示自己，比如变成灰色不可用</li>
+</ul>
+<h4 id="selected属性"><a href="#selected属性" class="headerlink" title="selected属性"></a>selected属性</h4><ul>
+<li>当用户选中控件时，UIControl类会将其selected属性设置为YES</li>
+</ul>
+<h4 id="contentVerticalAlignment属性"><a href="#contentVerticalAlignment属性" class="headerlink" title="contentVerticalAlignment属性"></a>contentVerticalAlignment属性</h4><ul>
+<li><p>主要是设置<code>内容</code>的<code>垂直方向</code>的对齐方式</p>
+</li>
+<li><p>这个属性值有如下4个枚举值</p>
+</li>
+<li><p>UIControlContentVerticalAlignmentCenter     - UIControlContentVerticalAlignmentTop  </p>
+</li>
+<li>UIControlContentVerticalAlignmentBottom  </li>
+<li>UIControlContentVerticalAlignmentFill</li>
+</ul>
+<h3 id="contentHorizontalAlignment属性"><a href="#contentHorizontalAlignment属性" class="headerlink" title="#contentHorizontalAlignment属性"></a>#contentHorizontalAlignment属性</h3><ul>
+<li><p>主要是设置<code>内容</code>的<code>水平方向</code>的对齐方式</p>
+</li>
+<li><p>这个属性值有如下4个枚举值</p>
+</li>
+<li><p>UIControlContentHorizontalAlignmentCenter </p>
+</li>
+<li>UIControlContentHorizontalAlignmentTop</li>
+<li>UIControlContentHorizontalAlignmentBottom</li>
+<li>UIControlContentHorizontalAlignmentFill</li>
+</ul>
+<h4 id="事件通知"><a href="#事件通知" class="headerlink" title="事件通知"></a>事件通知</h4><ul>
+<li><p>UIControl类提供了一个标准机制，来进行<code>事件登记</code>和<code>事件移除</code></p>
+</li>
+<li><p>事件登记</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">UIControl *control = nil;</span><br><span class="line"></span><br><span class="line">[control addTarget:事件处理对象</span><br><span class="line">action:@selector(消息的名字，方法的SEL值)</span><br><span class="line">forControlEvents:事件名];</span><br></pre></td></tr></table></figure>
+<ul>
+<li>事件可以用逻辑OR合并在一起，因此可以再一次单独的addTarget调用中指定多个事件</li>
+<li><code>事件名可以自己定义</code></li>
+</ul>
+<ul>
+<li>事件移除</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[myControl removeTarget:myDelegate   action:nil  forControlEvents:UIControlEventAllEvents];</span><br></pre></td></tr></table></figure>
+<ul>
+<li>获取UIControl登记的所有事件Target，返回一个NSSet</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">NSSet* myActions = [myConreol allTargets];</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>获取UIControl登记的<code>某一个事件</code>Target，所有的的处理方法的SEL</p>
+</li>
+<li><p>如下例子是以<code>UIControlEventValueChanged</code>对应的Target为例</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">NSArray* myActions = [myControl actionForTarget:UIControlEventValueChanged];</span><br></pre></td></tr></table></figure>
+<ul>
+<li>让UIControl发送一个事件通知，也就是让之前登记的回调方法执行</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-[UIControl sendActionsForControlEvents:事件名];</span><br></pre></td></tr></table></figure>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2016/03/01/UIControl/" data-title="UIControl | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2016/06/03/UITableViewCell的一些优化/" title="UITableViewCell的一些优化">
+  <strong>上一篇：</strong><br>
+  <span>
+  UITableViewCell的一些优化</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/02/23/nil-nsnull-null-kcfnull/" title="nil-nsnull-null-kcfnull">
+ <strong>下一篇：</strong><br> 
+ <span>nil-nsnull-null-kcfnull
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2016/03/01/UIControl/" data-title="UIControl" data-url="http://yoursite.com/2016/03/01/UIControl/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#UIControl接收事件，如下这些属性"><span class="toc-number">1.</span> <span class="toc-text">UIControl接收事件，如下这些属性</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#enabled属性"><span class="toc-number">1.1.</span> <span class="toc-text">enabled属性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#selected属性"><span class="toc-number">1.2.</span> <span class="toc-text">selected属性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#contentVerticalAlignment属性"><span class="toc-number">1.3.</span> <span class="toc-text">contentVerticalAlignment属性</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#contentHorizontalAlignment属性"><span class="toc-number">2.</span> <span class="toc-text">#contentHorizontalAlignment属性</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#事件通知"><span class="toc-number">2.1.</span> <span class="toc-text">事件通知</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

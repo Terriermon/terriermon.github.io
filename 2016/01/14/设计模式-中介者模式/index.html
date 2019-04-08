@@ -1,0 +1,451 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>设计模式-中介者模式 | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="中介者、通过中间者解耦 消息发送者与消息接收者 之间的强耦合. 消息发送者和消息接受者都需要实现的协议1234567891011121314151617181920212223242526////  MediaContact.h//  demos////  Created by xiongzenghui on 14/2/1.//  Copyright © 2014年 xiongzenghui. A">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计模式-中介者模式">
+<meta property="og:url" content="http://yoursite.com/2016/01/14/设计模式-中介者模式/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="中介者、通过中间者解耦 消息发送者与消息接收者 之间的强耦合. 消息发送者和消息接受者都需要实现的协议1234567891011121314151617181920212223242526////  MediaContact.h//  demos////  Created by xiongzenghui on 14/2/1.//  Copyright © 2014年 xiongzenghui. A">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-08T12:18:48.638Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="设计模式-中介者模式">
+<meta name="twitter:description" content="中介者、通过中间者解耦 消息发送者与消息接收者 之间的强耦合. 消息发送者和消息接受者都需要实现的协议1234567891011121314151617181920212223242526////  MediaContact.h//  demos////  Created by xiongzenghui on 14/2/1.//  Copyright © 2014年 xiongzenghui. A">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/01/14/设计模式-中介者模式/" title="设计模式-中介者模式" itemprop="url">设计模式-中介者模式</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2016-01-14T07:01:51.000Z" itemprop="datePublished"> Published 2016-01-14</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#中介者、通过中间者解耦-消息发送者与消息接收者-之间的强耦合"><span class="toc-number">1.</span> <span class="toc-text">中介者、通过中间者解耦 消息发送者与消息接收者 之间的强耦合.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#消息发送者和消息接受者都需要实现的协议"><span class="toc-number">2.</span> <span class="toc-text">消息发送者和消息接受者都需要实现的协议</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#抽象中介者"><span class="toc-number">3.</span> <span class="toc-text">抽象中介者</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#交流方A"><span class="toc-number">4.</span> <span class="toc-text">交流方A</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#交流方B"><span class="toc-number">5.</span> <span class="toc-text">交流方B</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#具体中介者"><span class="toc-number">6.</span> <span class="toc-text">具体中介者</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#A与B通过中介者进行通信"><span class="toc-number">7.</span> <span class="toc-text">A与B通过中介者进行通信</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#最终B只是接到一个消息字符串，并不知道该消息是A发送的，完成了A与B的解耦"><span class="toc-number">8.</span> <span class="toc-text">最终B只是接到一个消息字符串，并不知道该消息是A发送的，完成了A与B的解耦.</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="中介者、通过中间者解耦-消息发送者与消息接收者-之间的强耦合"><a href="#中介者、通过中间者解耦-消息发送者与消息接收者-之间的强耦合" class="headerlink" title="中介者、通过中间者解耦 消息发送者与消息接收者 之间的强耦合."></a>中介者、通过<code>中间者</code>解耦 <code>消息发送者</code>与<code>消息接收者</code> 之间的强耦合.</h3><hr>
+<h3 id="消息发送者和消息接受者都需要实现的协议"><a href="#消息发送者和消息接受者都需要实现的协议" class="headerlink" title="消息发送者和消息接受者都需要实现的协议"></a>消息发送者和消息接受者都需要实现的协议</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  MediaContact.h</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by xiongzenghui on 14/2/1.</span></span><br><span class="line"><span class="comment">//  Copyright © 2014年 xiongzenghui. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  能够通过到中介者沟通的抽象</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">MediaContact</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  已经发送消息</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">- (<span class="keyword">void</span>)didSendMessage;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  接收到消息</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">- (<span class="keyword">void</span>)didReceiveMessage:(<span class="built_in">NSString</span> *)message;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="抽象中介者"><a href="#抽象中介者" class="headerlink" title="抽象中介者"></a>抽象中介者</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  AbstractMediator.h</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//消息发送者与消息接受者</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"MediaContact.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  抽象中介者</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">AbstractMediator</span> : <span class="title">NSObject</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  单例</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">+ (<span class="keyword">instancetype</span>)sharedInstance;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  由中介者发送消息</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">*  @param msg  消息</span></span><br><span class="line"><span class="comment">*  @param from 发送方</span></span><br><span class="line"><span class="comment">*  @param to   接收方</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">- (<span class="keyword">void</span>)contactMessage:(<span class="built_in">NSString</span> *)msg</span><br><span class="line">From:(<span class="keyword">id</span>&lt;MediaContact&gt;)from</span><br><span class="line">To:(<span class="keyword">id</span>&lt;MediaContact&gt;)to;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  AbstractMediator.m</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"AbstractMediator.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">AbstractMediator</span></span></span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">instancetype</span>)sharedInstance &#123;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">id</span> mediator = <span class="literal">nil</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="built_in">dispatch_once_t</span> onceToken;</span><br><span class="line"><span class="built_in">dispatch_once</span>(&amp;onceToken, ^&#123;</span><br><span class="line">mediator = [[<span class="keyword">self</span> alloc] init];</span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">return</span> mediator;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)contactMessage:(<span class="built_in">NSString</span> *)msg</span><br><span class="line">From:(<span class="keyword">id</span>&lt;MediaContact&gt;)from</span><br><span class="line">To:(<span class="keyword">id</span>&lt;MediaContact&gt;)to</span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">//空实现</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="交流方A"><a href="#交流方A" class="headerlink" title="交流方A"></a>交流方A</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  PersonA.h</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"MediaContact.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  实现接口成为能够注册到中介者的能力</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">PersonA</span> : <span class="title">NSObject</span> &lt;<span class="title">MediaContact</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  PersonA.m</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"PersonA.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">PersonA</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)didSendMessage &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"已发送消息回调"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)didReceiveMessage:(<span class="built_in">NSString</span> *)message &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"接收到消息: %@"</span>, message);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="交流方B"><a href="#交流方B" class="headerlink" title="交流方B"></a>交流方B</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  PersonB.h</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"MediaContact.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  实现接口成为能够注册到中介者的能力</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">PersonB</span> : <span class="title">NSObject</span> &lt;<span class="title">MediaContact</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  PersonB.m</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"PersonB.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">PersonB</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)didSendMessage &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"已发送消息回调"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)didReceiveMessage:(<span class="built_in">NSString</span> *)message &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"接收到消息: %@"</span>, message);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="具体中介者"><a href="#具体中介者" class="headerlink" title="具体中介者"></a>具体中介者</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  MediatorA.h</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"AbstractMediator.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">MediatorA</span> : <span class="title">AbstractMediator</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  MediatorA.m</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"MediatorA.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">MediatorA</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  完成具体消息功能</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">*  1. 发送消息</span></span><br><span class="line"><span class="comment">*  2. 接收消息</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">- (<span class="keyword">void</span>)contactMessage:(<span class="built_in">NSString</span> *)msg</span><br><span class="line">From:(<span class="keyword">id</span>&lt;MediaContact&gt;)from</span><br><span class="line">To:(<span class="keyword">id</span>&lt;MediaContact&gt;)to</span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">//1. 通知接收方收取消息</span></span><br><span class="line">[to didReceiveMessage:msg];</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 通知发送方，接送方已经接收消息</span></span><br><span class="line">[from didSendMessage];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="A与B通过中介者进行通信"><a href="#A与B通过中介者进行通信" class="headerlink" title="A与B通过中介者进行通信"></a>A与B通过中介者进行通信</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  MediatorTest.m</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"MediatorTest.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//沟通双方</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"PersonA.h"</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"PersonB.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//消息中间件</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"MediatorA.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">MediatorTest</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)test &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//1. 交流方A</span></span><br><span class="line"><span class="keyword">id</span>&lt;MediaContact&gt; A = [PersonA new];</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 交流方B </span></span><br><span class="line"><span class="comment">//这里假设A或B，不能在A中直接导入B，应该要让消息中间件容器进行隔离</span></span><br><span class="line"><span class="comment">//可以使用一个标识来代替</span></span><br><span class="line"><span class="comment">//如下直接导入PersonB，只是为了代码简单方便</span></span><br><span class="line"><span class="keyword">id</span>&lt;MediaContact&gt; B = [PersonB new];</span><br><span class="line"></span><br><span class="line"><span class="comment">//3. A向B发送消息</span></span><br><span class="line">[[MediatorA sharedInstance] contactMessage:<span class="string">@"哈哈哈哈"</span></span><br><span class="line">From:A</span><br><span class="line">To:B];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="最终B只是接到一个消息字符串，并不知道该消息是A发送的，完成了A与B的解耦"><a href="#最终B只是接到一个消息字符串，并不知道该消息是A发送的，完成了A与B的解耦" class="headerlink" title="最终B只是接到一个消息字符串，并不知道该消息是A发送的，完成了A与B的解耦."></a>最终B只是接到一个消息字符串，并不知道该消息是A发送的，完成了A与B的解耦.</h3>  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2016/01/14/设计模式-中介者模式/" data-title="设计模式-中介者模式 | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2016/01/15/设计模式-观察者模式/" title="设计模式-观察者模式">
+  <strong>上一篇：</strong><br>
+  <span>
+  设计模式-观察者模式</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/01/13/设计模式-命令模式/" title="设计模式-命令模式">
+ <strong>下一篇：</strong><br> 
+ <span>设计模式-命令模式
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2016/01/14/设计模式-中介者模式/" data-title="设计模式-中介者模式" data-url="http://yoursite.com/2016/01/14/设计模式-中介者模式/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#中介者、通过中间者解耦-消息发送者与消息接收者-之间的强耦合"><span class="toc-number">1.</span> <span class="toc-text">中介者、通过中间者解耦 消息发送者与消息接收者 之间的强耦合.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#消息发送者和消息接受者都需要实现的协议"><span class="toc-number">2.</span> <span class="toc-text">消息发送者和消息接受者都需要实现的协议</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#抽象中介者"><span class="toc-number">3.</span> <span class="toc-text">抽象中介者</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#交流方A"><span class="toc-number">4.</span> <span class="toc-text">交流方A</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#交流方B"><span class="toc-number">5.</span> <span class="toc-text">交流方B</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#具体中介者"><span class="toc-number">6.</span> <span class="toc-text">具体中介者</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#A与B通过中介者进行通信"><span class="toc-number">7.</span> <span class="toc-text">A与B通过中介者进行通信</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#最终B只是接到一个消息字符串，并不知道该消息是A发送的，完成了A与B的解耦"><span class="toc-number">8.</span> <span class="toc-text">最终B只是接到一个消息字符串，并不知道该消息是A发送的，完成了A与B的解耦.</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

@@ -1,0 +1,554 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>Runtime Part10 Forward | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="完整的消息转发阶段 foward to a target  forward with NSInvocation   当向对象或类发送一个没有对应方法实现的消息SEL时，由系统自动调用消息转发的几个系统函数。注意： 必须是执行一个不存在方法实现的SEL，才会调用如下的几个函数.  可以作为实现方法拦截的思路之一，JSPatch正式利用这个系统消息转发函数进行获取目标方法执行所需要的所有的参数值，再自">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Runtime Part10 Forward">
+<meta property="og:url" content="http://yoursite.com/2016/09/24/Runtime-Part10-Forward/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="完整的消息转发阶段 foward to a target  forward with NSInvocation   当向对象或类发送一个没有对应方法实现的消息SEL时，由系统自动调用消息转发的几个系统函数。注意： 必须是执行一个不存在方法实现的SEL，才会调用如下的几个函数.  可以作为实现方法拦截的思路之一，JSPatch正式利用这个系统消息转发函数进行获取目标方法执行所需要的所有的参数值，再自">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-08T12:47:50.682Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Runtime Part10 Forward">
+<meta name="twitter:description" content="完整的消息转发阶段 foward to a target  forward with NSInvocation   当向对象或类发送一个没有对应方法实现的消息SEL时，由系统自动调用消息转发的几个系统函数。注意： 必须是执行一个不存在方法实现的SEL，才会调用如下的几个函数.  可以作为实现方法拦截的思路之一，JSPatch正式利用这个系统消息转发函数进行获取目标方法执行所需要的所有的参数值，再自">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/09/24/Runtime-Part10-Forward/" title="Runtime Part10 Forward" itemprop="url">Runtime Part10 Forward</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2016-09-23T16:26:56.000Z" itemprop="datePublished"> Published 2016-09-24</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#完整的消息转发阶段"><span class="toc-number">1.</span> <span class="toc-text">完整的消息转发阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#当向对象或类发送一个没有对应方法实现的消息SEL时，由系统自动调用消息转发的几个系统函数。"><span class="toc-number">2.</span> <span class="toc-text">当向对象或类发送一个没有对应方法实现的消息SEL时，由系统自动调用消息转发的几个系统函数。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#当Resolve动态决议函数中返回NO，而foward消息转发分为两个阶段。如果第一个阶段返回一个不是nil的对象，那么就不会再进入第二个阶段。"><span class="toc-number">3.</span> <span class="toc-text">当Resolve动态决议函数中返回NO，而foward消息转发分为两个阶段。如果第一个阶段返回一个不是nil的对象，那么就不会再进入第二个阶段。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#对于对象方法的消息转发"><span class="toc-number">4.</span> <span class="toc-text">对于对象方法的消息转发</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#阶段二、消息转发的举例"><span class="toc-number">4.1.</span> <span class="toc-text">阶段二、消息转发的举例</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#对象方法可以进入forward消息转发阶段，但对于类方法就无法进入forward消息转发阶段了"><span class="toc-number">5.</span> <span class="toc-text">对象方法可以进入forward消息转发阶段，但对于类方法就无法进入forward消息转发阶段了</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#如何让类方法也进入foward转发阶段，并完成转发了？"><span class="toc-number">6.</span> <span class="toc-text">如何让类方法也进入foward转发阶段，并完成转发了？</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#我个人的蠢办法"><span class="toc-number">6.1.</span> <span class="toc-text">我个人的蠢办法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#再看看有无其他方法让类方法也进入forward消息转发"><span class="toc-number">6.2.</span> <span class="toc-text">再看看有无其他方法让类方法也进入forward消息转发</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#参看JSPatch中为了拿到目标函数执行时所有的参数值实现"><span class="toc-number">6.3.</span> <span class="toc-text">参看JSPatch中为了拿到目标函数执行时所有的参数值实现</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用消息转发实现OC类的多继承"><span class="toc-number">7.</span> <span class="toc-text">使用消息转发实现OC类的多继承</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="完整的消息转发阶段"><a href="#完整的消息转发阶段" class="headerlink" title="完整的消息转发阶段"></a>完整的消息转发阶段</h3><ul>
+<li>foward to a target </li>
+<li>forward with NSInvocation</li>
+</ul>
+<hr>
+<h3 id="当向对象或类发送一个没有对应方法实现的消息SEL时，由系统自动调用消息转发的几个系统函数。"><a href="#当向对象或类发送一个没有对应方法实现的消息SEL时，由系统自动调用消息转发的几个系统函数。" class="headerlink" title="当向对象或类发送一个没有对应方法实现的消息SEL时，由系统自动调用消息转发的几个系统函数。"></a>当向对象或类发送一个没有对应方法实现的消息SEL时，由系统自动调用消息转发的几个系统函数。</h3><p>注意： 必须是执行一个不存在方法实现的SEL，才会调用如下的几个函数.</p>
+<blockquote>
+<p>可以作为实现方法拦截的思路之一，JSPatch正式利用这个系统消息转发函数进行获取目标方法执行所需要的所有的参数值，再自己手动构造NSInvocation发送消息.</p>
+</blockquote>
+<p>本文介绍使用 <code>Forward 消息转发</code>的方式处理 没有找到 SEL对应的Method.</p>
+<hr>
+<h3 id="当Resolve动态决议函数中返回NO，而foward消息转发分为两个阶段。如果第一个阶段返回一个不是nil的对象，那么就不会再进入第二个阶段。"><a href="#当Resolve动态决议函数中返回NO，而foward消息转发分为两个阶段。如果第一个阶段返回一个不是nil的对象，那么就不会再进入第二个阶段。" class="headerlink" title="当Resolve动态决议函数中返回NO，而foward消息转发分为两个阶段。如果第一个阶段返回一个不是nil的对象，那么就不会再进入第二个阶段。"></a>当Resolve动态决议函数中返回NO，而foward消息转发分为两个阶段。如果第一个阶段返回一个不是nil的对象，那么就不会再进入第二个阶段。</h3><ul>
+<li>消息转发阶段一、转发给一个具备方法实现的<code>对象</code>去处理</li>
+<li>如果该函数返回一个 非Nil或非nil的Target，那么就不会再进入第二个阶段</li>
+<li>反之，就会进入阶段二，让开发者自己手动创建NSInvocation完成消息转发</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (id)forwardingTargetForSelector:(SEL)aSelector;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>消息转发阶段二、自己构造一个<code>NSInvocation消息对象</code>，再设置消息接收者<code>对象</code>，并设置参数值，并执行 -[NSInvocation invoke];完成消息发送.    </li>
+<li>能够获取到目标实现函数执行所需要的<code>所有的参数值</code></li>
+<li>能得到最终转发消息执行的<code>返回值</code></li>
+<li>并能够做出一些额外的修改</li>
+<li>修改传入的方法参数值（防止nil、null处理）</li>
+<li>追加参数</li>
+<li>删除参数</li>
+<li>对参数做预处理（做一些参数防止null、nil处理）</li>
+<li>修改返回值</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//这种方法处理转发更为灵活，可以做很多处理</span><br><span class="line">- (void)forwardInvocation:(NSInvocation *)anInvocation;</span><br><span class="line"></span><br><span class="line">//同时需要重写这个函数，来提供目标实现函数的编码（提供: 返回值类型、参数类型、函数名...等等信息）</span><br><span class="line">- (nullable NSMethodSignature *)methodSignatureForSelector:(SEL)sel;</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="对于对象方法的消息转发"><a href="#对于对象方法的消息转发" class="headerlink" title="对于对象方法的消息转发"></a>对于对象方法的消息转发</h3><p>####阶段一、消息转发的举例</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">@implementation Person</span><br><span class="line"></span><br><span class="line">- (void)dynamicAddMethodDemo &#123;</span><br><span class="line"></span><br><span class="line">//1. 首先从外部隐式调用一个不存在的方法(一定是一个不存在实现的方法SEL)</span><br><span class="line">[self performSelector:@selector(noExistMethod:) withObject:@&quot;test&quot;];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//2.【重要】重写转发的方法，处理当前未找到实现的SEL调用，将消息转发给其他target处理（如此处的Car对象处理）</span><br><span class="line">//注意: </span><br><span class="line">//这个方法只是由系统传入了被调用函数的SEL，</span><br><span class="line">//无法拿到函数执行需要的参数值，所以就不能做预先处理等等</span><br><span class="line">- (id)forwardingTargetForSelector:(SEL)aSelector &#123;</span><br><span class="line"></span><br><span class="line">if ([NSStringFromSelector(aSelector) isEqualToString:@&quot;noExistMethod:&quot;]) &#123;</span><br><span class="line"></span><br><span class="line">//返回一个具体当前SEL对应的方法实现的target（类或对象）</span><br><span class="line">//但是替换的对象千万不要是self，那样会进入死循环</span><br><span class="line">return [Car new];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">return [super forwardingTargetForSelector:aSelector];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">//用来处理 SEL = @&quot;noExistMethod:&quot;的target</span><br><span class="line"></span><br><span class="line">@interface Car : NSObject</span><br><span class="line"></span><br><span class="line">//.h文件中，可以不用声明方法的定义</span><br><span class="line">- (void)noExistMethod:(NSString *)str;</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@implementation Car</span><br><span class="line"></span><br><span class="line">- (void)noExistMethod:(NSString *)str &#123;</span><br><span class="line">//最终由Person对象转发到这里处理</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<h4 id="阶段二、消息转发的举例"><a href="#阶段二、消息转发的举例" class="headerlink" title="阶段二、消息转发的举例"></a>阶段二、消息转发的举例</h4><ul>
+<li>系统将方法调用包装成一个<code>NSInvocation对象</code>消息，包括 </li>
+<li>方法的SEL</li>
+<li>目标target</li>
+<li>方法执行的参数</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line">@implementation Person</span><br><span class="line"></span><br><span class="line">- (void)dynamicAddMethodDemo &#123;</span><br><span class="line"></span><br><span class="line">//1. 首先从外部隐式调用一个不存在的方法(一定是一个不存在实现的方法SEL)</span><br><span class="line">[self performSelector:@selector(noExistMethod:) withObject:@&quot;test&quot;];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//2.【重要】必须重写如下方法，返回SEL对应的方法签名</span><br><span class="line">- (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector &#123;</span><br><span class="line"></span><br><span class="line">// 从父类获取方法签名</span><br><span class="line">NSMethodSignature *signature = [super methodSignatureForSelector:aSelector];</span><br><span class="line"></span><br><span class="line">// 从存在这个SEL对应方法实现的target中，获取SEL对应方法实现的签名（这里Car实例有这个SEL的方法实现，所以这里返回Car类中关于这个SEL的方法签名）</span><br><span class="line">if (!signature) &#123;</span><br><span class="line">if ([Car instancesRespondToSelector:aSelector]) &#123;</span><br><span class="line">signature = [Car instanceMethodSignatureForSelector:aSelector];</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">return signature;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//3.【重要】重写该方法奖方法调用消息转发给其他的target来处理，并且可以修改方法参数、以及拿到函数执行的结果值</span><br><span class="line">- (void)forwardInvocation:(NSInvocation *)anInvocation &#123;</span><br><span class="line"></span><br><span class="line">//首先，我们可以对方法参数进行一些处理</span><br><span class="line">//如下对参数操作，都是传递的地址c指针，如果是OC对象，也必须取地址</span><br><span class="line"></span><br><span class="line">//获取方法执行的参数</span><br><span class="line">id arg1 = nil;</span><br><span class="line">[anInvocation getArgument:&amp;arg1 atIndex:2];</span><br><span class="line"></span><br><span class="line">//修改方法执行的参数</span><br><span class="line">id arg2 = nil;</span><br><span class="line">[anInvocation setArgument:&amp;arg2 atIndex:2];</span><br><span class="line"></span><br><span class="line">//追加方法执行的参数，也就是set到下一个下标的位置</span><br><span class="line">id arg3 = nil;</span><br><span class="line">[anInvocation setArgument:&amp;arg3 atIndex:3];</span><br><span class="line"></span><br><span class="line">//转发给其他target，并处理消息执行方法</span><br><span class="line">if ([Car instancesRespondToSelector:anInvocation.selector]) &#123;</span><br><span class="line"></span><br><span class="line">//待转发到的target</span><br><span class="line">Car *target = [Car new];</span><br><span class="line"></span><br><span class="line">//转发消息给这个target，并执行</span><br><span class="line">[anInvocation invokeWithTarget:target];</span><br><span class="line"></span><br><span class="line">//上面那句，等价于如下两句</span><br><span class="line">//[anInvocation setTarget:target];</span><br><span class="line">//[invocatin invoke];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//设置方法执行后返回值</span><br><span class="line">id retValue = nil;</span><br><span class="line">[anInvocation setReturnValue:&amp;retValue];</span><br><span class="line"></span><br><span class="line">//获取方法执行后返回值</span><br><span class="line">[anInvocation getReturnValue:&amp;retValue];</span><br><span class="line"></span><br><span class="line">//转发完毕，做其他的操作</span><br><span class="line">//....</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//用来处理 SEL = @"noExistMethod:"的target</span></span><br><span class="line"></span><br><span class="line">@interface Car : NSObject</span><br><span class="line"></span><br><span class="line"><span class="comment">//.h文件中，可以不用声明方法的定义</span></span><br><span class="line">- (<span class="keyword">void</span>)noExistMethod:(NSString *)str;</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@implementation Car</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)noExistMethod:(NSString *)str &#123;</span><br><span class="line"><span class="comment">//最终由Person对象转发到这里处理</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="对象方法可以进入forward消息转发阶段，但对于类方法就无法进入forward消息转发阶段了"><a href="#对象方法可以进入forward消息转发阶段，但对于类方法就无法进入forward消息转发阶段了" class="headerlink" title="对象方法可以进入forward消息转发阶段，但对于类方法就无法进入forward消息转发阶段了"></a>对象方法可以进入forward消息转发阶段，但对于<code>类方法</code>就无法进入forward消息转发阶段了</h3><p>因为NSObject类提供的消息转发就如下几种</p>
+<ul>
+<li>resolve</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ (<span class="built_in">BOOL</span>)resolveClassMethod:(SEL)sel</span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ (<span class="built_in">BOOL</span>)resolveInstanceMethod:(SEL)sel</span><br></pre></td></tr></table></figure>
+<ul>
+<li>forward</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">id</span>)forwardingTargetForSelector:(SEL)aSelector</span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)forwardInvocation:(<span class="built_in">NSInvocation</span> *)anInvocation</span><br><span class="line">- (<span class="built_in">NSMethodSignature</span> *)methodSignatureForSelector:(SEL)aSelector</span><br></pre></td></tr></table></figure>
+<p>如上能对<code>类方法</code>进行处理的就只有<code>+ (BOOL)resolveClassMethod:(SEL)sel</code>阶段中对于ClassMethod进行处理，在该函数实现中完成:</p>
+<ul>
+<li>找到一个具备SEL对于实现的Target进行消息处理</li>
+<li>return NO; 不进入第二个阶段的消息转发</li>
+</ul>
+<p>但是如果return YES;就会进入完整的消息转发阶段forwardXxx，但是对于forward系列的函数都是<code>对象方法</code>，显然只会对<code>对象方法</code>进行转发，而不会对<code>类方法</code>处理转发.</p>
+<p>从如上的NSObject提供的消息转发函数来看，对于<code>类方法</code>只有一次机会进行处理。但是还是觉得不合理啊，再看看…</p>
+<hr>
+<h3 id="如何让类方法也进入foward转发阶段，并完成转发了？"><a href="#如何让类方法也进入foward转发阶段，并完成转发了？" class="headerlink" title="如何让类方法也进入foward转发阶段，并完成转发了？"></a>如何让类方法也进入foward转发阶段，并完成转发了？</h3><h4 id="我个人的蠢办法"><a href="#我个人的蠢办法" class="headerlink" title="我个人的蠢办法"></a>我个人的蠢办法</h4><ul>
+<li><p>因为类方法的实现，都是存放在Meta类中的，也就是Meta类的<code>objc_class</code>结构体实例中</p>
+</li>
+<li><p>那么是不是就是拿到Meta类来重写forward函数就可以了？</p>
+</li>
+<li><p>但是Meta类我们是看不到的，只有通过<code>object_getClass([类 class])</code>来获取到对应的Meta类的Class对象</p>
+</li>
+<li><p>然后再通过<code>Class_addMethod()、Class_repleaceMethod()</code>来重写Meta类中的forward函数完成消息转发</p>
+</li>
+</ul>
+<p>这仅仅是我个人突发奇想，没有任何的实现根据，觉得好笑也不是特别靠谱…</p>
+<p>修正下，可以不用去Meta类对应的<code>objc_class</code>获取类方法实现，直接可以通过</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取类方法实现</span></span><br><span class="line">Method m = class_getClassMethod([<span class="keyword">self</span> <span class="keyword">class</span>], <span class="keyword">@selector</span>(classMethod));</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *type = method_getTypeEncoding(m);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取类方法签名</span></span><br><span class="line"><span class="built_in">NSMethodSignature</span> *ms = [[<span class="keyword">self</span> <span class="keyword">class</span>] methodSignatureForSelector:<span class="keyword">@selector</span>(<span class="keyword">class</span>)];</span><br></pre></td></tr></table></figure>
+<h4 id="再看看有无其他方法让类方法也进入forward消息转发"><a href="#再看看有无其他方法让类方法也进入forward消息转发" class="headerlink" title="再看看有无其他方法让类方法也进入forward消息转发"></a>再看看有无其他方法让类方法也进入forward消息转发</h4><ul>
+<li>首先看交换类方法的实现</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Swizzle</span> : <span class="title">NSObject</span></span></span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">void</span>)test1;</span><br><span class="line">+ (<span class="keyword">void</span>)test1_hook;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">"Swizzle.h"</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;objc/runtime.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">Swizzle</span></span></span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">void</span>)load &#123;</span><br><span class="line">Method method1 = class_getClassMethod([<span class="keyword">self</span> <span class="keyword">class</span>], <span class="keyword">@selector</span>(test1));</span><br><span class="line">Method method2 = class_getClassMethod([<span class="keyword">self</span> <span class="keyword">class</span>], <span class="keyword">@selector</span>(test1_hook));</span><br><span class="line"></span><br><span class="line">method_exchangeImplementations(method1, method2);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">void</span>)test1 &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"test1"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">void</span>)test1_hook &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"test1 pre"</span>);</span><br><span class="line"></span><br><span class="line">[<span class="keyword">self</span> test1_hook];</span><br><span class="line"></span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"test2 last"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>直接可以通过<code>Method class_getClassMethod(Class cls, SEL name)</code>获取到类方法的实现，就不用像之前说的先获取Meta类的Class，再获取类方法的实现了。</p>
+<p>但是NSObject类提供的<code>forwardingTargetForSelector:</code>和<code>forwardInvocation:</code>消息转发函数，都是针对<code>对象方法</code>，如果将一个类的<code>对象方法</code>实现与<code>类方法</code>实现进行交换，好像不太合理了，毕竟两个方法的类型都不同，而且一个存放类本身，一个是存放Meta类中。</p>
+<p>对于<code>类方法</code>和<code>对象方法</code>不能交叉进行替换实现，必须对象方法之间替换，类方法之前替换，比如如下代码:</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><span class="line">分情况进行 <span class="number">1</span>)类方法交换实现 <span class="number">2</span>)对象方法交换实现</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  交换一个类中的两个方法SEL指向的IMP</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">*  @param cls       类</span></span><br><span class="line"><span class="comment">*  @param origSEL   原始方法的SEL</span></span><br><span class="line"><span class="comment">*  @param newSEL    交换后新方法的SEL</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">void</span> Swizzle(Class cls, SEL origSEL, SEL newSEL)</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//1. 首先尝试获取对象方法的实现</span></span><br><span class="line">Method origMethod = class_getInstanceMethod(cls, origSEL);</span><br><span class="line">Method newMethod = <span class="literal">nil</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 判断originMethod是`类`方法还是`对象`方法</span></span><br><span class="line"><span class="keyword">if</span> (!origMethod) &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//2.1 交换类方法实现</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取类方法</span></span><br><span class="line">origMethod = class_getClassMethod(cls, origSEL);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (!origMethod) &#123;</span><br><span class="line"><span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//说明是交换类方法，则查找新的方法(拦截的方法)</span></span><br><span class="line">newMethod = class_getClassMethod(cls, newSEL);</span><br><span class="line"></span><br><span class="line"><span class="comment">//类中不存在新方法实现</span></span><br><span class="line"><span class="keyword">if</span> (!newMethod) &#123;</span><br><span class="line"><span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//2.2 交换对象方法</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//获取新方法实现</span></span><br><span class="line">newMethod = class_getInstanceMethod(cls, newSEL);</span><br><span class="line"></span><br><span class="line"><span class="comment">//未找到新方法实现</span></span><br><span class="line"><span class="keyword">if</span> (!newMethod) &#123;</span><br><span class="line"><span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">1. 这里有一个注意的问题 &gt;&gt;&gt; 要交换的方法有两种情况:</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">情况一、原始方法的实现，没有出现在当前类，而是出现在当前类的父类，也就是当前类中并未重新实现</span></span><br><span class="line"><span class="comment">情况二、原始方法已经在当前类重新实现</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">2. 如果是情况一，直接使用exchange交换SEL，那么可能造成`父类`的方法实现IMP被交换，就会导致其他所有子类都会受到影响。那显然我们只需要修改当前类，而不想要影响其他子类。</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">3. 那么结合上面两种情况:</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">- 首先，使用原始方法SEL，添加要替换成的新的实现IMP</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">- 如果添加成功 &gt;&gt;&gt; 情况一</span></span><br><span class="line"><span class="comment">- 第一步、向当前类 添加`新的`方法实现，使用newSEL</span></span><br><span class="line"><span class="comment">- 第二步、`修改 replace`新方法SEL指向原始方法实现IMP，为了执行newSEL时回到原来的方法实现中</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">- 如果添加失败 &gt;&gt;&gt; 情况二</span></span><br><span class="line"><span class="comment">- 直接`交换 exchange`原始方法与新方法的SEL指向的IMP</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">if</span>(class_addMethod(cls, origSEL, method_getImplementation(newMethod), method_getTypeEncoding(newMethod)))</span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">//情况一: 为了执行newSEL时回到原来的方式实现</span></span><br><span class="line">class_replaceMethod(cls, newSEL, method_getImplementation(origMethod), method_getTypeEncoding(origMethod));</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//情况二: 直接交换了方法实现</span></span><br><span class="line">method_exchangeImplementations(origMethod, newMethod);</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="参看JSPatch中为了拿到目标函数执行时所有的参数值实现"><a href="#参看JSPatch中为了拿到目标函数执行时所有的参数值实现" class="headerlink" title="参看JSPatch中为了拿到目标函数执行时所有的参数值实现"></a>参看JSPatch中为了拿到目标函数执行时所有的参数值实现</h4><blockquote>
+<p>核心: 直接交换目标函数实现，从而直接进入到系统实现的消息转发c函数（_objc_msgForward 或 _objc_msgForward_stret），从而获取到传入的NSInvocation对象，继而获取到所有的目标方法执行的参数值。</p>
+</blockquote>
+<ul>
+<li><code>_objc_msgForward</code> 和  <code>_objc_msgForward_stret</code>这两个c函数，是c底层负责消息转发的具体函数.</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">id _objc_msgForward(id receiver, SEL sel, ...)</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> _objc_msgForward_stret(id receiver, SEL sel, ...)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>JSPatch中获取目标方法执行时所有的参数的c函数</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">overrideMethod</span><span class="params">(Class cls,                   </span></span></span><br><span class="line"><span class="function"><span class="params">NSString *selectorName,      </span></span></span><br><span class="line"><span class="function"><span class="params">JSValue *function,           </span></span></span><br><span class="line"><span class="function"><span class="params">BOOL isClassMethod,          </span></span></span><br><span class="line"><span class="function"><span class="params"><span class="keyword">const</span> <span class="keyword">char</span> *typeDescription)</span> </span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"><span class="comment">//1. 要被替换实现的方法SEL</span></span><br><span class="line">SEL selector = NSSelectorFromString(selectorName);</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 被替换实现的方法的编码</span></span><br><span class="line"><span class="keyword">if</span> (!typeDescription) &#123;</span><br><span class="line">Method method = class_getInstanceMethod(cls, selector);<span class="comment">//这里</span></span><br><span class="line"></span><br><span class="line">typeDescription = (<span class="keyword">char</span> *)method_getTypeEncoding(method);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//3. 被替换方法实现的IMP</span></span><br><span class="line">IMP originalImp = class_respondsToSelector(cls, selector) ? class_getMethodImplementation(cls, selector) : <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//4. 准备系统消息转发函数的IMP</span></span><br><span class="line"><span class="comment">//4.1 如果cpu是arm64架构</span></span><br><span class="line">IMP msgForwardIMP = _objc_msgForward;</span><br><span class="line"><span class="comment">//4.2 针对 `非arm64` cpu架构时，消息转发使用 _objc_msgForward_stret系统函数</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">if</span> !defined(__arm64__)</span></span><br><span class="line"><span class="keyword">if</span> (typeDescription[<span class="number">0</span>] == <span class="string">'&#123;'</span>) &#123;</span><br><span class="line"><span class="comment">//In some cases that returns struct, we should use the '_stret' API:</span></span><br><span class="line"><span class="comment">//http://sealiesoftware.com/blog/archive/2008/10/30/objc_explain_objc_msgSend_stret.html</span></span><br><span class="line"><span class="comment">//NSMethodSignature knows the detail but has no API to return, we can only get the info from debugDescription.</span></span><br><span class="line">NSMethodSignature *methodSignature = [NSMethodSignature signatureWithObjCTypes:typeDescription];</span><br><span class="line"><span class="keyword">if</span> ([methodSignature.debugDescription rangeOfString:@<span class="string">"is special struct return? YES"</span>].location != NSNotFound) &#123;</span><br><span class="line">msgForwardIMP = (IMP)_objc_msgForward_stret;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//5. 让原来方法执行时，从而直接进入`系统消息转发函数（forwardInvocation:）`的实现中</span></span><br><span class="line">class_replaceMethod(cls, selector, msgForwardIMP, typeDescription); </span><br><span class="line"></span><br><span class="line"><span class="comment">//6. 拦截系统的消息转发函数（forwardInvocation:）执行</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> clang diagnostic push</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> clang diagnostic ignored <span class="meta-string">"-Wundeclared-selector"</span></span></span><br><span class="line"><span class="keyword">if</span> (class_getMethodImplementation(cls, @selector(forwardInvocation:)) != (IMP)JPForwardInvocation) &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 替换掉当前类自己的forwardInvocation:方法实现</span></span><br><span class="line">IMP originalForwardImp = class_replaceMethod(cls, @selector(forwardInvocation:), (IMP)JPForwardInvocation, <span class="string">"v@:@"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 然后增加一个新的方法，用来回到类自己的forwardInvocation:方法实现，完成系统的消息转发工作</span></span><br><span class="line">class_addMethod(cls, @selector(ORIGforwardInvocation:), originalForwardImp, <span class="string">"v@:@"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> clang diagnostic pop</span></span><br><span class="line"></span><br><span class="line">.....</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>第一次看，觉得仍然只是针对类的对象方法进行消息转发。但是又想了一下，如果是需要拦截类方法的话，是不是只需要传入MetaClass就行了？</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//1. 获取交换类的MetaClass</span></span><br><span class="line">Class metaCls = objc_getMetaClass(<span class="string">"NSObject子类名字"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 传入MetaClass进行类方法交换</span></span><br><span class="line">overrideMethod(metaCls, sel, ....);</span><br></pre></td></tr></table></figure>
+<p>我觉得这样就一点能够让类方法也进入到forwardInvocation:函数了，经过demo测试确实也是可以的。</p>
+<hr>
+<h3 id="使用消息转发实现OC类的多继承"><a href="#使用消息转发实现OC类的多继承" class="headerlink" title="使用消息转发实现OC类的多继承"></a>使用消息转发实现OC类的<code>多继承</code></h3><ul>
+<li>(1) 有三个抽象接口</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">SayChinese</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line">- (<span class="keyword">void</span>)sayChinese;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">SayEnglish</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line">- (<span class="keyword">void</span>)sayEnglish;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">SayFranch</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line">- (<span class="keyword">void</span>)sayFranch;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>(2) 我内部拥有三个具体实现类，但是我希望不对外暴露实现，只是我内部知道具体实现</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">__SayChineseImpl</span> : <span class="title">NSObject</span> &lt;<span class="title">SayChinese</span>&gt;</span></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">__SayChineseImpl</span></span></span><br><span class="line">- (<span class="keyword">void</span>)sayChinese &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"说中国话"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">__SayEnglishImpl</span> : <span class="title">NSObject</span> &lt;<span class="title">SayEnglish</span>&gt;</span></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">__SayEnglishImpl</span></span></span><br><span class="line">- (<span class="keyword">void</span>)sayEnglish &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"说英语话"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">__SayFranchImpl</span> : <span class="title">NSObject</span> &lt;<span class="title">SayFranch</span>&gt;</span></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">__SayFranchImpl</span></span></span><br><span class="line">- (<span class="keyword">void</span>)sayFranch &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"说法国话"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>(3) 统一向外暴露一个类，来操作上面三个类所有方法实现，即多继承的效果</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  模拟继承多种语言</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">SpeckManager</span> : <span class="title">NSObject</span> &lt;<span class="title">SayChinese</span>, <span class="title">SayEnglish</span>, <span class="title">SayFranch</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">SpeckManager</span> </span>&#123;</span><br><span class="line"><span class="keyword">id</span>&lt;SayChinese&gt; _sayC;</span><br><span class="line"><span class="keyword">id</span>&lt;SayEnglish&gt; _sayE;</span><br><span class="line"><span class="keyword">id</span>&lt;SayFranch&gt; _sayF;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">instancetype</span>)init</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">self</span> = [<span class="keyword">super</span> init];</span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">self</span>) &#123;</span><br><span class="line">_sayC = [__SayChineseImpl new];</span><br><span class="line">_sayE = [__SayEnglishImpl new];</span><br><span class="line">_sayF = [__SayFranchImpl new];</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">id</span>)forwardingTargetForSelector:(SEL)aSelector &#123;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (aSelector == <span class="keyword">@selector</span>(sayChinese)) &#123;</span><br><span class="line"><span class="keyword">return</span> _sayC;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (aSelector == <span class="keyword">@selector</span>(sayEnglish)) &#123;</span><br><span class="line"><span class="keyword">return</span> _sayE;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (aSelector == <span class="keyword">@selector</span>(sayFranch)) &#123;</span><br><span class="line"><span class="keyword">return</span> _sayF;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> [<span class="keyword">super</span> forwardingTargetForSelector:aSelector];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>代码看起来还是挺简单的，最终就是将消息直接转发给对应的实现类对象即可。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2016/09/24/Runtime-Part10-Forward/" data-title="Runtime Part10 Forward | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2016/09/25/Runtime-Part11-NSInvocation/" title="Runtime Part11 NSInvocation">
+  <strong>上一篇：</strong><br>
+  <span>
+  Runtime Part11 NSInvocation</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/09/24/Runtime-Part9-Resolve/" title="Runtime Part9  Resolve">
+ <strong>下一篇：</strong><br> 
+ <span>Runtime Part9  Resolve
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2016/09/24/Runtime-Part10-Forward/" data-title="Runtime Part10 Forward" data-url="http://yoursite.com/2016/09/24/Runtime-Part10-Forward/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#完整的消息转发阶段"><span class="toc-number">1.</span> <span class="toc-text">完整的消息转发阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#当向对象或类发送一个没有对应方法实现的消息SEL时，由系统自动调用消息转发的几个系统函数。"><span class="toc-number">2.</span> <span class="toc-text">当向对象或类发送一个没有对应方法实现的消息SEL时，由系统自动调用消息转发的几个系统函数。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#当Resolve动态决议函数中返回NO，而foward消息转发分为两个阶段。如果第一个阶段返回一个不是nil的对象，那么就不会再进入第二个阶段。"><span class="toc-number">3.</span> <span class="toc-text">当Resolve动态决议函数中返回NO，而foward消息转发分为两个阶段。如果第一个阶段返回一个不是nil的对象，那么就不会再进入第二个阶段。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#对于对象方法的消息转发"><span class="toc-number">4.</span> <span class="toc-text">对于对象方法的消息转发</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#阶段二、消息转发的举例"><span class="toc-number">4.1.</span> <span class="toc-text">阶段二、消息转发的举例</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#对象方法可以进入forward消息转发阶段，但对于类方法就无法进入forward消息转发阶段了"><span class="toc-number">5.</span> <span class="toc-text">对象方法可以进入forward消息转发阶段，但对于类方法就无法进入forward消息转发阶段了</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#如何让类方法也进入foward转发阶段，并完成转发了？"><span class="toc-number">6.</span> <span class="toc-text">如何让类方法也进入foward转发阶段，并完成转发了？</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#我个人的蠢办法"><span class="toc-number">6.1.</span> <span class="toc-text">我个人的蠢办法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#再看看有无其他方法让类方法也进入forward消息转发"><span class="toc-number">6.2.</span> <span class="toc-text">再看看有无其他方法让类方法也进入forward消息转发</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#参看JSPatch中为了拿到目标函数执行时所有的参数值实现"><span class="toc-number">6.3.</span> <span class="toc-text">参看JSPatch中为了拿到目标函数执行时所有的参数值实现</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用消息转发实现OC类的多继承"><span class="toc-number">7.</span> <span class="toc-text">使用消息转发实现OC类的多继承</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

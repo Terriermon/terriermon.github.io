@@ -1,0 +1,543 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>设计模式-访问者模式 | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="访问者、将对一个实体类的业务逻辑，封装到一个Visitor中. 假设有两个实体 书  水果    各自有各自的业务逻辑 书本需要计算最终的价格 &amp;gt;&amp;gt;&amp;gt; float返回值类型  水果需要计算最终的价格 &amp;gt;&amp;gt;&amp;gt; float返回值类型   可以看到是相同类型的业务，具体说是相同类型返回值.  可以被访问的抽象节点1234567891011121314151617181">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计模式-访问者模式">
+<meta property="og:url" content="http://yoursite.com/2016/01/18/设计模式-访问者模式/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="访问者、将对一个实体类的业务逻辑，封装到一个Visitor中. 假设有两个实体 书  水果    各自有各自的业务逻辑 书本需要计算最终的价格 &amp;gt;&amp;gt;&amp;gt; float返回值类型  水果需要计算最终的价格 &amp;gt;&amp;gt;&amp;gt; float返回值类型   可以看到是相同类型的业务，具体说是相同类型返回值.  可以被访问的抽象节点1234567891011121314151617181">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-08T12:22:30.519Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="设计模式-访问者模式">
+<meta name="twitter:description" content="访问者、将对一个实体类的业务逻辑，封装到一个Visitor中. 假设有两个实体 书  水果    各自有各自的业务逻辑 书本需要计算最终的价格 &amp;gt;&amp;gt;&amp;gt; float返回值类型  水果需要计算最终的价格 &amp;gt;&amp;gt;&amp;gt; float返回值类型   可以看到是相同类型的业务，具体说是相同类型返回值.  可以被访问的抽象节点1234567891011121314151617181">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/01/18/设计模式-访问者模式/" title="设计模式-访问者模式" itemprop="url">设计模式-访问者模式</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2016-01-18T15:29:02.000Z" itemprop="datePublished"> Published 2016-01-18</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#访问者、将对一个实体类的业务逻辑，封装到一个Visitor中"><span class="toc-number">1.</span> <span class="toc-text">访问者、将对一个实体类的业务逻辑，封装到一个Visitor中.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#假设有两个实体"><span class="toc-number">2.</span> <span class="toc-text">假设有两个实体</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#各自有各自的业务逻辑"><span class="toc-number">3.</span> <span class="toc-text">各自有各自的业务逻辑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#可以被访问的抽象节点"><span class="toc-number">4.</span> <span class="toc-text">可以被访问的抽象节点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#具体节点1、书"><span class="toc-number">5.</span> <span class="toc-text">具体节点1、书</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#具体节点2、水果"><span class="toc-number">6.</span> <span class="toc-text">具体节点2、水果</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#抽象Visitor"><span class="toc-number">7.</span> <span class="toc-text">抽象Visitor</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#具体Visitor"><span class="toc-number">8.</span> <span class="toc-text">具体Visitor</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#demo实例"><span class="toc-number">9.</span> <span class="toc-text">demo实例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#从上可以得到"><span class="toc-number">10.</span> <span class="toc-text">从上可以得到</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#个人凭感觉发挥了下，觉得上面的Vistor中处理多个不同的业务，而且也是通过强转数据类型获取要处理的数据，那么针对这两个问题进一步细化了下"><span class="toc-number">11.</span> <span class="toc-text">个人凭感觉发挥了下，觉得上面的Vistor中处理多个不同的业务，而且也是通过强转数据类型获取要处理的数据，那么针对这两个问题进一步细化了下</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#首先两种抽象Vistor协议定义"><span class="toc-number">12.</span> <span class="toc-text">#首先两种抽象Vistor协议定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#然后两种抽象节点，分别接受对应的一个Vistor"><span class="toc-number">13.</span> <span class="toc-text">#然后两种抽象节点，分别接受对应的一个Vistor</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#具体Vistor实现"><span class="toc-number">14.</span> <span class="toc-text">具体Vistor实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#最后是实体类，根据需要实现抽象节点协议。不同的Element对应不同的Vistor"><span class="toc-number">15.</span> <span class="toc-text">#最后是实体类，根据需要实现抽象节点协议。不同的Element对应不同的Vistor</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#现在要新增一个其他类型数据的处理业务"><span class="toc-number">16.</span> <span class="toc-text">#现在要新增一个其他类型数据的处理业务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#声明对应的Element节点协议-与-Visitor协议"><span class="toc-number">17.</span> <span class="toc-text">#声明对应的Element节点协议 与 Visitor协议</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#让需要成为该新节点的实体类实现Element协议，具备这个类型业务处理的能力"><span class="toc-number">18.</span> <span class="toc-text">#让需要成为该新节点的实体类实现Element协议，具备这个类型业务处理的能力</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#小结Visitor模式编写注意点"><span class="toc-number">19.</span> <span class="toc-text">#小结Visitor模式编写注意点:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Visitor模式的缺点"><span class="toc-number">20.</span> <span class="toc-text">Visitor模式的缺点:</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="访问者、将对一个实体类的业务逻辑，封装到一个Visitor中"><a href="#访问者、将对一个实体类的业务逻辑，封装到一个Visitor中" class="headerlink" title="访问者、将对一个实体类的业务逻辑，封装到一个Visitor中."></a>访问者、将对一个实体类的业务逻辑，封装到一个Visitor中.</h3><hr>
+<h3 id="假设有两个实体"><a href="#假设有两个实体" class="headerlink" title="假设有两个实体"></a>假设有两个实体</h3><ul>
+<li><p>书</p>
+</li>
+<li><p>水果</p>
+</li>
+</ul>
+<hr>
+<h3 id="各自有各自的业务逻辑"><a href="#各自有各自的业务逻辑" class="headerlink" title="各自有各自的业务逻辑"></a>各自有各自的业务逻辑</h3><ul>
+<li><p>书本需要计算最终的<code>价格</code> &gt;&gt;&gt; float返回值类型</p>
+</li>
+<li><p>水果需要计算最终的<code>价格</code> &gt;&gt;&gt; float返回值类型</p>
+</li>
+</ul>
+<p>可以看到是相同类型的业务，具体说是相同类型返回值.</p>
+<hr>
+<h3 id="可以被访问的抽象节点"><a href="#可以被访问的抽象节点" class="headerlink" title="可以被访问的抽象节点"></a>可以被访问的抽象节点</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Element.h</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">Visitor</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  实体类抽象</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">Element</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  当前Elemnt对象 转发给 传入的Vistor对象 进行处理</span></span><br><span class="line"><span class="comment">*  （被传入的Visitor对象访问）</span></span><br><span class="line"><span class="comment">*  </span></span><br><span class="line"><span class="comment">*  注意: 此函数定义了`返回值`的类型</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">- (<span class="keyword">float</span>)acceptVistor:(<span class="keyword">id</span>&lt;Visitor&gt;)vistor;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="具体节点1、书"><a href="#具体节点1、书" class="headerlink" title="具体节点1、书"></a>具体节点1、书</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  BookService.h</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Element.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  计算书的价格</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Book</span> : <span class="title">NSObject</span> &lt;<span class="title">Element</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">assign</span>) <span class="keyword">float</span> bookPrice;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">copy</span>) <span class="built_in">NSString</span> *bookNo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  BookService.m</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Book.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Visitor.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">Book</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">float</span>)acceptVistor:(<span class="keyword">id</span>&lt;Visitor&gt;)vistor &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//1. 对当前BookService对象的条件进行过滤</span></span><br><span class="line"><span class="keyword">if</span> ([<span class="keyword">self</span>.bookNo isEqualToString:<span class="string">@""</span>] || \</span><br><span class="line">!<span class="keyword">self</span>.bookNo)</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">return</span> <span class="number">0.0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 让Vistor处理</span></span><br><span class="line"><span class="keyword">return</span> [vistor visitWithFruit:<span class="keyword">self</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="具体节点2、水果"><a href="#具体节点2、水果" class="headerlink" title="具体节点2、水果"></a>具体节点2、水果</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Fruit.h</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Element.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  计算水鬼的价格</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Fruit</span> : <span class="title">NSObject</span> &lt;<span class="title">Element</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">assign</span>) <span class="keyword">float</span> fruitPrice;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">copy</span>) <span class="built_in">NSString</span> *fruitNo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Fruit.m</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Fruit.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Visitor.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">Fruit</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">float</span>)acceptVistor:(<span class="keyword">id</span>&lt;Visitor&gt;)vistor &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//1. 对当前FruitService对象的条件进行过滤</span></span><br><span class="line"><span class="keyword">if</span> ([<span class="keyword">self</span>.fruitNo isEqualToString:<span class="string">@""</span>] || \</span><br><span class="line">!<span class="keyword">self</span>.fruitNo)</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">return</span> <span class="number">0.0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 让Vistor处理</span></span><br><span class="line"><span class="keyword">return</span> [vistor visitWithFruit:<span class="keyword">self</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="抽象Visitor"><a href="#抽象Visitor" class="headerlink" title="抽象Visitor"></a>抽象Visitor</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Visitor.h</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">Element</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  抽象访问者</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">Visitor</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  业务1:</span></span><br><span class="line"><span class="comment">*  计算书价格业务</span></span><br><span class="line"><span class="comment">*  返回值为float</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">- (<span class="keyword">float</span>)visitWithBook:(<span class="keyword">id</span>&lt;Element&gt;)book;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  业务2:</span></span><br><span class="line"><span class="comment">*  计算水果价格业务</span></span><br><span class="line"><span class="comment">*  返回值为float</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">- (<span class="keyword">float</span>)visitWithFruit:(<span class="keyword">id</span>&lt;Element&gt;)fruit;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="具体Visitor"><a href="#具体Visitor" class="headerlink" title="具体Visitor"></a>具体Visitor</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  ConcreateVistor.h</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Visitor.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">ConcreateVistor</span> : <span class="title">NSObject</span> &lt;<span class="title">Visitor</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  ConcreateVistor.m</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"ConcreateVistor.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/** 导入具体的Elment实现类 */</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Book.h"</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Fruit.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ConcreateVistor</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">float</span>)visitWithBook:(<span class="keyword">id</span>&lt;Element&gt;)book &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//1.</span></span><br><span class="line">Book *bs = (Book *)book;</span><br><span class="line"></span><br><span class="line"><span class="comment">//2.</span></span><br><span class="line"><span class="keyword">float</span> price = bs.bookPrice;</span><br><span class="line"></span><br><span class="line"><span class="comment">//3. 书价打折</span></span><br><span class="line"><span class="keyword">return</span> price * <span class="number">0.6</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/** 优化: 可以单独抽一个Manager类提供这个处理业务 */</span></span><br><span class="line"><span class="comment">//...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">float</span>)visitWithFruit:(<span class="keyword">id</span>&lt;Element&gt;)fruit &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//1.</span></span><br><span class="line">Fruit *fs = (Fruit *)fruit;</span><br><span class="line"></span><br><span class="line"><span class="comment">//2.</span></span><br><span class="line"><span class="keyword">float</span> price = fs.fruitPrice;</span><br><span class="line"></span><br><span class="line"><span class="comment">//3. 水果打折</span></span><br><span class="line"><span class="keyword">return</span> price * <span class="number">0.85</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/** 优化: 可以单独抽一个Manager类提供这个处理业务 */</span></span><br><span class="line"><span class="comment">//...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="demo实例"><a href="#demo实例" class="headerlink" title="demo实例"></a>demo实例</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  VistorTest.m</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"VistorTest.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//商品类</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Book.h"</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Fruit.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//访问者</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"ConcreateVistor.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">VistorTest</span></span></span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">void</span>)test &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//1. 实体1</span></span><br><span class="line">Book *book = [Book new];</span><br><span class="line">book.bookPrice = <span class="number">99.0</span>;</span><br><span class="line">book.bookNo = <span class="string">@"book11111"</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 实体2</span></span><br><span class="line">Fruit *fruit = [Fruit new];</span><br><span class="line">fruit.fruitPrice = <span class="number">129.0</span>;</span><br><span class="line">fruit.fruitNo = <span class="string">@"fruit2222"</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//3. 访问者（业务统一调用者）</span></span><br><span class="line"><span class="keyword">id</span>&lt;Visitor&gt; vistor = [ConcreateVistor new];</span><br><span class="line"></span><br><span class="line"><span class="comment">//4. 将Book交给Visitor对象完成计算总价的</span></span><br><span class="line"><span class="keyword">float</span> price1 = [book acceptVistor:vistor];</span><br><span class="line"></span><br><span class="line"><span class="comment">//5. 将Fruit交给Visitor对象完成计算总价的</span></span><br><span class="line"><span class="keyword">float</span> price2 = [fruit acceptVistor:vistor];</span><br><span class="line"></span><br><span class="line"><span class="comment">//6. 总价</span></span><br><span class="line"><span class="keyword">float</span> sum = price1 + price2;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="从上可以得到"><a href="#从上可以得到" class="headerlink" title="从上可以得到"></a>从上可以得到</h3><ul>
+<li><p>Visitor中封装了 <code>Book、Fruit实体</code> 的一些 <code>业务逻辑</code></p>
+</li>
+<li><p>Visitor提供了 <code>计算总价</code> 这一类业务逻辑的 <code>统一入口</code></p>
+</li>
+<li>Book的 总价计算</li>
+<li>Fruit的 总价计算</li>
+</ul>
+<hr>
+<h3 id="个人凭感觉发挥了下，觉得上面的Vistor中处理多个不同的业务，而且也是通过强转数据类型获取要处理的数据，那么针对这两个问题进一步细化了下"><a href="#个人凭感觉发挥了下，觉得上面的Vistor中处理多个不同的业务，而且也是通过强转数据类型获取要处理的数据，那么针对这两个问题进一步细化了下" class="headerlink" title="个人凭感觉发挥了下，觉得上面的Vistor中处理多个不同的业务，而且也是通过强转数据类型获取要处理的数据，那么针对这两个问题进一步细化了下"></a>个人凭感觉发挥了下，觉得上面的Vistor中处理多个不同的业务，而且也是通过强转数据类型获取要处理的数据，那么针对这两个问题进一步细化了下</h3><h3 id="首先两种抽象Vistor协议定义"><a href="#首先两种抽象Vistor协议定义" class="headerlink" title="#首先两种抽象Vistor协议定义"></a>#首先两种抽象Vistor协议定义</h3><ul>
+<li>Vistor1</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Vistor1.h</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by xiongzenghui on 16/3/29.</span></span><br><span class="line"><span class="comment">//  Copyright © 2016年 xiongzenghui. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  处理类型1的节点</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">ServiceElement1</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">Vistor1</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 处理节点1的 某一个业务 */</span></span><br><span class="line">- (<span class="keyword">int</span>)visitWithElement1:(<span class="keyword">id</span>&lt;ServiceElement1&gt;)element1;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>Vistor2</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Vistor2.h</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by xiongzenghui on 16/3/29.</span></span><br><span class="line"><span class="comment">//  Copyright © 2016年 xiongzenghui. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  处理类型2的节点</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">ServiceElement2</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">Vistor2</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 处理节点2的 某一个业务 */</span></span><br><span class="line">- (<span class="keyword">float</span>)visitWithElement2:(<span class="keyword">id</span>&lt;ServiceElement2&gt;)element2;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="然后两种抽象节点，分别接受对应的一个Vistor"><a href="#然后两种抽象节点，分别接受对应的一个Vistor" class="headerlink" title="#然后两种抽象节点，分别接受对应的一个Vistor"></a>#然后两种抽象节点，分别接受对应的一个Vistor</h3><ul>
+<li>element1</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  ServiceElement.h</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by xiongzenghui on 16/3/29.</span></span><br><span class="line"><span class="comment">//  Copyright © 2016年 xiongzenghui. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">Vistor1</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">ServiceElement1</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 获取实体的参数，这里只是图简单写出一个字典，其实应该抽象出一个参数接口协议 */</span></span><br><span class="line">- (<span class="built_in">NSDictionary</span> *)argument;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 接收一个Vistor处理 */</span></span><br><span class="line">- (<span class="keyword">int</span>)acceptor1:(<span class="keyword">id</span>&lt;Vistor1&gt;)vistor;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>element2</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  ServiceElement2.h</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by xiongzenghui on 16/3/29.</span></span><br><span class="line"><span class="comment">//  Copyright © 2016年 xiongzenghui. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">Vistor2</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">ServiceElement2</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 获取实体的参数，这里只是图简单写出一个字典，其实应该抽象出一个参数接口协议 */</span></span><br><span class="line">- (<span class="built_in">NSDictionary</span> *)argument;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 接收一个Vistor处理 */</span></span><br><span class="line">- (<span class="keyword">float</span>)acceptor2:(<span class="keyword">id</span>&lt;Vistor2&gt;)vistor;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="具体Vistor实现"><a href="#具体Vistor实现" class="headerlink" title="具体Vistor实现"></a>具体Vistor实现</h3><ul>
+<li>抽象Vistor1的具体实现</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  ConcreateVistor1.h</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by xiongzenghui on 16/3/29.</span></span><br><span class="line"><span class="comment">//  Copyright © 2016年 xiongzenghui. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//导入Vistor1 协议</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Vistor1.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">ConcreateVistor1</span> : <span class="title">NSObject</span> &lt;<span class="title">Vistor1</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  ConcreateVistor1.m</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by xiongzenghui on 16/3/29.</span></span><br><span class="line"><span class="comment">//  Copyright © 2016年 xiongzenghui. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"ConcreateVistor1.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//导入节点1 协议</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"ServiceElement1.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ConcreateVistor1</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">int</span>)visitWithElement1:(<span class="keyword">id</span>&lt;ServiceElement1&gt;)element1 &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//1. 获取要处理的参数（这里可以做出一个参数接口协议）</span></span><br><span class="line"><span class="built_in">NSDictionary</span> *argument = [element1 argument];</span><br><span class="line"><span class="keyword">int</span> total = [[argument objectForKey:<span class="string">@"totoalPrice1"</span>] floatValue];</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 执行当前Vistor封装的业务</span></span><br><span class="line"><span class="keyword">return</span> total * <span class="number">2</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>抽象Vistor2的具体实现</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  ConcreateVistor2.h</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by xiongzenghui on 16/3/29.</span></span><br><span class="line"><span class="comment">//  Copyright © 2016年 xiongzenghui. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//导入Vistor2 协议</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Vistor2.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">ConcreateVistor2</span> : <span class="title">NSObject</span> &lt;<span class="title">Vistor2</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  ConcreateVistor2.m</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by xiongzenghui on 16/3/29.</span></span><br><span class="line"><span class="comment">//  Copyright © 2016年 xiongzenghui. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"ConcreateVistor2.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//导入节点2协议</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"ServiceElement2.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ConcreateVistor2</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">float</span>)visitWithElement2:(<span class="keyword">id</span>&lt;ServiceElement2&gt;)element2 &#123;</span><br><span class="line"><span class="comment">//1. 获取要处理的参数（这里可以做出一个参数接口协议）</span></span><br><span class="line"><span class="built_in">NSDictionary</span> *argument = [element2 argument];</span><br><span class="line"><span class="keyword">float</span> total = [[argument objectForKey:<span class="string">@"totoalPrice2"</span>] floatValue];</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 执行当前Vistor封装的业务</span></span><br><span class="line"><span class="keyword">return</span> total * <span class="number">0.9</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="最后是实体类，根据需要实现抽象节点协议。不同的Element对应不同的Vistor"><a href="#最后是实体类，根据需要实现抽象节点协议。不同的Element对应不同的Vistor" class="headerlink" title="#最后是实体类，根据需要实现抽象节点协议。不同的Element对应不同的Vistor"></a>#最后是实体类，根据需要实现抽象节点协议。不同的Element对应不同的Vistor</h3><ul>
+<li>实体1</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  VEntity1.h</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by xiongzenghui on 16/3/29.</span></span><br><span class="line"><span class="comment">//  Copyright © 2016年 xiongzenghui. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//导入所有节点协议</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"ServiceElement1.h"</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"ServiceElement2.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//成为两种节点</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">VEntity1</span> : <span class="title">NSObject</span> &lt;<span class="title">ServiceElement1</span>, <span class="title">ServiceElement2</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  VEntity1.m</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by xiongzenghui on 16/3/29.</span></span><br><span class="line"><span class="comment">//  Copyright © 2016年 xiongzenghui. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"VEntity1.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//导入访问者</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Vistor1.h"</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Vistor2.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">VEntity1</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSDictionary</span> *)argument &#123;</span><br><span class="line"><span class="keyword">return</span> @&#123;</span><br><span class="line"><span class="string">@"参数1"</span> : <span class="string">@"value1"</span>,</span><br><span class="line"><span class="string">@"参数2"</span> : <span class="string">@"value2"</span>,</span><br><span class="line">&#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">int</span>)acceptor1:(<span class="keyword">id</span>&lt;Vistor1&gt;)vistor &#123;</span><br><span class="line"><span class="keyword">return</span> [vistor visitWithElement1:<span class="keyword">self</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">float</span>)acceptor2:(<span class="keyword">id</span>&lt;Vistor2&gt;)vistor &#123;</span><br><span class="line"><span class="keyword">return</span> [vistor visitWithElement2:<span class="keyword">self</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>实体2</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  VEntity2.h</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by xiongzenghui on 16/3/29.</span></span><br><span class="line"><span class="comment">//  Copyright © 2016年 xiongzenghui. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//导入所有节点协议</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"ServiceElement1.h"</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"ServiceElement2.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//成为两种节点</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">VEntity2</span> : <span class="title">NSObject</span> &lt;<span class="title">ServiceElement1</span>, <span class="title">ServiceElement2</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  VEntity2.m</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by xiongzenghui on 16/3/29.</span></span><br><span class="line"><span class="comment">//  Copyright © 2016年 xiongzenghui. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"VEntity2.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//导入访问者</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Vistor1.h"</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Vistor2.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">VEntity2</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSDictionary</span> *)argument &#123;</span><br><span class="line"><span class="keyword">return</span> @&#123;</span><br><span class="line"><span class="string">@"参数1"</span> : <span class="string">@"value1"</span>,</span><br><span class="line"><span class="string">@"参数2"</span> : <span class="string">@"value2"</span>,</span><br><span class="line">&#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">int</span>)acceptor1:(<span class="keyword">id</span>&lt;Vistor1&gt;)vistor &#123;</span><br><span class="line"><span class="keyword">return</span> [vistor visitWithElement1:<span class="keyword">self</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">float</span>)acceptor2:(<span class="keyword">id</span>&lt;Vistor2&gt;)vistor &#123;</span><br><span class="line"><span class="keyword">return</span> [vistor visitWithElement2:<span class="keyword">self</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="现在要新增一个其他类型数据的处理业务"><a href="#现在要新增一个其他类型数据的处理业务" class="headerlink" title="#现在要新增一个其他类型数据的处理业务"></a>#现在要新增一个其他类型数据的处理业务</h3><h3 id="声明对应的Element节点协议-与-Visitor协议"><a href="#声明对应的Element节点协议-与-Visitor协议" class="headerlink" title="#声明对应的Element节点协议 与 Visitor协议"></a>#声明对应的Element节点协议 与 Visitor协议</h3><ul>
+<li>Element协议</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;Foundation/Foundation.h&gt;</span><br><span class="line"></span><br><span class="line">@protocol Vistor3;</span><br><span class="line"></span><br><span class="line">@protocol ServiceElement3 &lt;NSObject&gt;</span><br><span class="line"></span><br><span class="line">/* 获取实体的参数，这里只是图简单写出一个字典，其实应该抽象出一个参数接口协议 */</span><br><span class="line">- (NSString *)uname;</span><br><span class="line">- (NSString *)upassword;</span><br><span class="line"></span><br><span class="line">/* 接收一个Visitor业务处理对象 */</span><br><span class="line">- (NSNumber *)acceptor3:(id&lt;Vistor3&gt;)vistor;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Vistitor协议</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;Foundation/Foundation.h&gt;</span><br><span class="line"></span><br><span class="line">@protocol ServiceElement3;</span><br><span class="line"></span><br><span class="line">@protocol Visitor3 &lt;NSObject&gt;</span><br><span class="line"></span><br><span class="line">- (NSNumber *)visitWithElement3:(id&lt;ServiceElement3&gt;)element3;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<h3 id="让需要成为该新节点的实体类实现Element协议，具备这个类型业务处理的能力"><a href="#让需要成为该新节点的实体类实现Element协议，具备这个类型业务处理的能力" class="headerlink" title="#让需要成为该新节点的实体类实现Element协议，具备这个类型业务处理的能力"></a>#让需要成为该新节点的实体类实现Element协议，具备这个类型业务处理的能力</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//导入所有节点协议</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"ServiceElement1.h"</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"ServiceElement2.h"</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"ServiceElement3.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//成为两种节点</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">VEntity1</span> : <span class="title">NSObject</span> &lt;<span class="title">ServiceElement1</span>, <span class="title">ServiceElement2</span>, <span class="title">ServiceElement3</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  VEntity1.m</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by xiongzenghui on 16/3/29.</span></span><br><span class="line"><span class="comment">//  Copyright © 2016年 xiongzenghui. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"VEntity1.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//导入访问者</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Vistor1.h"</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Vistor2.h"</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Visitor3.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">VEntity1</span> </span>&#123;</span><br><span class="line"><span class="built_in">NSString</span> *_uname;</span><br><span class="line"><span class="built_in">NSString</span> *_upassword;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Element1节点处理需要的参数 */</span></span><br><span class="line">- (<span class="built_in">NSDictionary</span> *)argument1 &#123;</span><br><span class="line"><span class="keyword">return</span> @&#123;</span><br><span class="line"><span class="string">@"参数1"</span> : <span class="string">@"value1"</span>,</span><br><span class="line"><span class="string">@"参数2"</span> : <span class="string">@"value2"</span>,</span><br><span class="line">&#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Element2节点处理需要的参数 */</span></span><br><span class="line">- (<span class="built_in">NSDictionary</span> *)argument2 &#123;</span><br><span class="line"><span class="keyword">return</span> @&#123;</span><br><span class="line"><span class="string">@"参数1"</span> : <span class="string">@"value1"</span>,</span><br><span class="line"><span class="string">@"参数2"</span> : <span class="string">@"value2"</span>,</span><br><span class="line">&#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/* Element3节点处理需要的参数 */</span></span><br><span class="line">- (<span class="built_in">NSString</span> *)uname &#123;</span><br><span class="line"><span class="keyword">return</span> _uname;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSString</span> *)upassword &#123;</span><br><span class="line"><span class="keyword">return</span> _upassword;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">#pragma mark - Element1 节点处理</span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">int</span>)acceptor1:(<span class="keyword">id</span>&lt;Vistor1&gt;)vistor &#123;</span><br><span class="line"><span class="keyword">return</span> [vistor visitWithElement1:<span class="keyword">self</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#pragma mark - Element2 节点处理</span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">float</span>)acceptor2:(<span class="keyword">id</span>&lt;Vistor2&gt;)vistor &#123;</span><br><span class="line"><span class="keyword">return</span> [vistor visitWithElement2:<span class="keyword">self</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#pragma mark - Element3 节点处理</span></span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSNumber</span> *)acceptor3:(<span class="keyword">id</span>&lt;Visitor3&gt;)vistor &#123;</span><br><span class="line"><span class="keyword">return</span> [vistor visitWithElement3:<span class="keyword">self</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="小结Visitor模式编写注意点"><a href="#小结Visitor模式编写注意点" class="headerlink" title="#小结Visitor模式编写注意点:"></a>#小结Visitor模式编写注意点:</h3><ul>
+<li><p>实体类根据需要，选择性的实现Element协议，成为对应节点类型从而具备该节点对应的业务处理能力</p>
+</li>
+<li><p>一类Element 应该只对应的 一类Vistor</p>
+</li>
+<li><p>一个Element结构</p>
+</li>
+<li>接收一个实现了依赖的抽象Visitor接口的具体Visitor对象</li>
+<li>提供该Elment对应的Vistor进行业务处理时需要的各种参数</li>
+<li><p>调用通过传入的Visitor对象，来进行最终的业务处理</p>
+</li>
+<li><p>一个Vistor只负责处理<code>一种</code>业务，保持职责单一</p>
+</li>
+<li>多种业务分成不同的Visitor单独封装</li>
+</ul>
+<hr>
+<h3 id="Visitor模式的缺点"><a href="#Visitor模式的缺点" class="headerlink" title="Visitor模式的缺点:"></a>Visitor模式的缺点:</h3><ul>
+<li>Element中的<code>accept</code>方法的<code>返回值类型</code> 必须事先确定，并且与Visitor中的<code>visitXxx</code>方法的<code>返回值类型</code>要一致.</li>
+<li><p>不同实体类，但是相同业务的处理，也就是返回值相同</p>
+</li>
+<li><p>访问者模式，只适合<code>实体类型确定、数据类型确定、后期代码重构</code>的时候使用</p>
+</li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2016/01/18/设计模式-访问者模式/" data-title="设计模式-访问者模式 | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2016/01/21/NSCharacterSet/" title="NSCharacterSet">
+  <strong>上一篇：</strong><br>
+  <span>
+  NSCharacterSet</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/01/17/设计模式-策略模式/" title="设计模式-策略模式">
+ <strong>下一篇：</strong><br> 
+ <span>设计模式-策略模式
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2016/01/18/设计模式-访问者模式/" data-title="设计模式-访问者模式" data-url="http://yoursite.com/2016/01/18/设计模式-访问者模式/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#访问者、将对一个实体类的业务逻辑，封装到一个Visitor中"><span class="toc-number">1.</span> <span class="toc-text">访问者、将对一个实体类的业务逻辑，封装到一个Visitor中.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#假设有两个实体"><span class="toc-number">2.</span> <span class="toc-text">假设有两个实体</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#各自有各自的业务逻辑"><span class="toc-number">3.</span> <span class="toc-text">各自有各自的业务逻辑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#可以被访问的抽象节点"><span class="toc-number">4.</span> <span class="toc-text">可以被访问的抽象节点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#具体节点1、书"><span class="toc-number">5.</span> <span class="toc-text">具体节点1、书</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#具体节点2、水果"><span class="toc-number">6.</span> <span class="toc-text">具体节点2、水果</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#抽象Visitor"><span class="toc-number">7.</span> <span class="toc-text">抽象Visitor</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#具体Visitor"><span class="toc-number">8.</span> <span class="toc-text">具体Visitor</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#demo实例"><span class="toc-number">9.</span> <span class="toc-text">demo实例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#从上可以得到"><span class="toc-number">10.</span> <span class="toc-text">从上可以得到</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#个人凭感觉发挥了下，觉得上面的Vistor中处理多个不同的业务，而且也是通过强转数据类型获取要处理的数据，那么针对这两个问题进一步细化了下"><span class="toc-number">11.</span> <span class="toc-text">个人凭感觉发挥了下，觉得上面的Vistor中处理多个不同的业务，而且也是通过强转数据类型获取要处理的数据，那么针对这两个问题进一步细化了下</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#首先两种抽象Vistor协议定义"><span class="toc-number">12.</span> <span class="toc-text">#首先两种抽象Vistor协议定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#然后两种抽象节点，分别接受对应的一个Vistor"><span class="toc-number">13.</span> <span class="toc-text">#然后两种抽象节点，分别接受对应的一个Vistor</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#具体Vistor实现"><span class="toc-number">14.</span> <span class="toc-text">具体Vistor实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#最后是实体类，根据需要实现抽象节点协议。不同的Element对应不同的Vistor"><span class="toc-number">15.</span> <span class="toc-text">#最后是实体类，根据需要实现抽象节点协议。不同的Element对应不同的Vistor</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#现在要新增一个其他类型数据的处理业务"><span class="toc-number">16.</span> <span class="toc-text">#现在要新增一个其他类型数据的处理业务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#声明对应的Element节点协议-与-Visitor协议"><span class="toc-number">17.</span> <span class="toc-text">#声明对应的Element节点协议 与 Visitor协议</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#让需要成为该新节点的实体类实现Element协议，具备这个类型业务处理的能力"><span class="toc-number">18.</span> <span class="toc-text">#让需要成为该新节点的实体类实现Element协议，具备这个类型业务处理的能力</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#小结Visitor模式编写注意点"><span class="toc-number">19.</span> <span class="toc-text">#小结Visitor模式编写注意点:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Visitor模式的缺点"><span class="toc-number">20.</span> <span class="toc-text">Visitor模式的缺点:</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

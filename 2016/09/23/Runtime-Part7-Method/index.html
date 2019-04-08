@@ -1,0 +1,610 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>Runtime Part7 Method | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="Method: 抽象一个方法的结构体类型 Method定义为objc_method结构体类型的一个指针类型  1typedef struct objc_method *Method; Method本身就是一个指针类型，所以不要使用如下代码 1Method * method = .... 而是使用 1Method method = ...  objc_method对一个方法的结构定义   通过一个S">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Runtime Part7 Method">
+<meta property="og:url" content="http://yoursite.com/2016/09/23/Runtime-Part7-Method/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="Method: 抽象一个方法的结构体类型 Method定义为objc_method结构体类型的一个指针类型  1typedef struct objc_method *Method; Method本身就是一个指针类型，所以不要使用如下代码 1Method * method = .... 而是使用 1Method method = ...  objc_method对一个方法的结构定义   通过一个S">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://i4.piimg.com/3d3a440667091342.png">
+<meta property="og:image" content="http://i4.piimg.com/aa17cd0c9ccfdcc6.png">
+<meta property="og:updated_time" content="2019-04-08T12:43:16.954Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Runtime Part7 Method">
+<meta name="twitter:description" content="Method: 抽象一个方法的结构体类型 Method定义为objc_method结构体类型的一个指针类型  1typedef struct objc_method *Method; Method本身就是一个指针类型，所以不要使用如下代码 1Method * method = .... 而是使用 1Method method = ...  objc_method对一个方法的结构定义   通过一个S">
+<meta name="twitter:image" content="http://i4.piimg.com/3d3a440667091342.png">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/09/23/Runtime-Part7-Method/" title="Runtime Part7 Method" itemprop="url">Runtime Part7 Method</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2016-09-23T15:48:52.000Z" itemprop="datePublished"> Published 2016-09-23</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Method-抽象一个方法的结构体类型"><span class="toc-number">1.</span> <span class="toc-text">Method: 抽象一个方法的结构体类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#查找类方法与对象方法"><span class="toc-number">2.</span> <span class="toc-text">查找类方法与对象方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#一个OC类中的一个方法，最终编译生成一个objc-method结构体实例的图示"><span class="toc-number">3.</span> <span class="toc-text">一个OC类中的一个方法，最终编译生成一个objc_method结构体实例的图示</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#这些-type-encodings-字符串编码-做什么的？"><span class="toc-number">4.</span> <span class="toc-text">这些 type encodings 字符串编码 做什么的？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#比如如下OC方法与对应测C函数实现转换"><span class="toc-number">5.</span> <span class="toc-text">比如如下OC方法与对应测C函数实现转换</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#简介Method常用runtime方法"><span class="toc-number">6.</span> <span class="toc-text">简介Method常用runtime方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取Class的-method-list-方法列表"><span class="toc-number">7.</span> <span class="toc-text">获取Class的 method_list 方法列表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#class-addMethod-函数所有参数意义"><span class="toc-number">8.</span> <span class="toc-text">class_addMethod()函数所有参数意义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#class-replaceMethod-函数所有参数意义"><span class="toc-number">9.</span> <span class="toc-text">class_replaceMethod()函数所有参数意义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取某个函数的实现指针IMP"><span class="toc-number">10.</span> <span class="toc-text">获取某个函数的实现指针IMP</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#交换两个SEL指向的最终编译生成的c函数（具体实现IMP、函数地址、函数名）"><span class="toc-number">11.</span> <span class="toc-text">交换两个SEL指向的最终编译生成的c函数（具体实现IMP、函数地址、函数名）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#一、直接替换ViewController中的SEL指向我们自己写的C函数实现"><span class="toc-number">12.</span> <span class="toc-text">一、直接替换ViewController中的SEL指向我们自己写的C函数实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#二、替换ViewController中的SEL指向自己写的OC函数"><span class="toc-number">13.</span> <span class="toc-text">二、替换ViewController中的SEL指向自己写的OC函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#三、hook之后继续让原始函数进行执行，并直接使用c函数作"><span class="toc-number">14.</span> <span class="toc-text">三、hook之后继续让原始函数进行执行，并直接使用c函数作.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#交换两个OC函数实现的IMP的简单版本，复杂版本可参阅JRSwizzle"><span class="toc-number">15.</span> <span class="toc-text">交换两个OC函数实现的IMP的简单版本，复杂版本可参阅JRSwizzle</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#注意上面注释的一个问题-被替换实现的函数是否是继承自父类"><span class="toc-number">16.</span> <span class="toc-text">注意上面注释的一个问题: 被替换实现的函数是否是继承自父类.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#那么我觉得对于-method-exchangeImplementations-与-class-replaceMethod-这两个函数的区别是"><span class="toc-number">17.</span> <span class="toc-text">那么我觉得对于 method_exchangeImplementations() 与 class_replaceMethod() 这两个函数的区别是:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#JRSwizzle源码"><span class="toc-number">18.</span> <span class="toc-text">JRSwizzle源码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取类对象的方法的签名"><span class="toc-number">19.</span> <span class="toc-text">获取类对象的方法的签名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#如何判断method是否被swizzled"><span class="toc-number">20.</span> <span class="toc-text">如何判断method是否被swizzled</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="Method-抽象一个方法的结构体类型"><a href="#Method-抽象一个方法的结构体类型" class="headerlink" title="Method: 抽象一个方法的结构体类型"></a><code>Method</code>: 抽象一个方法的结构体类型</h3><ul>
+<li><code>Method</code>定义为<code>objc_method结构体</code>类型的一个<code>指针类型</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">typedef struct objc_method *Method;</span><br></pre></td></tr></table></figure>
+<p>Method本身就是一个指针类型，所以不要使用如下代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Method * method = ....</span><br></pre></td></tr></table></figure>
+<p>而是使用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Method method = ...</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>objc_method</code>对一个方法的结构定义</li>
+</ul>
+<blockquote>
+<p>通过一个SEL值作为找到一个objc_method实例的唯一id值</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">typedef struct objc_method *Method;</span><br><span class="line"></span><br><span class="line">typedef struct objc_ method &#123;</span><br><span class="line"></span><br><span class="line">//1. 苹果是SEL这个数据类型，作为一个方法Method实例的标识</span><br><span class="line">SEL method_name;</span><br><span class="line"></span><br><span class="line">//2. 方法的@encode()系统编码字符串</span><br><span class="line">char *method_types;</span><br><span class="line"></span><br><span class="line">//3. 最终OC函数编译生成的c函数代码的地址</span><br><span class="line">IMP method_imp;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>外界通过一个SEL值，从Class的<code>method_list</code>查询到一个objc_method实例</li>
+<li>然后再从 <code>objc_method实例-&gt;method_imp</code> 获取到函数实现的内存地址</li>
+<li>再简单的说，<code>一个SEL &gt;&gt;&gt; objc_method实例 &gt;&gt;&gt; IMP 或 encodingTypes</code></li>
+<li>那么所以，交换两个objc_method实例的<code>SEL的指向不同的Method</code></li>
+<li>交换方法的具体实现代码，动态方法拦截代理实现</li>
+</ul>
+<hr>
+<h3 id="查找类方法与对象方法"><a href="#查找类方法与对象方法" class="headerlink" title="查找类方法与对象方法"></a>查找类方法与对象方法</h3><ul>
+<li>类方法 &gt;&gt;&gt; Meta类 中查找</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">class_getClassMethod([类 <span class="keyword">class</span>], <span class="keyword">@selector</span>(func));</span><br></pre></td></tr></table></figure>
+<ul>
+<li>对象方法 &gt;&gt;&gt; 类本身 中查找</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">class_getInstanceMethod([类 <span class="keyword">class</span>], <span class="keyword">@selector</span>(func));</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="一个OC类中的一个方法，最终编译生成一个objc-method结构体实例的图示"><a href="#一个OC类中的一个方法，最终编译生成一个objc-method结构体实例的图示" class="headerlink" title="一个OC类中的一个方法，最终编译生成一个objc_method结构体实例的图示"></a>一个OC类中的一个方法，最终编译生成一个<code>objc_method</code>结构体实例的图示</h3><p><img src="http://i4.piimg.com/3d3a440667091342.png" alt></p>
+<h3 id="这些-type-encodings-字符串编码-做什么的？"><a href="#这些-type-encodings-字符串编码-做什么的？" class="headerlink" title="这些 type encodings 字符串编码 做什么的？"></a>这些 type encodings 字符串编码 做什么的？</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">1. return type encodings: 返回之类的编码</span><br><span class="line">method_getArgumentType(&lt;#Method m#&gt;, &lt;#unsigned int index#&gt;, &lt;#char *dst#&gt;, &lt;#size_t dst_len#&gt;)</span><br><span class="line"></span><br><span class="line">2. argument type encodings: 方法参数类型的编码</span><br><span class="line">method_getReturnType(&lt;#Method m#&gt;, &lt;#char *dst#&gt;, &lt;#size_t dst_len#&gt;)</span><br><span class="line"></span><br><span class="line">3. method type encodings: 方法本身的类型编码（应该包含如上）</span><br><span class="line">method_getTypeEncoding(&lt;#Method m#&gt;)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>每一个OC类的中我们编写的所有的<code>OC函数</code>，最后都会编译成一个个独立的 <code>c函数</code></p>
+</li>
+<li><p>但是如何知道每一个独立的<code>c函数</code>，对应哪一个<code>OC函数</code>了？</p>
+</li>
+<li>每一个OC函数，创建一个 <code>objc_method结构体实例</code> 来记录映射关系</li>
+<li>SEL、记录 c函数 对应 哪一个OC方法SEL</li>
+<li>IMP、记录 c函数具体实现保存在的哪一个内存块中（内存块首地址）</li>
+</ul>
+<h3 id="比如如下OC方法与对应测C函数实现转换"><a href="#比如如下OC方法与对应测C函数实现转换" class="headerlink" title="比如如下OC方法与对应测C函数实现转换"></a>比如如下OC方法与对应测C函数实现转换</h3><p>OC中的函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-(int)say:(NSString *)str &#123;</span><br><span class="line">OC消息代码</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>编译生成的最终c函数实现</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">int say(id self, SEL _cmd, NSString *str) &#123;</span><br><span class="line">C的函数调用代码</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>那么就需要建立OC函数与c函数之间的关系，就是通过method type encodings来做这个事情。</p>
+<hr>
+<h3 id="简介Method常用runtime方法"><a href="#简介Method常用runtime方法" class="headerlink" title="简介Method常用runtime方法"></a>简介Method常用runtime方法</h3><ul>
+<li>基础操作，获取objc_method实例</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">//所属类（提供一个 method_list 存放所有objc_method实例的数组容器）</span><br><span class="line">Class class = NSClassFromString(@&quot;ViewController&quot;);</span><br><span class="line"></span><br><span class="line">//要获取方法实例的SEL值</span><br><span class="line">SEL selector = NSSelectorFromString(@&quot;viewDidLoad&quot;);</span><br><span class="line"></span><br><span class="line">//从类中获取如上SEL值对应的objc_method实例（对象方法）</span><br><span class="line">Method method = class_getInstanceMethod(class, selector);</span><br><span class="line"></span><br><span class="line">//从类中获取如上SEL值对应的objc_method实例（类方法）</span><br><span class="line">Method method = class_getClassMethod(class, selector);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>得到一个<code>objc_method</code>实例之后，继续可以从这个<code>objc_method</code>实例获得信息</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">//获取方法的SEL值</span><br><span class="line">SEL method_getName ( Method m );</span><br><span class="line">const char * mName= sel_getName(method_getName(method));</span><br><span class="line"></span><br><span class="line">//获取方法的IMP</span><br><span class="line">IMP method_getImplementation ( Method m );</span><br><span class="line"></span><br><span class="line">//获取方法 描述方法参数 的@encode()编码字符串</span><br><span class="line">const char * method_getTypeEncoding ( Method m );</span><br><span class="line"></span><br><span class="line">//获取方法 方法返回值类型 的@encode()编码字符串</span><br><span class="line">char * method_copyReturnType ( Method m );</span><br><span class="line"></span><br><span class="line">//获取方法 形参列表所有参数的 的@encode()编码字符串</span><br><span class="line">char *method_copyArgumentType(Method m, unsigned int index);</span><br><span class="line"></span><br><span class="line">//获取方法的参数总个数</span><br><span class="line">unsigned int method_getNumberOfArguments ( Method m );</span><br></pre></td></tr></table></figure>
+<ul>
+<li>设置方法实现、添加方法实现、替换方法实现</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">//给某个类添加一个方法实现</span><br><span class="line">BOOL class_addMethod(Class cls, SEL name, IMP imp,  const char *types) </span><br><span class="line"></span><br><span class="line">//设置方法的实现</span><br><span class="line">IMP method_setImplementation ( Method m, IMP imp );</span><br><span class="line"></span><br><span class="line">//`修改`类的Method IMP</span><br><span class="line">IMP class_replaceMethod(Class cls, SEL name, IMP imp, const char *types) </span><br><span class="line"></span><br><span class="line">//`交换`2个方法中的IMP</span><br><span class="line">void method_exchangeImplementations ( Method m1, Method m2 );</span><br></pre></td></tr></table></figure>
+<h3 id="获取Class的-method-list-方法列表"><a href="#获取Class的-method-list-方法列表" class="headerlink" title="获取Class的 method_list 方法列表"></a>获取Class的 method_list 方法列表</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">//1. Method个数</span><br><span class="line">unsigned int methodCount;</span><br><span class="line"></span><br><span class="line">//2. Method结构体数组</span><br><span class="line">Method *methodList = class_copyMethodList([self class], &amp; methodCount);</span><br><span class="line"></span><br><span class="line">//3. 依次遍历每一个Method</span><br><span class="line">for (unsigned int i; i&lt;count; i++) &#123;</span><br><span class="line"></span><br><span class="line">//取出当前遍历额Method</span><br><span class="line">Method method = methodList[i];</span><br><span class="line"></span><br><span class="line">//得到Method的方法名的SEL值</span><br><span class="line">SEL sel = method_getName(method)</span><br><span class="line"></span><br><span class="line">//根据SEL值得到方法名</span><br><span class="line">NSString *methodName = NSStringFromSelector(sel);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="class-addMethod-函数所有参数意义"><a href="#class-addMethod-函数所有参数意义" class="headerlink" title="class_addMethod()函数所有参数意义"></a><code>class_addMethod()</code>函数所有参数意义</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//参数1: 某个类</span><br><span class="line">//参数2: 方法的SEL值</span><br><span class="line">//参数3: 要添加的 c方法的方法名 or 地址 （IMP）</span><br><span class="line">//参数4: 要添加的 方法的编码字符串</span><br><span class="line">BOOL class_addMethod ( Class cls, SEL name, IMP imp, const char *types );</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">注意:</span><br><span class="line">和成员变量不同的是可以为类动态添加方法。</span><br><span class="line">如果有同名会返回NO。</span><br><span class="line">修改的话需要使用method_setImplementation()函数</span><br></pre></td></tr></table></figure>
+<p>举例使用<code>class_addMethod()</code>函数，直接给OC类添加一个c实现函数作为objc_method实例的IMP属性值</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="built_in">NSString</span>* my_constMehtod(<span class="built_in">NSString</span> * name) &#123;</span><br><span class="line"><span class="keyword">return</span> <span class="string">@"给OC类直接添加一个c函数实现"</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ViewController</span></span></span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">void</span>)load &#123;</span><br><span class="line">[<span class="keyword">self</span> testConstMethodImpl];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">void</span>)testConstMethodImpl &#123;</span><br><span class="line">IMP imp = my_constMehtod;</span><br><span class="line"></span><br><span class="line">class_addMethod([ViewController <span class="keyword">class</span>],</span><br><span class="line"><span class="keyword">@selector</span>(constMehtod),</span><br><span class="line">imp,</span><br><span class="line"><span class="string">"@@:@"</span>);<span class="comment">//c实现函数格式的编码</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//测试调用创建的c函数实现</span></span><br><span class="line">- (<span class="keyword">void</span>)touchesBegan:(<span class="built_in">NSSet</span>&lt;<span class="built_in">UITouch</span> *&gt; *)touches withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line">[<span class="keyword">self</span> testConstMethod];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)testConstMethod &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//1. 完成方法调用，并获取返回值</span></span><br><span class="line"><span class="built_in">NSMethodSignature</span> *sign = [<span class="built_in">NSMethodSignature</span> signatureWithObjCTypes:<span class="string">"@@:@"</span>];</span><br><span class="line"><span class="built_in">NSInvocation</span> *invocate = [<span class="built_in">NSInvocation</span> invocationWithMethodSignature:sign];</span><br><span class="line">[invocate setTarget:<span class="keyword">self</span>];</span><br><span class="line">[invocate setSelector:<span class="keyword">@selector</span>(constMehtod)];</span><br><span class="line">[invocate invoke];</span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> *ret = <span class="literal">NULL</span>;</span><br><span class="line">[invocate getReturnValue:&amp;ret];</span><br><span class="line"><span class="built_in">NSString</span> *retString = (__bridge <span class="built_in">NSString</span> *)(ret);</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"ret = %@"</span>, retString);</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 输出所有的方法参数编码</span></span><br><span class="line"><span class="built_in">NSInteger</span> numberOfArguments = [sign numberOfArguments];</span><br><span class="line"><span class="keyword">for</span> (<span class="built_in">NSInteger</span> i = <span class="number">0</span>; i &lt; numberOfArguments; i++) &#123;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *argumentType = [sign getArgumentTypeAtIndex:i];</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"%s"</span>, argumentType);</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>运行App点击屏幕输出如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">2016-03-31 18:35:10.916 JSPatchDeme[77051:506442] 原始viewDidLoad方法实现</span><br><span class="line">2016-03-31 18:35:11.536 JSPatchDeme[77051:506442] ret = 给OC类直接添加一个c函数实现</span><br><span class="line">2016-03-31 18:35:11.536 JSPatchDeme[77051:506442] @</span><br><span class="line">2016-03-31 18:35:11.536 JSPatchDeme[77051:506442] :</span><br><span class="line">2016-03-31 18:35:11.537 JSPatchDeme[77051:506442] @</span><br></pre></td></tr></table></figure>
+<p>可以看到c函数实现中的所有参数的编码</p>
+<ul>
+<li>第一个是@ &gt;&gt;&gt;&gt; 返回值类型。如果是void，那么就是v</li>
+<li>第二个是: &gt;&gt;&gt;&gt; </li>
+<li>第三个是@ &gt;&gt;&gt;&gt;</li>
+</ul>
+<h3 id="class-replaceMethod-函数所有参数意义"><a href="#class-replaceMethod-函数所有参数意义" class="headerlink" title="class_replaceMethod()函数所有参数意义"></a><code>class_replaceMethod()</code>函数所有参数意义</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//参数1: 某个类</span><br><span class="line">//参数2: 被替换的方法的SEL值</span><br><span class="line">//参数3: 将要要替换成的新的 c方法的方法名 or 地址 （IMP）</span><br><span class="line">//参数4: `被替换的原始` c函数的编码字符串</span><br><span class="line">IMP class_replaceMethod(Class cls, SEL name, IMP imp, </span><br><span class="line">const char *types)</span><br></pre></td></tr></table></figure>
+<p>eg、</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">IMP originIMP = class_replaceMethod(cls , </span><br><span class="line">overrideSEL, </span><br><span class="line">method_getImplementation(新的method),</span><br><span class="line">method_getTypeEncoding(origMethod)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<p>该方法返回的IMP，是被替换的<code>原始c函数实现</code>的函数名 (函数指针).</p>
+<hr>
+<h3 id="获取某个函数的实现指针IMP"><a href="#获取某个函数的实现指针IMP" class="headerlink" title="获取某个函数的实现指针IMP"></a>获取某个函数的实现指针IMP</h3><ul>
+<li>当获取到一个Method实例时</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">IMP method_getImplementation(Method method)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>只知道一个Method实例对应的SEL时</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;Foundation/Foundation.h&gt;</span><br><span class="line"></span><br><span class="line">@interface Person : NSObject</span><br><span class="line"></span><br><span class="line">@property (nonatomic, copy) NSString *name;</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@implementation Person</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Person *p = [Person new];</span><br><span class="line"></span><br><span class="line">//使用函数指针</span><br><span class="line">void (*func)(id, SEL, NSString*);</span><br><span class="line">func = (void (*)(id, SEL, NSString*))[p methodForSelector:@selector(name)];</span><br><span class="line"></span><br><span class="line">//直接使用IMP</span><br><span class="line">IMP imp = [p methodForSelector:@selector(name)];</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="交换两个SEL指向的最终编译生成的c函数（具体实现IMP、函数地址、函数名）"><a href="#交换两个SEL指向的最终编译生成的c函数（具体实现IMP、函数地址、函数名）" class="headerlink" title="交换两个SEL指向的最终编译生成的c函数（具体实现IMP、函数地址、函数名）"></a>交换两个SEL指向的最终编译生成的c函数（具体实现IMP、函数地址、函数名）</h3><p><img src="http://i4.piimg.com/aa17cd0c9ccfdcc6.png" alt></p>
+<h3 id="一、直接替换ViewController中的SEL指向我们自己写的C函数实现"><a href="#一、直接替换ViewController中的SEL指向我们自己写的C函数实现" class="headerlink" title="一、直接替换ViewController中的SEL指向我们自己写的C函数实现"></a>一、直接替换ViewController中的SEL指向我们自己写的C函数实现</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">void my_viewWillAppear(id self, SEL _cmd, BOOL isAnimate) &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@implementation ViewController</span><br><span class="line"></span><br><span class="line">+ (void)load &#123;</span><br><span class="line"></span><br><span class="line">Method m = class_getInstanceMethod([ViewController class], @selector(viewWillAppear:));</span><br><span class="line">const char *types = method_getTypeEncoding(m);</span><br><span class="line"></span><br><span class="line">class_replaceMethod([ViewController class],</span><br><span class="line">@selector(viewWillAppear:),</span><br><span class="line">(IMP)my_viewWillAppear,</span><br><span class="line">types);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<h3 id="二、替换ViewController中的SEL指向自己写的OC函数"><a href="#二、替换ViewController中的SEL指向自己写的OC函数" class="headerlink" title="二、替换ViewController中的SEL指向自己写的OC函数"></a>二、替换ViewController中的SEL指向自己写的OC函数</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ViewController</span></span></span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">void</span>)load &#123;</span><br><span class="line"></span><br><span class="line">Method m = class_getInstanceMethod([ViewController <span class="keyword">class</span>], <span class="keyword">@selector</span>(viewWillAppear:));</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *types = method_getTypeEncoding(m);</span><br><span class="line"></span><br><span class="line">class_replaceMethod([ViewController <span class="keyword">class</span>],</span><br><span class="line"><span class="keyword">@selector</span>(viewWillAppear:),</span><br><span class="line">class_getMethodImplementation([ViewController <span class="keyword">class</span>], <span class="keyword">@selector</span>(my_viewWillAppear:)),</span><br><span class="line">types);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)my_viewWillAppear:(<span class="built_in">BOOL</span>)animated &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>注意: </p>
+<p>如上两个例子只是能够完成拦截，但是拦截之后并不能够回到原来的函数继续执行，仅做demo示例。</p>
+<h3 id="三、hook之后继续让原始函数进行执行，并直接使用c函数作"><a href="#三、hook之后继续让原始函数进行执行，并直接使用c函数作" class="headerlink" title="三、hook之后继续让原始函数进行执行，并直接使用c函数作."></a>三、hook之后继续让原始函数进行执行，并直接使用c函数作.</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">"ViewController.h"</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;objc/message.h&gt;</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;objc/runtime.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//替换成的c函数的声明</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">void</span> container_viewDidAppear(<span class="keyword">id</span> <span class="keyword">self</span>, SEL sel, <span class="built_in">BOOL</span> flag);</span><br><span class="line"></span><br><span class="line"><span class="comment">//替换成的c函数的实现</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">void</span> container_viewDidAppear(<span class="keyword">id</span> <span class="keyword">self</span>, SEL sel, <span class="built_in">BOOL</span> flag) &#123;</span><br><span class="line"><span class="comment">//让被hook的原始函数实现继续执行</span></span><br><span class="line">ViewDidAppearIMP(<span class="keyword">self</span>, sel, flag);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//指向替换成的c函数的指针</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">void</span> (*ViewDidAppearIMP)(<span class="keyword">id</span> <span class="keyword">self</span>, SEL sel, <span class="built_in">BOOL</span> flag);</span><br><span class="line"></span><br><span class="line"><span class="comment">//保存被替换的原始c函数</span></span><br><span class="line"><span class="keyword">typedef</span> IMP *IMPPointer;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  直接使用IMP的c函数实现的形式，交换SEL指向的IMP</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">*  @param class       交换实现的Class</span></span><br><span class="line"><span class="comment">*  @param original    要交换的SEL</span></span><br><span class="line"><span class="comment">*  @param replacement 交换成的c实现函数地址</span></span><br><span class="line"><span class="comment">*  @param store       用来保存被交换的原始c函数实现IMP</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="built_in">BOOL</span> class_swizzleMethodAndStore(Class <span class="keyword">class</span>, SEL original, IMP replacement, IMPPointer store) &#123;</span><br><span class="line"></span><br><span class="line">IMP imp = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取传入Class中要替换实现的SEL对应的 objc_method实例    </span></span><br><span class="line">Method method = class_getInstanceMethod(<span class="keyword">class</span>, original);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (method) &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 方法实现的编码</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *type = method_getTypeEncoding(method);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 将原来OC函数的IMP替换为传入的新的IMP，并记录之前的OC函数的IMP</span></span><br><span class="line">imp = class_replaceMethod(<span class="keyword">class</span>, original, replacement, type);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 替换IMP失败，获取原来的OC函数实现IMP</span></span><br><span class="line"><span class="keyword">if</span> (!imp) &#123;</span><br><span class="line">imp = method_getImplementation(method);</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 保存被替换实现的OC函数对应的IMP</span></span><br><span class="line"><span class="keyword">if</span> (imp &amp;&amp; store) &#123;</span><br><span class="line">*store = imp;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// imp不为NULL，表明交换成功</span></span><br><span class="line"><span class="keyword">return</span> (imp != <span class="literal">NULL</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ViewController</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)viewDidAppear:(<span class="built_in">BOOL</span>)animated &#123;</span><br><span class="line">[<span class="keyword">super</span> viewDidAppear:animated];</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)touchesBegan:(<span class="built_in">NSSet</span>&lt;<span class="built_in">UITouch</span> *&gt; *)touches withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//只交换一次</span></span><br><span class="line"><span class="keyword">static</span> <span class="built_in">dispatch_once_t</span> onceToken;</span><br><span class="line"><span class="built_in">dispatch_once</span>(&amp;onceToken, ^&#123;</span><br><span class="line">class_swizzleMethodAndStore([<span class="keyword">self</span> <span class="keyword">class</span>],</span><br><span class="line"><span class="keyword">@selector</span>(viewDidAppear:),</span><br><span class="line">(IMP)container_viewDidAppear,</span><br><span class="line">(IMP *)&amp;ViewDidAppearIMP);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">[<span class="keyword">self</span>.navigationController pushViewController:[<span class="built_in">UIViewController</span> new] animated:<span class="literal">YES</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="交换两个OC函数实现的IMP的简单版本，复杂版本可参阅JRSwizzle"><a href="#交换两个OC函数实现的IMP的简单版本，复杂版本可参阅JRSwizzle" class="headerlink" title="交换两个OC函数实现的IMP的简单版本，复杂版本可参阅JRSwizzle"></a>交换两个OC函数实现的IMP的简单版本，复杂版本可参阅JRSwizzle</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line">分情况进行 <span class="number">1</span>)类方法交换实现 <span class="number">2</span>)对象方法交换实现</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  交换一个类中的两个方法SEL指向的IMP</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">*  @param cls       类</span></span><br><span class="line"><span class="comment">*  @param origSEL   原始方法的SEL</span></span><br><span class="line"><span class="comment">*  @param newSEL    交换后新方法的SEL</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">void</span> Swizzle(Class cls, SEL origSEL, SEL newSEL)</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//1. 首先尝试获取对象方法的实现</span></span><br><span class="line">Method origMethod = class_getInstanceMethod(cls, origSEL);</span><br><span class="line">Method newMethod = <span class="literal">nil</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 判断originMethod是`类`方法还是`对象`方法</span></span><br><span class="line"><span class="keyword">if</span> (!origMethod) &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//2.1 交换类方法实现</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取类方法</span></span><br><span class="line">origMethod = class_getClassMethod(cls, origSEL);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (!origMethod) &#123;</span><br><span class="line"><span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//说明是交换类方法，则查找新的方法(拦截的方法)</span></span><br><span class="line">newMethod = class_getClassMethod(cls, newSEL);</span><br><span class="line"></span><br><span class="line"><span class="comment">//类中不存在新方法实现</span></span><br><span class="line"><span class="keyword">if</span> (!newMethod) &#123;</span><br><span class="line"><span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//2.2 交换对象方法</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//获取新方法实现</span></span><br><span class="line">newMethod = class_getInstanceMethod(cls, newSEL);</span><br><span class="line"></span><br><span class="line"><span class="comment">//未找到新方法实现</span></span><br><span class="line"><span class="keyword">if</span> (!newMethod) &#123;</span><br><span class="line"><span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">1. 这里有一个注意的问题 &gt;&gt;&gt; 要交换的方法有两种情况:</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">情况一、被替换实现的函数，没有出现在当前类/对象，而是出现在当前类的父类，也就是当前类中并未重写.</span></span><br><span class="line"><span class="comment">情况二、被替换实现的函数，已经在当前类重写.</span></span><br><span class="line"><span class="comment">情况三、是当前类/对象自己的函数，并不是继承过来的.</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">if</span>(class_addMethod(cls, origSEL, method_getImplementation(newMethod), method_getTypeEncoding(newMethod)))</span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">//情况一: 间接交换方法实现</span></span><br><span class="line">class_replaceMethod(cls, newSEL, method_getImplementation(origMethod), method_getTypeEncoding(origMethod));</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//情况二、情况三: 直接交换方法实现</span></span><br><span class="line">method_exchangeImplementations(origMethod, newMethod);</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="注意上面注释的一个问题-被替换实现的函数是否是继承自父类"><a href="#注意上面注释的一个问题-被替换实现的函数是否是继承自父类" class="headerlink" title="注意上面注释的一个问题: 被替换实现的函数是否是继承自父类."></a>注意上面注释的一个问题: 被替换实现的函数是否是继承自父类.</h3><ul>
+<li><p>（情况一）如果是被替换实现的函数，是继承自父类得到的</p>
+</li>
+<li><p>那么直接使用exchange()函数去交换SEL对应的IMP</p>
+</li>
+<li>就会造成<code>父类</code>的方法实现IMP被交换，继而造成 该父类的<code>所有子类</code>的这个方法实现，也同样会被替换</li>
+<li>那么就会导致，该父类的其他子类，也会走拦截的方法中的逻辑，造成一些错误</li>
+<li>显然只应该替换当前类的方法实现，而不应该影响其他子类</li>
+</ul>
+<ul>
+<li>（情况二、情况三）如果该函数不是通过继承、该函数虽然是继承但是已经在当前类重写</li>
+<li>直接可以通过exchange()函数去交换SEL对应的IMP</li>
+<li><p>只会对当前类自己的方法实现去替换，而不会影响其他子类</p>
+</li>
+<li><p>那么结合如上三种情况，最完善的逻辑如下:</p>
+</li>
+<li><p>向当前类的<code>objc_class</code>结构体中，新添加一个新的 <code>objc_method</code>实例</p>
+</li>
+<li>使用要被替换实现的方法 <code>originSEL</code></li>
+<li><p>指向的新的函数实现 <code>newIMP</code></p>
+</li>
+<li><p>如果添加成功 &gt;&gt;&gt; <code>进入情况一</code></p>
+</li>
+<li>第一步、向当前类 使用 <code>class_addMethod()函数</code> 添加<code>新的</code>方法实现，使用newSEL</li>
+<li><p>第二步、使用 <code>class_replaceMethod()函数</code> 让 新的方法SEL 指向 被替换掉的原始方法实现IMP（为了拦截后回到原来的函数）</p>
+</li>
+<li><p>如果添加失败 &gt;&gt;&gt; <code>进入情况二、情况三</code>说明被替换的函数实现已经存在于当前类的<code>objc_class</code>中</p>
+</li>
+<li>直接使用 <code>method_exchangeImplementations()函数</code> 交换 原始方法SEL 与 新方法SEL指向的IMP</li>
+</ul>
+<h3 id="那么我觉得对于-method-exchangeImplementations-与-class-replaceMethod-这两个函数的区别是"><a href="#那么我觉得对于-method-exchangeImplementations-与-class-replaceMethod-这两个函数的区别是" class="headerlink" title="那么我觉得对于 method_exchangeImplementations() 与 class_replaceMethod() 这两个函数的区别是:"></a>那么我觉得对于 <code>method_exchangeImplementations()</code> 与 <code>class_replaceMethod()</code> 这两个函数的区别是:</h3><ul>
+<li>exchange &gt;&gt;&gt; 如果两个方法的实现早就存在于类中（代码编写阶段）</li>
+<li>replace &gt;&gt;&gt; 如果一个方法实现是在运行时动态添加的（程序运行时阶段）</li>
+</ul>
+<p>不知道这样理解是否有误，如果有误再来更正。</p>
+<hr>
+<h3 id="JRSwizzle源码"><a href="#JRSwizzle源码" class="headerlink" title="JRSwizzle源码"></a><code>JRSwizzle</code>源码</h3><ul>
+<li>NSObject+JRSwizzle.h</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">NSObject</span> (<span class="title">JRSwizzle</span>)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*    交换对象的方法实现</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">+ (<span class="built_in">BOOL</span>)jr_swizzleMethod:(SEL)origSel_ withMethod:(SEL)altSel_ error:(<span class="built_in">NSError</span>**)error_;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*    交换类的方法实现</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">+ (<span class="built_in">BOOL</span>)jr_swizzleClassMethod:(SEL)origSel_ withClassMethod:(SEL)altSel_ error:(<span class="built_in">NSError</span>**)error_;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>NSObject+JRSwizzle.m</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">"NSObjct+JRSwizzle.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//根据iPhone与mac os区别导入runtime库</span></span><br><span class="line"><span class="meta">#if TARGET_OS_IPHONE</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;objc/runtime.h&gt;</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;objc/message.h&gt;</span></span></span><br><span class="line"><span class="meta">#else</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;objc/objc-class.h&gt;</span></span></span><br><span class="line"><span class="meta">#endif</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//快速组装一个NSError实例</span></span><br><span class="line"><span class="meta">#define SetNSErrorFor(FUNC, ERROR_VAR, FORMAT,...)    \</span></span><br><span class="line"><span class="keyword">if</span> (ERROR_VAR) &#123;    \</span><br><span class="line"><span class="built_in">NSString</span> *errStr = [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"%s: "</span> FORMAT,FUNC,<span class="meta">##__VA_ARGS__]; \</span></span><br><span class="line">*ERROR_VAR = [<span class="built_in">NSError</span> errorWithDomain:<span class="string">@"NSCocoaErrorDomain"</span> \</span><br><span class="line">code:<span class="number">-1</span>    \</span><br><span class="line">userInfo:[<span class="built_in">NSDictionary</span> dictionaryWithObject:errStr forKey:<span class="built_in">NSLocalizedDescriptionKey</span>]]; \</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#define SetNSError(ERROR_VAR, FORMAT,...) SetNSErrorFor(__func__, ERROR_VAR, FORMAT, ##__VA_ARGS__)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//不同SDK获取对象的Class</span></span><br><span class="line"><span class="meta">#if OBJC_API_VERSION &gt;= 2</span></span><br><span class="line"><span class="meta">#define GetClass(obj)    object_getClass(obj)</span></span><br><span class="line"><span class="meta">#else</span></span><br><span class="line"><span class="meta">#define GetClass(obj)    (obj ? obj-&gt;isa : Nil)</span></span><br><span class="line"><span class="meta">#endif</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">NSObject</span> (<span class="title">JRSwizzle</span>)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//先看交换类方法实现指针</span></span><br><span class="line">+ (<span class="built_in">BOOL</span>)jr_swizzleClassMethod:(SEL)origSel_ withClassMethod:(SEL)altSel_ error:(<span class="built_in">NSError</span>**)error_ &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//1. 获取当前使用swizzle的Class</span></span><br><span class="line">Class targetCls = GetClass((<span class="keyword">id</span>)<span class="keyword">self</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 再用获得的Class调用swizzle方法</span></span><br><span class="line"><span class="keyword">return</span> [targetCls jr_swizzleMethod:origSel_ withMethod:altSel_ error:error_];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//最终交换方法实现</span></span><br><span class="line">+ (<span class="built_in">BOOL</span>)jr_swizzleMethod:(SEL)origSel_ withMethod:(SEL)altSel_ error:(<span class="built_in">NSError</span>**)error_ </span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//首先判断当前运行的iOS SDK支持的 OBJC_API_VERSION 版本号，使用不同的Runtime Api进行交换方法交换</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#if OBJC_API_VERSION &gt;= 2</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//下面是当 `OBJC_API_VERSION &gt;= 2`时使用苹果封装后的一些较高级方便使用的Runtime Api完成方法交换</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//1. 首先获取原始方法SEL对于的Method实例</span></span><br><span class="line">Method origMethod = class_getInstanceMethod(<span class="keyword">self</span>, origSel_);</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 如果没有找到方法实现Method，先创建NSError，然后返回NO，结束交换</span></span><br><span class="line"><span class="keyword">if</span> (!origMethod) &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//先创建NSError，并返回</span></span><br><span class="line"><span class="meta">#if TARGET_OS_IPHONE</span></span><br><span class="line">SetNSError(error_, <span class="string">@"original method %@ not found for class %@"</span>, <span class="built_in">NSStringFromSelector</span>(origSel_), [<span class="keyword">self</span> <span class="keyword">class</span>]);</span><br><span class="line"><span class="meta">#else</span></span><br><span class="line">SetNSError(error_, <span class="string">@"original method %@ not found for class %@"</span>, <span class="built_in">NSStringFromSelector</span>(origSel_), [<span class="keyword">self</span> className]);</span><br><span class="line"><span class="meta">#endif</span></span><br><span class="line"></span><br><span class="line">然后返回<span class="literal">NO</span>，结束交换</span><br><span class="line"><span class="keyword">return</span> <span class="literal">NO</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//3. 再获取替换方法SEL的Method实例</span></span><br><span class="line">Method altMethod = class_getInstanceMethod(<span class="keyword">self</span>, altSel_);</span><br><span class="line"></span><br><span class="line"><span class="comment">//4. 同样判断有没有找到方法实现Method，如果没有就先创建NSError，然后返回NO，结束交换</span></span><br><span class="line"><span class="keyword">if</span> (!altMethod) &#123;</span><br><span class="line"><span class="meta">#if TARGET_OS_IPHONE</span></span><br><span class="line">SetNSError(error_, <span class="string">@"alternate method %@ not found for class %@"</span>, <span class="built_in">NSStringFromSelector</span>(altSel_), [<span class="keyword">self</span> <span class="keyword">class</span>]);</span><br><span class="line"><span class="meta">#else</span></span><br><span class="line">SetNSError(error_, <span class="string">@"alternate method %@ not found for class %@"</span>, <span class="built_in">NSStringFromSelector</span>(altSel_), [<span class="keyword">self</span> className]);</span><br><span class="line"><span class="meta">#endif</span></span><br><span class="line"><span class="keyword">return</span> <span class="literal">NO</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//5. 给当前Class的在运行时，添加originMethod，并使用originSEL指向</span></span><br><span class="line">class_addMethod(<span class="keyword">self</span>,</span><br><span class="line">origSel_,</span><br><span class="line">class_getMethodImplementation(<span class="keyword">self</span>, origSel_),</span><br><span class="line">method_getTypeEncoding(origMethod));</span><br><span class="line"></span><br><span class="line"><span class="comment">//6. 给当前Class的在运行时，添加altMethod，并使用altSEL指向</span></span><br><span class="line">class_addMethod(<span class="keyword">self</span>,</span><br><span class="line">altSel_,</span><br><span class="line">class_getMethodImplementation(<span class="keyword">self</span>, altSel_),</span><br><span class="line">method_getTypeEncoding(altMethod));</span><br><span class="line"></span><br><span class="line"><span class="comment">//注意，如上5，6步，是防止传入的两个方法没有找到引起崩溃</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//7. 交换originSEL与altSEL指向的函数实现IMP</span></span><br><span class="line">method_exchangeImplementations(class_getInstanceMethod(<span class="keyword">self</span>, origSel_), </span><br><span class="line">class_getInstanceMethod(<span class="keyword">self</span>, altSel_));</span><br><span class="line"></span><br><span class="line"><span class="comment">//8. 返回交换成功</span></span><br><span class="line"><span class="keyword">return</span> <span class="literal">YES</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">#else </span></span><br><span class="line"></span><br><span class="line"><span class="comment">//下面是当 `OBJC_API_VERSION &lt; 2`时使用的`低级`的Runtime API进行方法交换</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//----------------- 1. 从当前Class的Method列表中，不是继承自父类的Method方法 中查找originMethod与altMethod-------------------</span></span><br><span class="line"></span><br><span class="line">Method directOriginalMethod = <span class="literal">NULL</span>;</span><br><span class="line">Method directAlternateMethod = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> *iterator = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//获取到当前Class的Method列表（数组）</span></span><br><span class="line"><span class="keyword">struct</span> objc_method_list *mlist = class_nextMethodList(<span class="keyword">self</span>, &amp;iterator);</span><br><span class="line"></span><br><span class="line"><span class="comment">//遍历Method数组，获取到originMethod与altMethod</span></span><br><span class="line"><span class="keyword">while</span> (mlist) &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//用来记录遍历的下标值</span></span><br><span class="line"><span class="keyword">int</span> method_index = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span> (; method_index &lt; mlist-&gt;method_count; method_index++) &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//使用originSEL判断，找到originMethod</span></span><br><span class="line"><span class="keyword">if</span> (mlist-&gt;method_list[method_index].method_name == origSel_) &#123;</span><br><span class="line">assert(!directOriginalMethod);</span><br><span class="line"></span><br><span class="line"><span class="comment">//找到Method的地址</span></span><br><span class="line">directOriginalMethod = &amp;mlist-&gt;method_list[method_index];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//使用altSEL判断，找到altMethod</span></span><br><span class="line"><span class="keyword">if</span> (mlist-&gt;method_list[method_index].method_name == altSel_) &#123;</span><br><span class="line">assert(!directAlternateMethod);</span><br><span class="line"></span><br><span class="line"><span class="comment">//找到Method的地址</span></span><br><span class="line">directAlternateMethod = &amp;mlist-&gt;method_list[method_index];</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//指针移到下一个Method</span></span><br><span class="line">mlist = class_nextMethodList(<span class="keyword">self</span>, &amp;iterator);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//----------------- 2. 如果从当前Class没有找到两个Method，就从`superClass`查找，并复制到当前Class -------------------</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//从SuperClass查找Method</span></span><br><span class="line"><span class="keyword">if</span> (!directOriginalMethod || !directAlternateMethod) &#123;</span><br><span class="line"></span><br><span class="line">Method inheritedOriginalMethod = <span class="literal">NULL</span>, inheritedAlternateMethod = <span class="literal">NULL</span>;</span><br><span class="line"><span class="comment">//处理originMethod没找到</span></span><br><span class="line"><span class="keyword">if</span> (!directOriginalMethod) &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//会从superClass查找</span></span><br><span class="line">inheritedOriginalMethod = class_getInstanceMethod(<span class="keyword">self</span>, origSel_);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (!inheritedOriginalMethod) &#123;</span><br><span class="line">SetNSError(error_, <span class="string">@"original method %@ not found for class %@"</span>, <span class="built_in">NSStringFromSelector</span>(origSel_), [<span class="keyword">self</span> className]);</span><br><span class="line"><span class="keyword">return</span> <span class="literal">NO</span>;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//处理altMethod没找到</span></span><br><span class="line"><span class="keyword">if</span> (!directAlternateMethod) &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//会从superClass查找</span></span><br><span class="line">inheritedAlternateMethod = class_getInstanceMethod(<span class="keyword">self</span>, altSel_);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (!inheritedAlternateMethod) &#123;</span><br><span class="line">SetNSError(error_, <span class="string">@"alternate method %@ not found for class %@"</span>, <span class="built_in">NSStringFromSelector</span>(altSel_), [<span class="keyword">self</span> className]);</span><br><span class="line"><span class="keyword">return</span> <span class="literal">NO</span>;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//从当前Class中为查找到Method的个数</span></span><br><span class="line"><span class="keyword">int</span> hoisted_method_count = !directOriginalMethod &amp;&amp; !directAlternateMethod ? <span class="number">2</span> : <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//创建一个`struct objc_method_list`结构体类型的实例</span></span><br><span class="line"><span class="comment">//总内存大小 = objc_method_list结构体初始大小 + method_list数组大小</span></span><br><span class="line"><span class="keyword">struct</span> objc_method_list *hoisted_method_list = malloc(<span class="keyword">sizeof</span>(<span class="keyword">struct</span> objc_method_list) + (<span class="keyword">sizeof</span>(<span class="keyword">struct</span> objc_method)*(hoisted_method_count<span class="number">-1</span>)));</span><br><span class="line"></span><br><span class="line"><span class="comment">//给创建出来`struct objc_method_list`结构体类型的实例，进行赋值</span></span><br><span class="line">hoisted_method_list-&gt;obsolete = <span class="literal">NULL</span>;</span><br><span class="line">hoisted_method_list-&gt;method_count = hoisted_method_count;<span class="comment">//记录从当前cLASS未找到Method的个数</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//使用一个指针指向`objc_method_list结构体实例`的方法数组属性`method_list`</span></span><br><span class="line">Method hoisted_method = hoisted_method_list-&gt;method_list;</span><br><span class="line"></span><br><span class="line"><span class="comment">//如果在当前Class没有找到originMethod</span></span><br><span class="line"><span class="keyword">if</span> (!directOriginalMethod) &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//extern void bcopy(const void *src, void *dest, int n);</span></span><br><span class="line"><span class="comment">//将从父类找到的Method复制到之前创建的Method列表中的Method数组的第一个地址位置</span></span><br><span class="line">bcopy(inheritedOriginalMethod, hoisted_method, <span class="keyword">sizeof</span>(<span class="keyword">struct</span> objc_method));</span><br><span class="line"></span><br><span class="line"><span class="comment">//Method数组指针移到下一个位置</span></span><br><span class="line">directOriginalMethod = hoisted_method++;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//如果在当前Class没有找到altMethod</span></span><br><span class="line"><span class="keyword">if</span> (!directAlternateMethod) &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//如上</span></span><br><span class="line">bcopy(inheritedAlternateMethod, hoisted_method, <span class="keyword">sizeof</span>(<span class="keyword">struct</span> objc_method));</span><br><span class="line">directAlternateMethod = hoisted_method;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//将Method列表，添加到当前Class</span></span><br><span class="line">class_addMethods(<span class="keyword">self</span>, hoisted_method_list);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//----------------- 3. 交换方法实现 -------------------</span></span><br><span class="line">IMP temp = directOriginalMethod-&gt;method_imp;</span><br><span class="line">directOriginalMethod-&gt;method_imp = directAlternateMethod-&gt;method_imp;</span><br><span class="line">directAlternateMethod-&gt;method_imp = temp;</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> <span class="literal">YES</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">#endif    </span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>小结如上源码:</li>
+<li>objc2.0 与 objc1.0 使用Runtime Api的区别</li>
+<li><code>extern void bcopy(const void *src, void *dest, int n);</code>函数完成复制</li>
+</ul>
+<hr>
+<h3 id="获取类对象的方法的签名"><a href="#获取类对象的方法的签名" class="headerlink" title="获取类对象的方法的签名"></a>获取类对象的方法的签名</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">NSMethodSignature *methodSignature = [cls methodSignatureForSelector:selector];</span><br></pre></td></tr></table></figure>
+<p>随便输出得到的方法签名内容如下面所示:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&lt;NSMethodSignature: 0x7fc22841c7a0&gt;</span><br><span class="line">number of arguments = 2</span><br><span class="line">frame size = 224</span><br><span class="line">is special struct return? NO</span><br><span class="line">return value: -------- -------- -------- --------</span><br><span class="line">type encoding (@) &apos;@&apos;</span><br><span class="line">flags &#123;isObject&#125;</span><br><span class="line">modifiers &#123;&#125;</span><br><span class="line">frame &#123;offset = 0, offset adjust = 0, size = 8, size adjust = 0&#125;</span><br><span class="line">memory &#123;offset = 0, size = 8&#125;</span><br><span class="line">argument 0: -------- -------- -------- --------</span><br><span class="line">type encoding (@) &apos;@&apos;</span><br><span class="line">flags &#123;isObject&#125;</span><br><span class="line">modifiers &#123;&#125;</span><br><span class="line">frame &#123;offset = 0, offset adjust = 0, size = 8, size adjust = 0&#125;</span><br><span class="line">memory &#123;offset = 0, size = 8&#125;</span><br><span class="line">argument 1: -------- -------- -------- --------</span><br><span class="line">type encoding (:) &apos;:&apos;</span><br><span class="line">flags &#123;&#125;</span><br><span class="line">modifiers &#123;&#125;</span><br><span class="line">frame &#123;offset = 8, offset adjust = 0, size = 8, size adjust = 0&#125;</span><br><span class="line">memory &#123;offset = 0, size = 8&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到，可以很完整的描述一个方法的所有信息。那么在构造NSInvocation的时候，需要得到一个方法的签名设置给NSInvocation，让NSInvocation知道如何调用这个方法.</p>
+<hr>
+<h3 id="如何判断method是否被swizzled"><a href="#如何判断method是否被swizzled" class="headerlink" title="如何判断method是否被swizzled"></a>如何判断method是否被swizzled</h3><blockquote>
+<p>这个学习来源: <a href="https://segmentfault.com/a/1190000004542608、https://segmentfault.com/a/1190000003950284。" target="_blank" rel="noopener">https://segmentfault.com/a/1190000004542608、https://segmentfault.com/a/1190000003950284。</a></p>
+</blockquote>
+<p>从上面可以学习到任何的Objective-C的方法实现都可以在运行时替换成另外一个Objective-C方法实现，那么有时候可能需要检测一个Objective-C方法实现是否已经被替换掉，那如何判断了？</p>
+<p>使用如下代码进行判断:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">bool</span> <span class="title">isDiff</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *func, SEL _cmd)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"><span class="keyword">char</span> buff[<span class="number">256</span>] = &#123;<span class="string">'\0'</span>&#125;;</span><br><span class="line"><span class="keyword">if</span> (<span class="built_in">strlen</span>(func) &gt; <span class="number">2</span>) &#123;</span><br><span class="line"><span class="keyword">char</span>* s = <span class="built_in">strstr</span>(func, <span class="string">" "</span>) + <span class="number">1</span>;</span><br><span class="line"><span class="keyword">char</span>* e = <span class="built_in">strstr</span>(func, <span class="string">"]"</span>);</span><br><span class="line"><span class="built_in">memcpy</span>(buff, s, <span class="keyword">sizeof</span>(<span class="keyword">char</span>) * (e - s) );</span><br><span class="line"><span class="keyword">return</span> <span class="built_in">strcmp</span>(buff, sel_getName(_cmd));</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>测试代码如下:</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">"SwizzleViewController.h"</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;objc/runtime.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> Swizzle(Class cls, SEL origSEL, SEL newSEL)</span><br><span class="line">&#123;</span><br><span class="line">Method origMethod = class_getInstanceMethod(cls, origSEL);</span><br><span class="line">Method newMethod = <span class="literal">nil</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (!origMethod) &#123;</span><br><span class="line">origMethod = class_getClassMethod(cls, origSEL);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (!origMethod) &#123;</span><br><span class="line"><span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">newMethod = class_getClassMethod(cls, newSEL);</span><br><span class="line"><span class="keyword">if</span> (!newMethod) &#123;</span><br><span class="line"><span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">newMethod = class_getInstanceMethod(cls, newSEL);</span><br><span class="line"><span class="keyword">if</span> (!newMethod) &#123;</span><br><span class="line"><span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(class_addMethod(cls, origSEL, method_getImplementation(newMethod), method_getTypeEncoding(newMethod)))</span><br><span class="line">&#123;</span><br><span class="line">class_replaceMethod(cls, newSEL, method_getImplementation(origMethod), method_getTypeEncoding(origMethod));</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">method_exchangeImplementations(origMethod, newMethod);</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  就是比较 __PRETTY_FUNCTION__中的sel字符串 是否与 _cmd字符串 完全相对</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">*  @param func  __PRETTY_FUNCTION__，如:  -[SwizzleViewController testMethod]</span></span><br><span class="line"><span class="comment">*  @param _cmd 当前方法的sel，如: _swizzle_testMethod</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">*  @return YES没有替换实现，NO表示替换了实现</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">bool</span> isDiff(<span class="keyword">const</span> <span class="keyword">char</span> *func, SEL _cmd)</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">char</span> buff[<span class="number">256</span>] = &#123;<span class="string">'\0'</span>&#125;;</span><br><span class="line"><span class="keyword">if</span> (strlen(func) &gt; <span class="number">2</span>) &#123;</span><br><span class="line"><span class="keyword">char</span>* s = strstr(func, <span class="string">" "</span>) + <span class="number">1</span>;</span><br><span class="line"><span class="keyword">char</span>* e = strstr(func, <span class="string">"]"</span>);</span><br><span class="line">memcpy(buff, s, <span class="keyword">sizeof</span>(<span class="keyword">char</span>) * (e - s) );</span><br><span class="line"><span class="keyword">return</span> strcmp(buff, sel_getName(_cmd));</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">SwizzleViewController</span></span></span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">void</span>)load &#123;</span><br><span class="line"><span class="keyword">static</span> <span class="built_in">dispatch_once_t</span> onceToken;</span><br><span class="line"><span class="built_in">dispatch_once</span>(&amp;onceToken, ^&#123;</span><br><span class="line">Swizzle([SwizzleViewController <span class="keyword">class</span>], <span class="keyword">@selector</span>(testMethod), <span class="keyword">@selector</span>(_swizzle_testMethod));</span><br><span class="line">Swizzle([SwizzleViewController <span class="keyword">class</span>], <span class="keyword">@selector</span>(viewDidLoad), <span class="keyword">@selector</span>(_swizzle_viewDidLoad));</span><br><span class="line">&#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)testMethod &#123;</span><br><span class="line"></span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"__PRETTY_FUNCTION__ = %@"</span>, [<span class="built_in">NSString</span> stringWithUTF8String:__PRETTY_FUNCTION__]);</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"_cmd = %@"</span>, <span class="built_in">NSStringFromSelector</span>(_cmd));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 判断函数实现是否已经被替换</span></span><br><span class="line"><span class="built_in">BOOL</span> ret = isDiff(__PRETTY_FUNCTION__, _cmd);</span><br><span class="line"><span class="keyword">if</span> (ret) &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"实现已经被替换"</span>);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"实现未被替换"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"origin method implementations"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)_swizzle_testMethod &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"swizzle method implementations"</span>);</span><br><span class="line">[<span class="keyword">self</span> _swizzle_testMethod];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)touchesBegan:(<span class="built_in">NSSet</span>&lt;<span class="built_in">UITouch</span> *&gt; *)touches withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line">[<span class="keyword">self</span> testMethod];</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)viewDidLoad &#123;</span><br><span class="line">[<span class="keyword">super</span> viewDidLoad];</span><br><span class="line"></span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"__PRETTY_FUNCTION__ = %@"</span>, [<span class="built_in">NSString</span> stringWithUTF8String:__PRETTY_FUNCTION__]);</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"_cmd = %@"</span>, <span class="built_in">NSStringFromSelector</span>(_cmd));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 判断函数实现是否已经被替换</span></span><br><span class="line"><span class="built_in">BOOL</span> ret = isDiff(__PRETTY_FUNCTION__, _cmd);</span><br><span class="line"><span class="keyword">if</span> (ret) &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"实现已经被替换"</span>);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"实现未被替换"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)_swizzle_viewDidLoad &#123;</span><br><span class="line">[<span class="keyword">self</span> _swizzle_viewDidLoad];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>运行结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">2016-08-03 19:21:25.225 Demos[38746:2541168] __PRETTY_FUNCTION__ = -[SwizzleViewController viewDidLoad]</span><br><span class="line">2016-08-03 19:21:25.225 Demos[38746:2541168] _cmd = _swizzle_viewDidLoad</span><br><span class="line">2016-08-03 19:21:25.225 Demos[38746:2541168] 实现已经被替换</span><br><span class="line">2016-08-03 19:23:36.459 Demos[38746:2541168] swizzle method implementations</span><br><span class="line">2016-08-03 19:23:36.459 Demos[38746:2541168] __PRETTY_FUNCTION__ = -[SwizzleViewController testMethod]</span><br><span class="line">2016-08-03 19:23:36.459 Demos[38746:2541168] _cmd = _swizzle_testMethod</span><br><span class="line">2016-08-03 19:23:36.459 Demos[38746:2541168] 实现已经被替换</span><br><span class="line">2016-08-03 19:23:36.459 Demos[38746:2541168] origin method implementations</span><br></pre></td></tr></table></figure>
+<p>发现系统的方法实现也是可以判断的，不知道为啥原文作者说不可以。</p>
+<p>有一个注意点，在被替换后执行的原始方法实现中，<code>_cmd</code>表示的是替换实现的方法sel。</p>
+<hr>
+<p>学习资源</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">http://blog.csdn.net/yiyaaixuexi/article/details/9374411</span><br><span class="line">http://www.v2ex.com/t/273893</span><br><span class="line">https://segmentfault.com/a/1190000004542608</span><br></pre></td></tr></table></figure>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2016/09/23/Runtime-Part7-Method/" data-title="Runtime Part7 Method | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2016/09/24/Runtime-Part8-Associate/" title="Runtime Part8 Associate">
+  <strong>上一篇：</strong><br>
+  <span>
+  Runtime Part8 Associate</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/09/23/Runtime-Part5-Class/" title="Runtime Part5 Class">
+ <strong>下一篇：</strong><br> 
+ <span>Runtime Part5 Class
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2016/09/23/Runtime-Part7-Method/" data-title="Runtime Part7 Method" data-url="http://yoursite.com/2016/09/23/Runtime-Part7-Method/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Method-抽象一个方法的结构体类型"><span class="toc-number">1.</span> <span class="toc-text">Method: 抽象一个方法的结构体类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#查找类方法与对象方法"><span class="toc-number">2.</span> <span class="toc-text">查找类方法与对象方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#一个OC类中的一个方法，最终编译生成一个objc-method结构体实例的图示"><span class="toc-number">3.</span> <span class="toc-text">一个OC类中的一个方法，最终编译生成一个objc_method结构体实例的图示</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#这些-type-encodings-字符串编码-做什么的？"><span class="toc-number">4.</span> <span class="toc-text">这些 type encodings 字符串编码 做什么的？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#比如如下OC方法与对应测C函数实现转换"><span class="toc-number">5.</span> <span class="toc-text">比如如下OC方法与对应测C函数实现转换</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#简介Method常用runtime方法"><span class="toc-number">6.</span> <span class="toc-text">简介Method常用runtime方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取Class的-method-list-方法列表"><span class="toc-number">7.</span> <span class="toc-text">获取Class的 method_list 方法列表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#class-addMethod-函数所有参数意义"><span class="toc-number">8.</span> <span class="toc-text">class_addMethod()函数所有参数意义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#class-replaceMethod-函数所有参数意义"><span class="toc-number">9.</span> <span class="toc-text">class_replaceMethod()函数所有参数意义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取某个函数的实现指针IMP"><span class="toc-number">10.</span> <span class="toc-text">获取某个函数的实现指针IMP</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#交换两个SEL指向的最终编译生成的c函数（具体实现IMP、函数地址、函数名）"><span class="toc-number">11.</span> <span class="toc-text">交换两个SEL指向的最终编译生成的c函数（具体实现IMP、函数地址、函数名）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#一、直接替换ViewController中的SEL指向我们自己写的C函数实现"><span class="toc-number">12.</span> <span class="toc-text">一、直接替换ViewController中的SEL指向我们自己写的C函数实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#二、替换ViewController中的SEL指向自己写的OC函数"><span class="toc-number">13.</span> <span class="toc-text">二、替换ViewController中的SEL指向自己写的OC函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#三、hook之后继续让原始函数进行执行，并直接使用c函数作"><span class="toc-number">14.</span> <span class="toc-text">三、hook之后继续让原始函数进行执行，并直接使用c函数作.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#交换两个OC函数实现的IMP的简单版本，复杂版本可参阅JRSwizzle"><span class="toc-number">15.</span> <span class="toc-text">交换两个OC函数实现的IMP的简单版本，复杂版本可参阅JRSwizzle</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#注意上面注释的一个问题-被替换实现的函数是否是继承自父类"><span class="toc-number">16.</span> <span class="toc-text">注意上面注释的一个问题: 被替换实现的函数是否是继承自父类.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#那么我觉得对于-method-exchangeImplementations-与-class-replaceMethod-这两个函数的区别是"><span class="toc-number">17.</span> <span class="toc-text">那么我觉得对于 method_exchangeImplementations() 与 class_replaceMethod() 这两个函数的区别是:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#JRSwizzle源码"><span class="toc-number">18.</span> <span class="toc-text">JRSwizzle源码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取类对象的方法的签名"><span class="toc-number">19.</span> <span class="toc-text">获取类对象的方法的签名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#如何判断method是否被swizzled"><span class="toc-number">20.</span> <span class="toc-text">如何判断method是否被swizzled</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

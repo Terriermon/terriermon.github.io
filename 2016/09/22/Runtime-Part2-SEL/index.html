@@ -1,0 +1,542 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>Runtime Part2 SEL | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="什么是消息选择器？ (1) 消息选择器是一种文本字符串，用于消息传递的过程  (2) 消息选择器是一种分为多段的文本字符串，每个段以冒号结尾且后面可以跟方法执行参数  (3) 运行时系统根据消息选择器，找到对应的方法实现完成方法调用  (4) 消息选择器主要是标识区别某个对象/某个类中的某一个对象方法/类方法  (5) 在Objective-C中，消息选择器直接与一个或多个类/对象中方法声明格式对">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Runtime Part2 SEL">
+<meta property="og:url" content="http://yoursite.com/2016/09/22/Runtime-Part2-SEL/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="什么是消息选择器？ (1) 消息选择器是一种文本字符串，用于消息传递的过程  (2) 消息选择器是一种分为多段的文本字符串，每个段以冒号结尾且后面可以跟方法执行参数  (3) 运行时系统根据消息选择器，找到对应的方法实现完成方法调用  (4) 消息选择器主要是标识区别某个对象/某个类中的某一个对象方法/类方法  (5) 在Objective-C中，消息选择器直接与一个或多个类/对象中方法声明格式对">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-08T12:36:12.071Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Runtime Part2 SEL">
+<meta name="twitter:description" content="什么是消息选择器？ (1) 消息选择器是一种文本字符串，用于消息传递的过程  (2) 消息选择器是一种分为多段的文本字符串，每个段以冒号结尾且后面可以跟方法执行参数  (3) 运行时系统根据消息选择器，找到对应的方法实现完成方法调用  (4) 消息选择器主要是标识区别某个对象/某个类中的某一个对象方法/类方法  (5) 在Objective-C中，消息选择器直接与一个或多个类/对象中方法声明格式对">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/09/22/Runtime-Part2-SEL/" title="Runtime Part2 SEL" itemprop="url">Runtime Part2 SEL</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2016-09-22T10:04:03.000Z" itemprop="datePublished"> Published 2016-09-22</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#什么是消息选择器？"><span class="toc-number">1.</span> <span class="toc-text">什么是消息选择器？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#什么是SEL？上面第-3-步中会将选择器转换SEL类型的数据"><span class="toc-number">2.</span> <span class="toc-text">什么是SEL？上面第(3)步中会将选择器转换SEL类型的数据.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Objective-C中所谓的消息发送，其实就是调用objc-msgSend-这个c函数"><span class="toc-number">3.</span> <span class="toc-text">Objective-C中所谓的消息发送，其实就是调用objc_msgSend()这个c函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方法签名（-method-signature）-定义了目标方法实现执行时，所需参数的数据类型、以及函数执行后的返回值的数据类型"><span class="toc-number">4.</span> <span class="toc-text">方法签名（ method signature）: 定义了目标方法实现执行时，所需参数的数据类型、以及函数执行后的返回值的数据类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#OC消息的种类"><span class="toc-number">5.</span> <span class="toc-text">OC消息的种类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#动态绑定"><span class="toc-number">6.</span> <span class="toc-text">动态绑定</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="什么是消息选择器？"><a href="#什么是消息选择器？" class="headerlink" title="什么是消息选择器？"></a>什么是消息选择器？</h3><ul>
+<li><p>(1) 消息选择器是一种<code>文本字符串</code>，用于消息传递的过程</p>
+</li>
+<li><p>(2) 消息选择器是一种分为多段的文本字符串，每个段以冒号结尾且后面可以跟方法执行参数</p>
+</li>
+<li><p>(3) 运行时系统根据消息选择器，找到对应的<code>方法实现</code>完成方法调用</p>
+</li>
+<li><p>(4) 消息选择器主要是标识区别<code>某个对象/某个类</code>中的某一个<code>对象方法/类方法</code></p>
+</li>
+<li><p>(5) 在Objective-C中，消息选择器直接与一个或多个类/对象中方法声明格式对应</p>
+</li>
+</ul>
+<p>加入有如下OC类，其对象方法声明如下</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Cat</span> : <span class="title">NSObject</span></span></span><br><span class="line">- (<span class="keyword">void</span>)helloWorld;</span><br><span class="line">- (<span class="keyword">void</span>)helloWorldWithArgument:(<span class="keyword">id</span>)arg;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>那么根据上面声明的两个对象方法，则对应的消息选择器也有两个:</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">helloWorld</span><br><span class="line">helloWorldWithArgument:</span><br></pre></td></tr></table></figure>
+<p>注意选择器并不是下面这样的，下面这样其实是将选择器转换成了SEL数据类型之后的东西了。</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SEL sel1 = <span class="keyword">@selector</span>(helloWorld);</span><br><span class="line">SEL sel2 = <span class="keyword">@selector</span>(helloWorldWithArgument:);</span><br></pre></td></tr></table></figure>
+<p>然后在程序<code>编译</code>期间，创建各种c数据结构，来解析我们所编写的所有Objective-C代码:</p>
+<ul>
+<li>类结构、<code>objc_class</code></li>
+<li>对象结构、<code>objc_object</code></li>
+<li>方法结构、<code>objc_method</code></li>
+<li>函数实现结构、<code>IMP</code></li>
+<li>实例变量结构、<code>objc_ivar</code></li>
+<li>属性结构、<code>objc_property</code></li>
+<li>分类结构、<code>objc_category</code></li>
+</ul>
+<p>在程序<code>运行</code>期间查询消息选择器对应的方法实现IMP:</p>
+<ul>
+<li>(1) 首先找到<code>对象/类</code>所对应的<code>objc_class实例/objc_object实例</code></li>
+<li>(2) <strong>然后将选<code>择器转</code>换成<code>SEL类型</code>数据</strong></li>
+<li>(3) 再使用得到的<code>SEL类型</code>数据，查询<code>objc_class实例/objc_object实例</code>中的<code>method_list</code>，找到对应的<code>objc_method实例</code></li>
+<li>(4) 最后根据找到的<code>objc_method实例</code>的IMP指针变量，找到最终的函数实现存放的内存地址，完成方法实现调用</li>
+</ul>
+<hr>
+<h3 id="什么是SEL？上面第-3-步中会将选择器转换SEL类型的数据"><a href="#什么是SEL？上面第-3-步中会将选择器转换SEL类型的数据" class="headerlink" title="什么是SEL？上面第(3)步中会将选择器转换SEL类型的数据."></a>什么是SEL？上面第(3)步中会将选择器转换SEL类型的数据.</h3><ul>
+<li><p>(1) SEL的一些基础</p>
+</li>
+<li><p>SEL是一种特殊的Objective-C的<code>数据类型</code></p>
+</li>
+<li>可以根据这个唯一标识，可以找到对应的<code>objc_method</code>结构体实例</li>
+<li>SEL 是c结构体 <code>objc_selector</code> 类型的一个指针</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">typedef struct objc_selector   *SEL;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>objc_selector</code> 结构体声明</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">typedef const struct objc_selector   </span><br><span class="line">&#123;  </span><br><span class="line">void *sel_id;  </span><br><span class="line">const char *sel_types;  </span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>(2) 通常我们使用<code>SEL sel1 = @selector(helloWorld);</code>得到一个SEL</li>
+</ul>
+<p>其实就是创建了一个 objc_selector 结构体实例，并完成了成员变量的数据初始化。</p>
+<ul>
+<li>(3) 为什么需要将选择器转换成<code>objc_selector 结构体实例</code>了？</li>
+</ul>
+<p>正是因为我们编写的所有<code>Objective-C方法</code>在程序编译期间，会被编译器自动编译成一个个的<code>c函数</code>。</p>
+<p>但是最终编译生成的<code>c函数</code>如何和我们编写的<code>Objective-C方法</code>对应起来了？正是通过<code>objc_method</code>的一个个实例来映射。</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> objc_method &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//1. 一个 objc_selector结构体实例</span></span><br><span class="line">SEL method_name;</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. OC方法的type encodings</span></span><br><span class="line"><span class="keyword">char</span> *method_types;</span><br><span class="line"></span><br><span class="line"><span class="comment">//3. 最终编译生成的c函数实现在运行时内存中存放的地址</span></span><br><span class="line">IMP method_imp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>只能通过一个<code>SEL实例</code>，来查询到一个<code>objc_method实例</code>，继而取出c函数实现存放的内存地址<code>IMP</code>。</p>
+<p>而<code>objc_method</code>实例又归属于<code>objc_class</code>实例中。一个OC类都有一个与之对应的独一无二的<code>objc_class</code>实例，所以无需担心相同的方法实现导致覆盖或冲突的问题，因为他们属于不同的<code>objc_class</code>实例中:</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> objc_class &#123;</span><br><span class="line">Class isa  OBJC_ISA_AVAILABILITY;</span><br><span class="line"></span><br><span class="line"><span class="meta">#if !__OBJC2__</span></span><br><span class="line">Class super_class;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *name;</span><br><span class="line"><span class="keyword">long</span> version;</span><br><span class="line"><span class="keyword">long</span> info;</span><br><span class="line"><span class="keyword">long</span> instance_size;</span><br><span class="line"><span class="keyword">struct</span> objc_ivar_list *ivars;</span><br><span class="line"><span class="keyword">struct</span> objc_method_list **methodLists;<span class="comment">//存放所有出现在该OC类中的OC方法</span></span><br><span class="line"><span class="keyword">struct</span> objc_cache *cache;</span><br><span class="line"><span class="keyword">struct</span> objc_protocol_list *protocols;</span><br><span class="line"><span class="meta">#endif</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="Objective-C中所谓的消息发送，其实就是调用objc-msgSend-这个c函数"><a href="#Objective-C中所谓的消息发送，其实就是调用objc-msgSend-这个c函数" class="headerlink" title="Objective-C中所谓的消息发送，其实就是调用objc_msgSend()这个c函数"></a>Objective-C中所谓的消息发送，其实就是调用<code>objc_msgSend()</code>这个c函数</h3><ul>
+<li>OC中的数组添加元素</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[array insertObject:foo atIndex:5];</span><br></pre></td></tr></table></figure>
+<ul>
+<li>编译成c语言版本的消息发送代码</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">objc_msgSend(array, @selector(insertObject:atIndex:), foo, 5);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>总结出格式</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">objc_msgSend(消息接收者, 消息名SEL值, 参数1, 参数2, ... 参数n)</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="方法签名（-method-signature）-定义了目标方法实现执行时，所需参数的数据类型、以及函数执行后的返回值的数据类型"><a href="#方法签名（-method-signature）-定义了目标方法实现执行时，所需参数的数据类型、以及函数执行后的返回值的数据类型" class="headerlink" title="方法签名（ method signature）: 定义了目标方法实现执行时，所需参数的数据类型、以及函数执行后的返回值的数据类型"></a>方法签名（ method signature）: 定义了目标方法实现执行时，所需参数的数据类型、以及函数执行后的返回值的数据类型</h3><p>当对象接收到消息之后，经过一系列查询找到最终的<code>c函数实现</code>然后完成方法调用，但是有几个问题:</p>
+<ul>
+<li>(1) 运行时系统，如何确定被调用的c函数 <code>需要什么样的参数类型</code> 了？</li>
+<li>(2) 运行时系统，如何确定被调用的c函数 <code>函数返回值的类型</code> 了？</li>
+</ul>
+<p>只有通过首先获取得到OC方法的<code>签名</code>，从而让运行时系统根据<code>签名</code>推测出最终被调用的c函数的格式:</p>
+<ul>
+<li>(1) 需要什么样的参数类型</li>
+<li>(2) 函数返回值的类型</li>
+</ul>
+<p>如果获取OC方法的<code>签名</code>失败，那么在最终执行c函数实现时就会出现程序崩溃，因为运行时系统根本不知道传什么类型的数据、也不知道返回值的类型。</p>
+<hr>
+<h3 id="OC消息的种类"><a href="#OC消息的种类" class="headerlink" title="OC消息的种类"></a>OC消息的种类</h3><ul>
+<li>(1) 对象消息，最终消息发送给一个<code>OC类的对象</code>来处理</li>
+<li>(2) 类消息，最终消息发送给一个<code>OC类</code>来处理</li>
+</ul>
+<p>一般用的最多的还是(1)，因为对象消息可以重写消息转发的一系列函数。但如果是类消息，就不好重写消息转发函数实现了，因为类方法的实现我们直接获取不到，而是在所谓的Meta元类中。</p>
+<hr>
+<h3 id="动态绑定"><a href="#动态绑定" class="headerlink" title="动态绑定"></a>动态绑定</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Animal</span> : <span class="title">NSObject</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">copy</span>) <span class="built_in">NSString</span> *name;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">instancetype</span>)initWithName:(<span class="built_in">NSString</span> *)name;</span><br><span class="line">- (<span class="keyword">void</span>)debugName;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Monkey</span> : <span class="title">Animal</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">Animal</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">instancetype</span>)initWithName:(<span class="built_in">NSString</span> *)name &#123;</span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">self</span> = [<span class="keyword">super</span> init]) &#123;</span><br><span class="line">_name = [name <span class="keyword">copy</span>];</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)debugName &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"name = %@"</span>, _name);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">Monkey</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>测试代码</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)test12 &#123;</span><br><span class="line"></span><br><span class="line"><span class="keyword">id</span> ani1 = [[Animal alloc] initWithName:<span class="string">@"animal01"</span>];</span><br><span class="line">[ani1 debugName];</span><br><span class="line"></span><br><span class="line"><span class="keyword">id</span> ani2 = [[Monkey alloc] initWithName:<span class="string">@"animal02"</span>];</span><br><span class="line">[ani2 debugName];</span><br><span class="line"><span class="comment">//断点log</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">2015-07-31 17:24:36.030 Demos[21074:299508] name = animal01</span><br><span class="line">2015-07-31 17:24:36.030 Demos[21074:299508] name = animal02</span><br><span class="line">(lldb) fr v</span><br><span class="line">(Animal *) ani1 = 0x00007fead971ec10</span><br><span class="line">(Monkey *) ani2 = 0x00007fead971f310</span><br><span class="line">(lldb)</span><br></pre></td></tr></table></figure>
+<p>可以看到，即使使用id万能指针，最终仍然能正确的识别出对象的真实类型，从而调用对应的方法实现。</p>
+<p>重点是，在程序运行时，会首先找到ani1和ani2真正的target，然后才会去调用<code>objc_msgSend()</code>将消息发送给找到的target。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2016/09/22/Runtime-Part2-SEL/" data-title="Runtime Part2 SEL | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2016/09/22/Runtime-Part3-IMP/" title="Runtime Part3 IMP">
+  <strong>上一篇：</strong><br>
+  <span>
+  Runtime Part3 IMP</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/09/21/Runtime-Part1-认识/" title="Runtime Part1 认识">
+ <strong>下一篇：</strong><br> 
+ <span>Runtime Part1 认识
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2016/09/22/Runtime-Part2-SEL/" data-title="Runtime Part2 SEL" data-url="http://yoursite.com/2016/09/22/Runtime-Part2-SEL/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#什么是消息选择器？"><span class="toc-number">1.</span> <span class="toc-text">什么是消息选择器？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#什么是SEL？上面第-3-步中会将选择器转换SEL类型的数据"><span class="toc-number">2.</span> <span class="toc-text">什么是SEL？上面第(3)步中会将选择器转换SEL类型的数据.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Objective-C中所谓的消息发送，其实就是调用objc-msgSend-这个c函数"><span class="toc-number">3.</span> <span class="toc-text">Objective-C中所谓的消息发送，其实就是调用objc_msgSend()这个c函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方法签名（-method-signature）-定义了目标方法实现执行时，所需参数的数据类型、以及函数执行后的返回值的数据类型"><span class="toc-number">4.</span> <span class="toc-text">方法签名（ method signature）: 定义了目标方法实现执行时，所需参数的数据类型、以及函数执行后的返回值的数据类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#OC消息的种类"><span class="toc-number">5.</span> <span class="toc-text">OC消息的种类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#动态绑定"><span class="toc-number">6.</span> <span class="toc-text">动态绑定</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

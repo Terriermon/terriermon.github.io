@@ -1,0 +1,738 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>APNS远程推送 | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="###推送通知简介  此通知不是NSNotificationCenter发出的通知NSNotification，而是推送通知。  推送通知主要用途  App 与 APNS苹果服务器 之间的交互 确切的说让不在前台运行的App被动触发做一些事情  推送通知的分类  1) 远程推送通知（只能走APNS苹果推送服务器发出的远程网络通知） 2) 本地推送通知 (自己代码触发的通知)   ###应用程序的三">
+<meta property="og:type" content="article">
+<meta property="og:title" content="APNS远程推送">
+<meta property="og:url" content="http://yoursite.com/2016/08/01/APNS远程推送/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="###推送通知简介  此通知不是NSNotificationCenter发出的通知NSNotification，而是推送通知。  推送通知主要用途  App 与 APNS苹果服务器 之间的交互 确切的说让不在前台运行的App被动触发做一些事情  推送通知的分类  1) 远程推送通知（只能走APNS苹果推送服务器发出的远程网络通知） 2) 本地推送通知 (自己代码触发的通知)   ###应用程序的三">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://i5.tietuku.com/e5cd2affe65442d4.png">
+<meta property="og:image" content="http://i12.tietuku.com/98381c6a790604ca.png">
+<meta property="og:updated_time" content="2019-04-08T12:31:54.617Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="APNS远程推送">
+<meta name="twitter:description" content="###推送通知简介  此通知不是NSNotificationCenter发出的通知NSNotification，而是推送通知。  推送通知主要用途  App 与 APNS苹果服务器 之间的交互 确切的说让不在前台运行的App被动触发做一些事情  推送通知的分类  1) 远程推送通知（只能走APNS苹果推送服务器发出的远程网络通知） 2) 本地推送通知 (自己代码触发的通知)   ###应用程序的三">
+<meta name="twitter:image" content="http://i5.tietuku.com/e5cd2affe65442d4.png">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/08/01/APNS远程推送/" title="APNS远程推送" itemprop="url">APNS远程推送</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2016-08-01T14:58:52.000Z" itemprop="datePublished"> Published 2016-08-01</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			
+		
+		</div>
+		
+		<p>###推送通知简介</p>
+<ul>
+<li><p>此通知不是<code>NSNotificationCenter</code>发出的通知<code>NSNotification</code>，而是<code>推送通知</code>。</p>
+</li>
+<li><p><code>推送通知</code>主要用途</p>
+</li>
+<li>App 与 APNS苹果服务器 之间的交互</li>
+<li><p>确切的说让<code>不在前台运行</code>的App被动触发做一些事情</p>
+</li>
+<li><p>推送通知的分类</p>
+</li>
+<li>1) 远程推送通知（<code>只能走APNS苹果推送服务器发出的远程网络通知</code>）</li>
+<li>2) 本地推送通知 (自己代码触发的通知)</li>
+</ul>
+<hr>
+<p>###应用程序的三种运行状态下时通知的执行差异</p>
+<p>####获取App当前的运行状态</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">UIApplicationState state = [UIApplication sharedApplication].applicationState</span><br><span class="line"></span><br><span class="line">typedef NS_ENUM(NSInteger, UIApplicationState) &#123;</span><br><span class="line"></span><br><span class="line">//1. App运行在前台</span><br><span class="line">UIApplicationStateActive,</span><br><span class="line"></span><br><span class="line">//2.     App非激活状态（被通知栏挡住，接电话..等）          </span><br><span class="line">UIApplicationStateInactive, </span><br><span class="line"></span><br><span class="line">//3. App运行在后台 </span><br><span class="line">UIApplicationStateBackground</span><br><span class="line"></span><br><span class="line">&#125; NS_ENUM_AVAILABLE_IOS(4_0);</span><br></pre></td></tr></table></figure>
+<p>####App运行在<code>前台active</code> 或 <code>inActive 被通知栏挡住</code></p>
+<ul>
+<li><p>能够接受到推送通知（远程or本地）</p>
+</li>
+<li><p>推送通知<code>不会</code>产生提示框</p>
+</li>
+<li><p>回调函数<code>直接由系统调用</code>，<code>不需要点击就会调用</code>，如下回调函数:</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//接收到【本地】通知的回调函数</span><br><span class="line">- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification</span><br><span class="line"></span><br><span class="line">//接收到【远程】通知的回调函数</span><br><span class="line">- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler</span><br></pre></td></tr></table></figure>
+<p>####App运行在<code>后台backgroud</code></p>
+<ul>
+<li><p>能够接受到推送通知（远程or本地）</p>
+</li>
+<li><p>推送通知会产生提示框</p>
+</li>
+<li><p>必须手动点击推送通知提示框，然后触发回调函数获取远程通知，如下回调函数:</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//接收到【本地】通知的回调函数</span><br><span class="line">- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification</span><br><span class="line"></span><br><span class="line">//接收到【远程】通知的回调函数</span><br><span class="line">- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler</span><br></pre></td></tr></table></figure>
+<p>####App还<code>没有运行</code></p>
+<ul>
+<li><p>能够接受到推送通知（远程or本地）</p>
+</li>
+<li><p>推送通知会产生提示框</p>
+</li>
+<li><p>必须手动点击推送通知提示框，重新启动App程序，如下回调函数:</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//App程序启动完毕的回调函数</span><br><span class="line">- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions</span><br></pre></td></tr></table></figure>
+<ul>
+<li>appDidFinishLaunching回调函数中，判断是由 本地通知启动 or 远程通知 启动</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">//1. 点击本地推送通知后启动App</span><br><span class="line"></span><br><span class="line">NSDictionary *localNotification = [launchOptions valueForKey:UIApplicationLaunchOptionsLocalNotificationKey];</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">//2. 点击远程推送通知后启动App</span><br><span class="line"></span><br><span class="line">NSDictionary *remoteNotification = [launchOptions valueForKey:UIApplicationLaunchOptionsRemoteNotificationKey];</span><br></pre></td></tr></table></figure>
+<ul>
+<li>将接收到的通知JSON显示在当前window显示的控制器的push出的子控制器界面</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">//1. 假设要显示通知JSON内容的界面</span><br><span class="line">UIViewController *detailVC = [[UIViewController alloc] init];</span><br><span class="line"></span><br><span class="line">//2. 将detailVCpush到最顶层控制器的上面</span><br><span class="line">[[[self.window.rootViewController.childViewControllers firstObject] view] addSubview:detailVC.view];</span><br><span class="line"></span><br><span class="line">//注意: [self.window.rootViewController.childViewControllers firstObject]，实际上是取得UINavigationController控制器栈顶的控制器.</span><br></pre></td></tr></table></figure>
+<hr>
+<p>###推送通知时的注意点</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1. 不管App是死是活，都会由系统弹出推送通知提示框.</span><br><span class="line"></span><br><span class="line">2. 也就是说，接收通知是iOS手机系统自己管理的事情，不是某个App能够做的事情.</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">完成推送功能的证书中的`app id`必须是`精确完整`的，不能使用`模糊`的app id</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">推送消息JSON消息大小不能超过`2KB`</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">标准的JSON消息体格式</span><br><span class="line"></span><br><span class="line">&#123;  </span><br><span class="line">&quot;aps&quot;: &#123;  </span><br><span class="line">&quot;content-available&quot;: 1, //此字段是接收后台推送通知时使用 </span><br><span class="line">&quot;alert&quot;: &#123;</span><br><span class="line"></span><br><span class="line">&quot;body&quot; : &quot;This is the alert text&quot;,  </span><br><span class="line">&quot;action-loc-key&quot; : &quot;PLAY&quot;</span><br><span class="line">&#125;</span><br><span class="line">&quot;badge&quot;: 1,  </span><br><span class="line">&quot;sound&quot;: &quot;default&quot;  </span><br><span class="line">&#125;  </span><br><span class="line"></span><br><span class="line">//我们自己定义的参数字典</span><br><span class="line">&quot;userInfo&quot; : &#123;</span><br><span class="line">//各种key与value</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">苹果不允许以任何形式获取iPhone设备的UUID`，只能使用苹果规定的`deviceToken`。</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">deviceToken代替UUID的作用:</span><br><span class="line"></span><br><span class="line">1. 标识`哪一部iPhone设备`</span><br><span class="line">2. iPhone设备上的`哪一个App`</span><br><span class="line">3. 自己在通知消息体JSON设置的参数，区别登陆状态....</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">接收到远程通知时显示的`样式`，只能`用户自己在手机上对App进行设置`，App代码中是无法控制的</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">用户可以设置禁止接收APNS对App的远程推送通知</span><br></pre></td></tr></table></figure>
+<hr>
+<p>###iOS8以上，不管是进行<code>本地推送通知</code> or <code>远程推送通知</code>之前，都必须<code>注册申请操作权限</code>，再程序启动时由系统弹出提示框，让用户选择是否进行授权推送操作</p>
+<p><img src="http://i5.tietuku.com/e5cd2affe65442d4.png" alt></p>
+<p>####不带Action的注册推送通知操作</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">- (void)sendReceiveDeviceTokenRequest &#123;</span><br><span class="line">#if ( __IPHONE_OS_VERSION_MAX_ALLOWED &gt; __IPHONE_7_0 )</span><br><span class="line">if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerUserNotificationSettings:)])</span><br><span class="line">&#123;</span><br><span class="line">//1.</span><br><span class="line">UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeBadge|UIUserNotificationTypeSound|UIUserNotificationTypeAlert categories:nil];</span><br><span class="line"></span><br><span class="line">//2.</span><br><span class="line">[[UIApplication sharedApplication] registerUserNotificationSettings:settings];</span><br><span class="line">&#125;</span><br><span class="line">#else</span><br><span class="line"></span><br><span class="line">//1.</span><br><span class="line">UIRemoteNotificationType myTypes = UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound;</span><br><span class="line"></span><br><span class="line">//2.</span><br><span class="line">[[UIApplication sharedApplication] registerForRemoteNotificationTypes:myTypes];</span><br><span class="line">#endif</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>####带Action的注册推送通知操作</p>
+<ul>
+<li>第一步、创建包含了多个将要在通知上显示的Action的<code>UIMutableUserNotificationCategory</code>实例</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">- (UIMutableUserNotificationCategory *)customNotificationCategory &#123;</span><br><span class="line"></span><br><span class="line">//1.创建消息上面要添加的动作(按钮的形式显示出来)  </span><br><span class="line">UIMutableUserNotificationAction *action = [[UIMutableUserNotificationAction alloc] init];  </span><br><span class="line">action.identifier = @&quot;action&quot;;//按钮的标示  </span><br><span class="line">action.title=@&quot;Accept&quot;;//按钮的标题  </span><br><span class="line">action.activationMode = UIUserNotificationActivationModeForeground;//当点击的时候启动程序  </span><br><span class="line">//    action.authenticationRequired = YES;  </span><br><span class="line">//    action.destructive = YES;  </span><br><span class="line"></span><br><span class="line">UIMutableUserNotificationAction *action2 = [[UIMutableUserNotificationAction alloc] init];  </span><br><span class="line">action2.identifier = @&quot;action2&quot;;  </span><br><span class="line">action2.title=@&quot;Reject&quot;;  </span><br><span class="line">action2.activationMode = UIUserNotificationActivationModeBackground;//当点击的时候不启动程序，在后台处理  </span><br><span class="line">action.authenticationRequired = YES;//需要解锁才能处理，如果action.activationMode = UIUserNotificationActivationModeForeground;则这个属性被忽略；  </span><br><span class="line">action.destructive = YES;  </span><br><span class="line"></span><br><span class="line">//2.创建动作(按钮)的类别集合  </span><br><span class="line">UIMutableUserNotificationCategory *category = [[UIMutableUserNotificationCategory alloc] init];  </span><br><span class="line">category.identifier = @&quot;alert&quot;;//这组动作的唯一标示,推送通知的时候也是根据这个来区分  </span><br><span class="line">[category setActions:@[action,action2] forContext:(UIUserNotificationActionContextMinimal)]; </span><br><span class="line"></span><br><span class="line">//3.</span><br><span class="line">return category;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>第二步、修改之前的注册推送的代码，在注册推送时传入<code>UIMutableUserNotificationCategory 数组</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">- (void)sendReceiveDeviceTokenRequest &#123;</span><br><span class="line"></span><br><span class="line">#if ( __IPHONE_OS_VERSION_MAX_ALLOWED &gt; __IPHONE_7_0 )</span><br><span class="line">if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerUserNotificationSettings:)]) &#123;</span><br><span class="line"></span><br><span class="line">//改动一: 得到上面方法创建的categry</span><br><span class="line">UIMutableUserNotificationCategory *categorys = [self customNotificationCategory];</span><br><span class="line"></span><br><span class="line">//改动二: 注册时，传入category</span><br><span class="line">UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeBadge|UIUserNotificationTypeSound|UIUserNotificationTypeAlert categories: [NSSet setWithObjects:categorys, nil]];</span><br><span class="line"></span><br><span class="line">[[UIApplication sharedApplication] registerUserNotificationSettings:settings];</span><br><span class="line">&#125;</span><br><span class="line">#else</span><br><span class="line">UIRemoteNotificationType myTypes = UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound;</span><br><span class="line">[[UIApplication sharedApplication] registerForRemoteNotificationTypes:myTypes];</span><br><span class="line">#endif</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="http://i12.tietuku.com/98381c6a790604ca.png" alt="通知上带Actions的效果图"></p>
+<p>####注册推送通知操作之后的UIApplicationDelegate定义的回调函数，注意必须是<code>iOS8+</code>的sdk才有如下函数，在此回调函数中，继续<code>注册远程推送操作</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">#if (__IPHONE_OS_VERSION_MAX_ALLOWED &gt; __IPHONE_7_1)</span><br><span class="line"></span><br><span class="line">- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">//1. 用户对app通知的设置</span><br><span class="line">UIUserNotificationSettings *settings = [application currentUserNotificationSettings];</span><br><span class="line"></span><br><span class="line">//2. 用户对通知允许的类型（内容、声音、应用图标数字）</span><br><span class="line">UIUserNotificationType types = [settings types];</span><br><span class="line"></span><br><span class="line">//3. 如果types包含应用图标数字的type，那么清除之前的数字</span><br><span class="line">if (types == 5 || types == 7) &#123;//5和7满足条件</span><br><span class="line"></span><br><span class="line">//注册推送时候，清除推送通知badge数字</span><br><span class="line">application.applicationIconBadgeNumber = 0;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//4. 如下这一句必须写，否则不会执行远程推送，也就获取不到deviceToken</span><br><span class="line">[application registerForRemoteNotifications];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#endif</span><br></pre></td></tr></table></figure>
+<p>###本地通知</p>
+<p>####发送一个本地通知的步骤</p>
+<ul>
+<li><p>1) 创建<code>UILocalNotification</code>实例</p>
+</li>
+<li><p>2) 设置由系统发送这个本地通知的时间<code>fireDate</code></p>
+</li>
+<li><p>3) 配置本地通知的内容：<code>通知主体、通知声音、图标数字</code>等</p>
+</li>
+<li>timeZone</li>
+<li>alertBody</li>
+<li>category</li>
+<li>soundName</li>
+<li><p>region</p>
+</li>
+<li><p>4) 配置通知传递的自定义参数<code>userInfo</code>JSON字典（这一步可选）</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">UILocalNotification *notify = ...;</span><br><span class="line"></span><br><span class="line">notify.userInfo = @&#123;</span><br><span class="line">@&quot;key&quot;:@&quot;value&quot;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<hr>
+<p>####本地通知使用示例</p>
+<ul>
+<li>创建本地通知对象</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UILocalNotification *notification = [[UILocalNotification alloc] init];</span><br></pre></td></tr></table></figure>
+<ul>
+<li>这个方法可以设置当前App在以后某个时间触发本地通知（即使App未运行，也会由系统发送这个本地通知）</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">notification.fireDate = [NSDate dateWithTimeIntervalSinceNow:5];</span><br></pre></td></tr></table></figure>
+<ul>
+<li>设置时区</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">notification.timeZone = [NSTimeZone defaultTimeZone];</span><br></pre></td></tr></table></figure>
+<ul>
+<li>设置通知播放的mp3</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">notification.soundName = @&quot;xxx.mp3&quot;;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>设置通知显示的内容</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">notification.alertBody = @&quot;测试推送的快捷回复&quot;;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>设置应用程序的投标上的badgeValue</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">notification.applicationIconBadgeNumber = 999;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>设置通知每隔一段时间重复的发送</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">notification.repeatInterval = NSCalendarUnitMonth;//每月发一次</span><br><span class="line"></span><br><span class="line">注意: NSCalendarUnit枚举变量</span><br></pre></td></tr></table></figure>
+<ul>
+<li>锁屏界面时的Action</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">notification.alertAction = @&quot;锁屏界面时提示用户解锁后能做的事情&quot;;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>设置本地通知附带的json参数</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">notification.userInfo = @&#123;</span><br><span class="line">@&quot;key&quot;:@&quot;value&quot;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>用这两个方法判断是否注册成功  </li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// NSLog(@&quot;currentUserNotificationSettings = %@&quot;,[[UIApplication sharedApplication] currentUserNotificationSettings]);  </span><br><span class="line">//[[UIApplication sharedApplication] isRegisteredForRemoteNotifications];</span><br></pre></td></tr></table></figure>
+<ul>
+<li>发送本地通知一、在本地通知队列等待App程序来发送，就是说可能会有延迟</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[[UIApplication sharedApplication]  scheduleLocalNotification:notification];</span><br></pre></td></tr></table></figure>
+<ul>
+<li>发送本地通知二、立马发送本地通知，不会有延迟</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[[UIApplication sharedApplication]  presentLocalNotificationNow:notification];</span><br></pre></td></tr></table></figure>
+<ul>
+<li>获取当前程序还<code>未被</code>调度的本地通知 （<code>一旦通知被发送，就会从通知调度队列移除</code>）</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[UIApplication sharedApplication].scheduledLocalNotifications;</span><br></pre></td></tr></table></figure>
+<p>####接收到<code>本地通知</code>，分情况走如下代理函数</p>
+<ul>
+<li>App处于<code>前台</code>，不会弹出提示框，由系统直接调用如下回调函数</li>
+<li>App处于<code>后台</code>，会弹出提示框，需要用户点击提示框之后，才会回调如下函数</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">- (void)application:(UIApplication *)application</span><br><span class="line">didReceiveLocalNotification:(UILocalNotification *)notification &#123;</span><br><span class="line"></span><br><span class="line">//1. 判断App程序状态的代码，统一由别处封装</span><br><span class="line"></span><br><span class="line">//2. 取出通知中的JSON</span><br><span class="line">NSDictionary *json = notification.userInfo;</span><br><span class="line"></span><br><span class="line">//3. 调用封装好的处理接收到推送通知的方法</span><br><span class="line">[某个类或对象 handleNotificationInfo:json];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>App还没有启动，会弹出提示框，需要用户点击提示框之后，才会调用App启动回调函数</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions &#123;</span><br><span class="line"></span><br><span class="line">//1. 判断launchOptions字典中是否包含推送通知JSON</span><br><span class="line"></span><br><span class="line">//2. 两种流程</span><br><span class="line">//2.1 正常点击App图标启动的App</span><br><span class="line">//初始化所有的UI结构</span><br><span class="line"></span><br><span class="line">//2.2 由点击推送通知启动的App</span><br><span class="line">//在2.1的基础上，在栈顶控制器继续push显示通知信息的界面</span><br><span class="line"></span><br><span class="line">return YES;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>####点击<code>本地通知</code>上的<code>Actions</code>做出的处理</p>
+<blockquote>
+<p>该方法必须当App在<code>已经运行</code>才会调用</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">#if (__IPHONE_OS_VERSION_MAX_ALLOWED &gt; __IPHONE_7_1)</span><br><span class="line"></span><br><span class="line">- (void)application:(UIApplication *)application</span><br><span class="line">handleActionWithIdentifier:(NSString *)identifier</span><br><span class="line">forLocalNotification:(UILocalNotification *)notification</span><br><span class="line">completionHandler:(void (^)())completionHandler</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">//在其他App界面显示时收到本地消息，下拉消息会有快捷回复的按钮，点击按钮后调用的方法，根据identifier来判断点击的哪个按钮，notification为消息内容  </span><br><span class="line">if ([identifier isEqulToString:@&quot;action1&quot;]) &#123;</span><br><span class="line"></span><br><span class="line">//点中action1的处理</span><br><span class="line">//....</span><br><span class="line"></span><br><span class="line">&#125; else if ([identifier isEqulToString:@&quot;action2&quot;]) &#123;</span><br><span class="line"></span><br><span class="line">//点中action2的处理    </span><br><span class="line">//....</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//如下代码必须要写</span><br><span class="line">if (completionHandler)</span><br><span class="line">completionHandler();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#endif</span><br></pre></td></tr></table></figure>
+<hr>
+<p>###远程推送</p>
+<p>####让服务器能够进行APNS通知推送，需要给服务器推送证书的p12交换证书</p>
+<ul>
+<li>开发推送证书的p12</li>
+<li>发布推送证书的p12</li>
+</ul>
+<p>####注册完远程推送之后<code>[application registerForRemoteNotifications]</code>，那么会回调执行获取deviceToken回调函数（可在<code>UIApplicationDelegate</code>找到）</p>
+<ul>
+<li>获取DeviceToken<code>成功</code>的回调函数，<code>将得到的deviceToken发送给到服务器</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken</span><br><span class="line">&#123;    </span><br><span class="line">//将当前将得到的deviceToken发送给到服务器</span><br><span class="line">[_remoteManager registWithDeviceToken:deviceToken];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>获取DeviceToken<code>失败</code>的回调函数</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error</span><br><span class="line">&#123;</span><br><span class="line">DLog(@&quot;获取DeviceToken失败 -- Error: %@\n&quot;, [error localizedDescription]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>####接收到<code>远程通知</code>，分情况走如下代理函数</p>
+<ul>
+<li>App处于<code>前台</code>，不会弹出提示框，由系统直接调用如下回调函数</li>
+<li>App处于<code>后台</code>，会弹出提示框，需要用户点击提示框之后，才会回调如下函数</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">这个方法建议不使用，当`App程序处于后台`的时候是无法接收到推送信息</span><br><span class="line"></span><br><span class="line">- (void)application:(UIApplication *)application</span><br><span class="line">didReceiveRemoteNotification:(NSDictionary *)userInfo </span><br><span class="line">&#123;</span><br><span class="line">// 调用封装好的处理接收到推送通知的方法，该方法会判断App程序状态分情况处理</span><br><span class="line">[某个类或对象 handleNotificationInfo:userInfo];</span><br><span class="line">&#125;</span><br><span class="line">```</span><br></pre></td></tr></table></figure>
+<p>最好使用这个回调函数代替上面的那个，因为上面那个函数具备如下优点:</p>
+<ol>
+<li>当<code>App程序处于后台</code>时也可以接收远程通知</li>
+<li>并可以<code>操作界面UIView实例</code></li>
+<li>系统给出30s的时间对推送的消息进行处理</li>
+<li>苹果推荐使用如下这个回调函数处理<code>远程通知</code></li>
+</ol>
+<p>注意: 最后必须执行<code>CompletionHandler</code>这个Block，告诉iOS系统开始处理更新UI</p>
+<ul>
+<li>(void)application:(UIApplication <em>)application didReceiveRemoteNotification:(NSDictionary </em>)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler<br>{</li>
+</ul>
+<p>//代码块1: 处理远程消息<br>{<br>//1.【重要】调用封装好的处理接收到推送通知的方法<br>[某个类或对象 handleNotificationInfo:userInfo];</p>
+<p>//2.【重要】在这里可以直接更新App的界面UI显示.<br>//修改UI属性的代码<br>}</p>
+<p>//代码块2: 一定要写如下其中一句，告诉iOS系统去更新UI，如下可以告诉SDK三种结果<br>{<br>//2.1 结果1: 接收到远程通知<br>completionHandler(UIBackgroundFetchResultNewData);</p>
+<p>//2.2 结果2: 没有接收到远程通知<br>//completionHandler(UIBackgroundFetchResultNoData);</p>
+<p>//2.3 结果3: 接收远程通知失败<br>//completionHandler(UIBackgroundFetchResultFailed);<br>}<br>}<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- App还没有启动，会弹出提示框，需要用户点击提示框之后，才会调用App启动回调函数</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>(BOOL)application:(UIApplication <em>)application didFinishLaunchingWithOptions:(NSDictionary </em>)launchOptions {</li>
+</ul>
+<p>//1. 判断launchOptions字典中是否包含推送通知JSON</p>
+<p>//2. 两种流程<br>//2.1 正常点击App图标启动的App<br>//初始化所有的UI结构</p>
+<p>//2.2 由点击推送通知启动的App<br>//在2.1的基础上，在栈顶控制器继续push显示通知信息的界面</p>
+<p>return YES;<br>}<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">####点击`远程通知`上的`Actions`做出的处理</span><br></pre></td></tr></table></figure></p>
+<p>#if (<strong>IPHONE_OS_VERSION_MAX_ALLOWED &gt; </strong>IPHONE_7_1)</p>
+<ul>
+<li>(void)application:(UIApplication <em>)application<br>handleActionWithIdentifier:(NSString </em>)identifier<br>forRemoteNotification:(NSDictionary *)userInfo<br>completionHandler:(void (^)())completionHandler<br>{<br>//1. 当App运行在后台时收到远程通知<br>//2. 下拉消息会有快捷回复的按钮，点击按钮后调用的方法<br>//3. 根据identifier来判断点击的哪个按钮<br>//4. notification为消息内容  </li>
+</ul>
+<p>if ([identifier isEqulToString:@”action1”]) {</p>
+<p>//点中action1的处理<br>//….</p>
+<p>} else if ([identifier isEqulToString:@”action2”]) {</p>
+<p>//点中action2的处理<br>//….</p>
+<p>}</p>
+<p>//如下代码必须要写<br>if (completionHandler)<br>completionHandler();<br>}</p>
+<p>#endif<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">****</span><br><span class="line"></span><br><span class="line">###统一处理`推送通知`的代码封装`handleNotificationInfo:`</span><br><span class="line"></span><br><span class="line">####根据`App程序状态`与`远程与本地通知`组合起来，总共有`6`种情况</span><br><span class="line"></span><br><span class="line">- 情况1: 【接收到`远程通知`】 + 【App在`前`台】</span><br><span class="line">- 情况2: 【接收到`远程通知`】 + 【App在`后`台】</span><br><span class="line">- 情况3: 【接收到`本地通知`】 + 【App在`前`台】</span><br><span class="line">- 情况4: 【接收到`本地通知`】 + 【App在`后`台】</span><br><span class="line">- 情况5: 【接收到`远程通知`】 + 【App`未启动`】</span><br><span class="line">- 情况6: 【接收到`本地通知`】 + 【App`未启动`】</span><br><span class="line"></span><br><span class="line">####处理方法A: （可封装到某个单独的类的一个方法中，主要处理App处于`前台`和`后台`）</span><br><span class="line"></span><br><span class="line">- 情况1: 【接收到`远程通知`】 + 【App在`前`台】</span><br><span class="line">- 情况2: 【接收到`远程通知`】 + 【App在`后`台】</span><br><span class="line">- 情况3: 【接收到`本地通知`】 + 【App在`前`台】</span><br><span class="line">- 情况4: 【接收到`本地通知`】 + 【App在`后`台】</span><br></pre></td></tr></table></figure></p>
+<p>/**</p>
+<ul>
+<li>对传入的通知的userInfo字典进行处理<br>*/</li>
+</ul>
+<ul>
+<li>(void)handleNotificationInfo:(NSDictionary *)notificationJSON<br>{</li>
+</ul>
+<p>//1. 通知字典必须存在<br>if (!notificationJSON) {<br>return;<br>}</p>
+<p>//2. 判断接收到的通知是是【远程通知】or 【本地通知】<br>// 远程通知，通知的JSON包含 @”apns” 的key<br>// 本地通知，规定通知的JSON不包含 @”apns” 这个key<br>NSDictionary *apsInfo = [pushInfo objectForKey:@”aps”];</p>
+<p>//3. 判断是否为远程通知or本地通知？<br>BOOL isRemote = (apsInfo != nil);</p>
+<p>//4. 获取当前App的状态<br>UIApplicationState appState = [UIApplication sharedApplication].applicationState;</p>
+<p>if (state == UIApplicationStateActive)<br>{<br>//App处于前台时，如何处理通知…<br>//注意: 不会由系统字典弹出提示框<br>//处于前台时，接收到通知，通常不会做什么处理</p>
+<p>} else if (state == UIApplicationStateBackground)<br>{<br>//App处于后台时，如何处理通知…<br>//显示到某个控制器界面，显示通知中的数据<br>//在topViewController上push或present其他控制器界面</p>
+<p>} else if (state == UIApplicationStateInActive)<br>{<br>//App处于启动但是未激活时，如何处理通知…<br>//…<br>}<br>}<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 这个方法可以封装在`BaseViewController`</span><br><span class="line">- `BaseViewController`初始化时，注册监听`接收远程推送通知`这个通知KEY</span><br><span class="line">- 然后`BaseViewController`在NSNotificationCenter通知回调函数中，调用一个`子类重写方法`</span><br><span class="line">- 某个子类ViewController重写的这个方法，用于处理`接收到远程通知`的逻辑</span><br><span class="line"></span><br><span class="line">- 如果直接写在AppDelegate中的一个方法，就很简单了...</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>(BOOL)application:(UIApplication <em>)application didFinishLaunchingWithOptions:(NSDictionary </em>)launchOptions<br>{</li>
+</ul>
+<p>//对App主界面UI结构进行初始化完毕<br>//tabbarController，rootViewController，rootNav…</p>
+<p>//处理由接收到推送通知，而启动App程序（接收到通知时，App未启动）<br>//——————————————————-<br>//1. 本地推送通知<br>NSDictionary *localNotification = [options valueForKey:UIApplicationLaunchOptionsLocalNotificationKey];</p>
+<p>//2. 远程推送通知<br>NSDictionary *remoteNotification = [options valueForKey:UIApplicationLaunchOptionsRemoteNotificationKey];</p>
+<p>//3. 确定是【本地推送通知】or【远程推送通知】<br>NSDictionary *json = nil;</p>
+<p>if (localNotification &amp;&amp; !remoteNotification) {</p>
+<p>//3.1 接收到的是【本地推送通知】<br>json = localNotification;</p>
+<p>//【重要】调用封装好的处理接收到推送通知的方法<br>[某个类或对象 handleNotificationInfo:json];</p>
+<p>} else if (!localNotification &amp;&amp; remoteNotification) {</p>
+<p>//3.2 接收到的是【远程推送通知】<br>json = remoteNotification;</p>
+<p>//【重要】调用封装好的处理接收到推送通知的方法<br>[某个类或对象 handleNotificationInfo:json];</p>
+<p>} else {</p>
+<p>//3.3 同时接收到【本地推送通知】and【远程推送通知】<br>//并且触发启动App程序<br>//这里如何处理….<br>}</p>
+<p>//4. 每次都注册远程通知，怕deviceToken变化<br>[self registerRemoteNotificationToReceiveDeviceToken];</p>
+<p>return YES;<br>}<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">####处理方法B: 直接在AppDelegate回调函数`application: didFinishLaunchingWithOptions:`中，调用上面封装的方法主要处理`App未启动`的情况</span><br><span class="line"></span><br><span class="line">- 情况5: 【接收到`远程通知`】 + 【App`未启动`】</span><br><span class="line">- 情况6: 【接收到`本地通知`】 + 【App`未启动`】</span><br><span class="line"></span><br><span class="line">***</span><br><span class="line"></span><br><span class="line">###iOS7以上可以支持`后台接收远程通知`后，让处于后台的App也可以更新界面元素</span><br><span class="line"></span><br><span class="line">- 1) 配置后台接收消息</span><br><span class="line"></span><br><span class="line">![](http://i13.tietuku.com/f058c5e9a00cef9e.png)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">- 2) 服务器往APNS推送的消息格式必须是如下</span><br><span class="line">- 关键点: `必须在apns为key的JSON中，加上content-available=1字段`</span><br></pre></td></tr></table></figure></p>
+<p>{<br>“aps”: {<br>“content-available”: 1,<br>“alert”: “This is the alert text”,<br>“badge”: 1,<br>“sound”: “default”<br>}<br>“acme1” : “bar”,<br>“acme2” : 42,<br>//自他字段<br>}</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">****</span><br><span class="line"></span><br><span class="line">###地理位置的推送</span><br><span class="line"></span><br><span class="line">- 使用`CoreLocation`发起定位</span><br></pre></td></tr></table></figure>
+<p>注意: iOS7以上要求，使用定位相关功能时，必须调用如下代码让用户完成授权</p>
+<p>CLLocationManager *manager = [[CLLocationManager alloc] init];  </p>
+<p>manager.delegate = self; </p>
+<p>//请求用户授权<br>[manager requestWhenInUseAuthorization];<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- `用户授权`回调函数，在用户授权成功之后，发送一个`本地的地理通知`</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>(void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status  </li>
+</ul>
+<p>{<br>//获取授权结果<br>BOOL canUseLocationNotifications = (status == kCLAuthorizationStatusAuthorizedWhenInUse);  </p>
+<p>//如果已经授权，开始发送一个地理本地通知<br>if (canUseLocationNotifications) {<br>[self startShowLocationNotification];<br>}<br>}<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 发送一个`本地的地理通知`</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>(void)startShowLocationNotification  </li>
+</ul>
+<p>{<br>//1. 创建一个定理位置<br>CLLocationCoordinate2D local2D ;<br>local2D.latitude = 123.0;<br>local2D.longitude = 223.0;  </p>
+<p>//2. 创建一个本地通知<br>UILocalNotification *locNotification = [[UILocalNotification alloc] init];<br>locNotification.alertBody = @”你接收到了”;<br>locNotification.regionTriggersOnce = YES;<br>locNotification.region = [[CLCircularRegion alloc] initWithCenter:local2D radius:45 identifier:@”local-identity”];  </p>
+<p>//3. 发送一个本地通知<br>[[UIApplication sharedApplication] scheduleLocalNotification:locNotification];<br>}<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 接收到`地理位置`的`本地`的推送通知</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>(void)application:(UIApplication <em>)application didReceiveLocalNotification:(UILocalNotification </em>)notification  </li>
+</ul>
+<p>{<br>CLRegion *region = notification.region;<br>if (region)<br>{<br>//处理远程推送的地理位置通知<br>//…<br>}<br>}<br><code>`</code></p>
+<ul>
+<li>如上看出，<code>地理位置</code>的推送通知，只能是<code>本地</code>通知</li>
+</ul>
+<hr>
+<p>###使用工具模拟调试APNS远程推送通知</p>
+<ul>
+<li>完成<code>模拟远程推送</code>，可以使用<code>pushMeBaby</code>工具，步骤如下:</li>
+<li>1) <code>推送证书的导出的p12交换证书文件</code>放到<code>pushMeBaby</code>工程中</li>
+<li>2) 执行代码获取当前调试手机对应的</li>
+<li><code>deviceToken</code></li>
+<li>2) 将之前获取的<code>deviceToken</code>，配置到<code>pushMeBaby</code>代码中的<code>deviceToken</code>选项</li>
+<li>3) 配置<code>pushMeBaby</code>代码中的<code>certificate</code>的<code>证书名字</code></li>
+<li>4) 运行<code>pushMeBaby</code>代码，在弹出框中输入消息JSON即可</li>
+</ul>
+<hr>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2016/08/01/APNS远程推送/" data-title="APNS远程推送 | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2016/08/05/iOS-common-crash-problem/" title="iOS common crash problem">
+  <strong>上一篇：</strong><br>
+  <span>
+  iOS common crash problem</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/06/03/UITableViewCell的一些优化/" title="UITableViewCell的一些优化">
+ <strong>下一篇：</strong><br> 
+ <span>UITableViewCell的一些优化
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2016/08/01/APNS远程推送/" data-title="APNS远程推送" data-url="http://yoursite.com/2016/08/01/APNS远程推送/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ 
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

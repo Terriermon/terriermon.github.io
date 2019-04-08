@@ -1,0 +1,506 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>Runtime Part11 NSInvocation | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="NSInvocation学习记录首先看一个简单的示例代码 1234567891011121314151617181920212223242526//1. 创建要调用方法的SEL标识SEL myMethod = @selector(myLog:parm:parm:);//2. 设置消息执行的SEL[invocatin setSelector:myMethod2];//3. 从具有该SEL方法实现的T">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Runtime Part11 NSInvocation">
+<meta property="og:url" content="http://yoursite.com/2016/09/25/Runtime-Part11-NSInvocation/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="NSInvocation学习记录首先看一个简单的示例代码 1234567891011121314151617181920212223242526//1. 创建要调用方法的SEL标识SEL myMethod = @selector(myLog:parm:parm:);//2. 设置消息执行的SEL[invocatin setSelector:myMethod2];//3. 从具有该SEL方法实现的T">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-08T12:49:15.427Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Runtime Part11 NSInvocation">
+<meta name="twitter:description" content="NSInvocation学习记录首先看一个简单的示例代码 1234567891011121314151617181920212223242526//1. 创建要调用方法的SEL标识SEL myMethod = @selector(myLog:parm:parm:);//2. 设置消息执行的SEL[invocatin setSelector:myMethod2];//3. 从具有该SEL方法实现的T">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/09/25/Runtime-Part11-NSInvocation/" title="Runtime Part11 NSInvocation" itemprop="url">Runtime Part11 NSInvocation</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2016-09-24T16:39:25.000Z" itemprop="datePublished"> Published 2016-09-25</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#NSInvocation学习记录"><span class="toc-number">1.</span> <span class="toc-text">NSInvocation学习记录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#通过如上的代码大致可以得出NSInvocation做什么的？"><span class="toc-number">2.</span> <span class="toc-text">通过如上的代码大致可以得出NSInvocation做什么的？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用performSelector-withObject-与NSInvocation发送消息的区别？"><span class="toc-number">3.</span> <span class="toc-text">使用performSelector:withObject:与NSInvocation发送消息的区别？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#如下是调用多参数的简单模板"><span class="toc-number">4.</span> <span class="toc-text">如下是调用多参数的简单模板</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用NSInvocation来扩展-NSObject-performSelector-withObject-withObject-存在的限制"><span class="toc-number">5.</span> <span class="toc-text">使用NSInvocation来扩展-[NSObject performSelector:withObject:withObject:]存在的限制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#如下是从JSPatch中的callSelector-函数中，抽出来的一个NSInvocation使用模板"><span class="toc-number">6.</span> <span class="toc-text">如下是从JSPatch中的callSelector()函数中，抽出来的一个NSInvocation使用模板</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#模拟-cat-cryWithWord-”传入的值”"><span class="toc-number">7.</span> <span class="toc-text">模拟[cat cryWithWord:@”传入的值”];</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="NSInvocation学习记录"><a href="#NSInvocation学习记录" class="headerlink" title="NSInvocation学习记录"></a>NSInvocation学习记录</h3><p>首先看一个简单的示例代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">//1. 创建要调用方法的SEL标识</span><br><span class="line">SEL myMethod = @selector(myLog:parm:parm:);</span><br><span class="line"></span><br><span class="line">//2. 设置消息执行的SEL</span><br><span class="line">[invocatin setSelector:myMethod2];</span><br><span class="line"></span><br><span class="line">//3. 从具有该SEL方法实现的Target获取到方法的签名</span><br><span class="line">NSMethodSignature * sig  = [某个类 instanceMethodSignatureForSelector:myMethod];</span><br><span class="line"></span><br><span class="line">//4. 使用方法签名，创建消息对象，确定消息调用的函数由哪些参数、返回值..</span><br><span class="line">NSInvocation * invocatin = [NSInvocation invocationWithMethodSignature:sig];</span><br><span class="line"></span><br><span class="line">//5. 给消息设置方法执行时需要的参数值</span><br><span class="line">//注意：设置参数的Index 需要从2开始，因为前两个被selector和target占用</span><br><span class="line">int a=1;</span><br><span class="line">int b=2;</span><br><span class="line">int c=3;</span><br><span class="line">[invocatin setArgument:&amp;a atIndex:2];//必须从2开始</span><br><span class="line">[invocatin setArgument:&amp;b atIndex:3];</span><br><span class="line">[invocatin setArgument:&amp;c atIndex:4];</span><br><span class="line"></span><br><span class="line">//6. 设置消息的接收者</span><br><span class="line">[invocatin setTarget:self];</span><br><span class="line"></span><br><span class="line">//7. 向系统发送这个消息</span><br><span class="line">[invocatin invoke];</span><br></pre></td></tr></table></figure>
+<p>如上有个方法的签名<code>NSMethodSignature</code>干什么的？</p>
+<ul>
+<li>主要是描述一个方法的具体信息</li>
+<li>方法的参数</li>
+<li>方法的返回值类型</li>
+<li>等等其他有关方法相关的信息</li>
+</ul>
+<hr>
+<h3 id="通过如上的代码大致可以得出NSInvocation做什么的？"><a href="#通过如上的代码大致可以得出NSInvocation做什么的？" class="headerlink" title="通过如上的代码大致可以得出NSInvocation做什么的？"></a>通过如上的代码大致可以得出<code>NSInvocation</code>做什么的？</h3><ul>
+<li>NSInvocation也是一种发送消息的方式</li>
+<li><p>在消息转发机制中，最后一个阶段，就是使用NSInvocation</p>
+</li>
+<li><p>其他我们常用的消息发送方式</p>
+</li>
+<li>使用<code>[类/对象 SEL] or 对象.sel</code>发送消息</li>
+<li><p>使用<code>[类/对象 performSelector:OnThread:withArgs: ...]</code>发送消息</p>
+</li>
+<li><p>最原始的发送消息方式</p>
+</li>
+<li>使用<code>objc_msgSend(Target, SEL, args)</code>发送消息</li>
+</ul>
+<hr>
+<h3 id="使用performSelector-withObject-与NSInvocation发送消息的区别？"><a href="#使用performSelector-withObject-与NSInvocation发送消息的区别？" class="headerlink" title="使用performSelector:withObject:与NSInvocation发送消息的区别？"></a>使用<code>performSelector:withObject:</code>与<code>NSInvocation</code>发送消息的区别？</h3><ul>
+<li><p>使用<code>performSelector:withObject:</code>对方法参数个数上有限制</p>
+</li>
+<li><p>而使用<code>NSInvocation</code>不限制方法参数个数，还可以做一下事情</p>
+</li>
+<li>1) 对原始方法参数，进行增、删、改、</li>
+<li><p>2) 获取方法执行的返回值、以及修改</p>
+</li>
+<li><p>所以说，图简单就用<code>performSelector:withObject:</code>，要完成复杂的方法调用就需要使用<code>NSInvocation</code></p>
+</li>
+</ul>
+<hr>
+<h3 id="如下是调用多参数的简单模板"><a href="#如下是调用多参数的简单模板" class="headerlink" title="如下是调用多参数的简单模板"></a>如下是调用多参数的简单模板</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">- (void)viewDidLoad &#123;</span><br><span class="line">[super viewDidLoad];</span><br><span class="line"></span><br><span class="line">SEL myMethod = @selector(myLog:parm:parm:);</span><br><span class="line"></span><br><span class="line">NSMethodSignature * sig  = [[self class] instanceMethodSignatureForSelector:myMethod];</span><br><span class="line"></span><br><span class="line">NSInvocation * invocatin = [NSInvocation invocationWithMethodSignature:sig];</span><br><span class="line"></span><br><span class="line">[invocatin setTarget:self];</span><br><span class="line"></span><br><span class="line">[invocatin setSelector:myMethod2];</span><br><span class="line"></span><br><span class="line">int a=1;</span><br><span class="line">int b=2;</span><br><span class="line">int c=3;</span><br><span class="line">[invocatin setArgument:&amp;a atIndex:2];</span><br><span class="line">[invocatin setArgument:&amp;b atIndex:3];</span><br><span class="line">[invocatin setArgument:&amp;c atIndex:4];</span><br><span class="line"></span><br><span class="line">[invocatin invoke];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//该函数有三个参数</span><br><span class="line">-(void)myLog:(int)a parm:(int)b parm:(int)c&#123;</span><br><span class="line">NSLog(@&quot;MyLog%d:%d:%d&quot;,a,b,c);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="使用NSInvocation来扩展-NSObject-performSelector-withObject-withObject-存在的限制"><a href="#使用NSInvocation来扩展-NSObject-performSelector-withObject-withObject-存在的限制" class="headerlink" title="使用NSInvocation来扩展-[NSObject performSelector:withObject:withObject:]存在的限制"></a>使用NSInvocation来扩展<code>-[NSObject performSelector:withObject:withObject:]</code>存在的限制</h3><ul>
+<li>可以同时设置 <code>多个参数</code></li>
+<li>同时可以获取 <code>返回值</code></li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">NSObject</span> (<span class="title">NSInvocation</span>)</span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">id</span> _Nonnull)performSelector:(SEL _Nonnull)aSelector withObjects:(<span class="keyword">id</span> _Nullable)object, ... &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//1. 获取SEL对应的方法签名</span></span><br><span class="line"><span class="built_in">NSMethodSignature</span> *signature = [<span class="keyword">self</span> methodSignatureForSelector:aSelector];</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 必须找到方法签名，才能使用NSInvocation手动发送消息</span></span><br><span class="line"><span class="keyword">if</span> (signature) &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//2.1 使用方法签名创建一个对应的消息对象</span></span><br><span class="line"><span class="built_in">NSInvocation</span> *invocation = [<span class="built_in">NSInvocation</span> invocationWithMethodSignature:signature];</span><br><span class="line"></span><br><span class="line"><span class="comment">//2.2 设置消息接收者</span></span><br><span class="line">[invocation setTarget:<span class="keyword">self</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">//2.3 设置消息对应的触发SEL</span></span><br><span class="line">[invocation setSelector:aSelector];</span><br><span class="line"></span><br><span class="line"><span class="comment">/////////////////////////////////////////////////////////////////////////////</span></span><br><span class="line"><span class="comment">/////////2.4 多个参数一起打包处理</span></span><br><span class="line"><span class="comment">/////////////////////////////////////////////////////////////////////////////</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//声明一个新的可变参数列表</span></span><br><span class="line">va_list args;</span><br><span class="line"></span><br><span class="line"><span class="comment">//指向传入的 `可变参数列表 object` 的第一个参数的地址</span></span><br><span class="line">va_start(args, object);</span><br><span class="line"></span><br><span class="line"><span class="comment">//可变参数起始下标为2（除开系统的两个参数）</span></span><br><span class="line">[invocation setArgument:&amp;object atIndex:<span class="number">2</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">//保存后续的每一个方法参数值</span></span><br><span class="line"><span class="keyword">id</span> arg = <span class="literal">nil</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//后续方法参数值下标为3开始</span></span><br><span class="line"><span class="keyword">int</span> index = <span class="number">3</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//遍历取出args参数列表中的每一个参数</span></span><br><span class="line"><span class="keyword">while</span> ((arg = va_arg(args, <span class="keyword">id</span>))) &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//从下标3开始依次往下设置</span></span><br><span class="line">[invocation setArgument:&amp;arg atIndex:index];</span><br><span class="line"></span><br><span class="line">index++;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//清空va_list可变参数列表</span></span><br><span class="line">va_end(args);</span><br><span class="line"></span><br><span class="line"><span class="comment">/////////////////////////////////////////////////////////////////////////////</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//2.5 触发消息</span></span><br><span class="line">[invocation invoke];</span><br><span class="line"></span><br><span class="line"><span class="comment">//2.6 目标方法执行后的返回值获取</span></span><br><span class="line"><span class="keyword">if</span> (signature.methodReturnLength) &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//从NSInvocation获取返回值</span></span><br><span class="line"><span class="keyword">id</span> anObject;</span><br><span class="line">[invocation getReturnValue:&amp;anObject];</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> anObject;</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>NSInvocation完成<code>多参数设置</code>、<code>返回值获取</code></li>
+<li><code>可变参数</code> 设置为 NSInvocation参数的下标值 = <code>2</code></li>
+<li>具体的<code>每一个方法参数</code> 设置为 NSInvocation参数的下标值 = <code>3++</code></li>
+</ul>
+<hr>
+<h3 id="如下是从JSPatch中的callSelector-函数中，抽出来的一个NSInvocation使用模板"><a href="#如下是从JSPatch中的callSelector-函数中，抽出来的一个NSInvocation使用模板" class="headerlink" title="如下是从JSPatch中的callSelector()函数中，抽出来的一个NSInvocation使用模板"></a>如下是从JSPatch中的callSelector()函数中，抽出来的一个NSInvocation使用模板</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//1. 获取要执行方法的签名</span></span><br><span class="line"><span class="built_in">NSMethodSignature</span>  *signature = [类 instanceMethodSignatureForSelector:方法SEL];</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 未找到方法实现</span></span><br><span class="line"><span class="keyword">if</span> (!signature) &#123;</span><br><span class="line"><span class="comment">//...处理...</span></span><br><span class="line"><span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 创建NSInvocation</span></span><br><span class="line"><span class="built_in">NSInvocation</span> *invocation = [<span class="built_in">NSInvocation</span> invocationWithMethodSignature:signature];</span><br><span class="line"></span><br><span class="line"><span class="comment">//3. 设置消息接收者</span></span><br><span class="line">invocation.target = ....;</span><br><span class="line"></span><br><span class="line"><span class="comment">//4. 消息中执行方法的SEL</span></span><br><span class="line">invocation.selector = 方法sel;</span><br><span class="line"></span><br><span class="line"><span class="comment">//5. 方法执行参数设置，需要考虑: 外界传递参数个数 != 方法的参数个数</span></span><br><span class="line"><span class="comment">//方法参数的个数，除去 self与_cmd两个系统参数</span></span><br><span class="line"><span class="built_in">NSUInteger</span> argsCount = signature.numberOfArguments - <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//外界传递的参数个数</span></span><br><span class="line"><span class="built_in">NSUInteger</span> arrCount = objects.count;</span><br><span class="line"></span><br><span class="line"><span class="comment">//取前面两个参数个数的最小值</span></span><br><span class="line"><span class="built_in">NSUInteger</span> count = MIN(argsCount, arrCount);</span><br><span class="line"></span><br><span class="line"><span class="comment">//对每个参数进行NSNull处理，并设置给NSInvocation</span></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; count; i++) &#123;</span><br><span class="line"><span class="keyword">id</span> obj = objects[i];</span><br><span class="line"><span class="keyword">if</span> ([obj isKindOfClass:[<span class="built_in">NSNull</span> <span class="keyword">class</span>]]) &#123;</span><br><span class="line">obj = <span class="literal">nil</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">[invocation setArgument:&amp;obj atIndex:i + <span class="number">2</span>];<span class="comment">//除开self、_cmd</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//6. 返回值的处理</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *returnType = [methodSignature methodReturnType];</span><br><span class="line"><span class="keyword">id</span> returnValue;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (strncmp(returnType, <span class="string">"v"</span>, <span class="number">1</span>) != <span class="number">0</span>) &#123;</span><br><span class="line"><span class="comment">//方法返回值不是void</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (strncmp(returnType, <span class="string">"@"</span>, <span class="number">1</span>) == <span class="number">0</span>) &#123;</span><br><span class="line"><span class="comment">//返回值类型是 Foundation类型（NSObject*）</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//从NSInvocation获取方法执行后的返回值</span></span><br><span class="line"><span class="keyword">void</span> *result;</span><br><span class="line">[invocation getReturnValue:&amp;result];</span><br><span class="line"></span><br><span class="line"><span class="comment">//返回值方式一、将Core Foundation的对象转换为Objective-C对象，同时将内存管理权交给ARC</span></span><br><span class="line">returnValue = (__bridge_transfer <span class="keyword">id</span>)result;</span><br><span class="line"></span><br><span class="line"><span class="comment">//返回值方式二、只是类型转换成Objective-C对象</span></span><br><span class="line">returnValue = (__bridge <span class="keyword">id</span>)result;</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> returnValue;</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"><span class="comment">//基本数据类型</span></span><br><span class="line"><span class="comment">//SEL</span></span><br><span class="line"><span class="comment">//struct</span></span><br><span class="line"><span class="comment">//char* 与 ^其他类型</span></span><br><span class="line"><span class="comment">//Class</span></span><br><span class="line"></span><br><span class="line">分别按照如上类型，调用对应的方法，将从invocation获取的返回值，转换成对应的类型的值</span><br><span class="line">returnValue = .....;</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> returnValue;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//返回值类型void，返回nil</span></span><br><span class="line"><span class="keyword">return</span> <span class="literal">nil</span>;</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="模拟-cat-cryWithWord-”传入的值”"><a href="#模拟-cat-cryWithWord-”传入的值”" class="headerlink" title="模拟[cat cryWithWord:@”传入的值”];"></a>模拟[cat cryWithWord:@”传入的值”];</h3><p>Cat类</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Cat</span> : <span class="title">NSObject</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSString</span> *)cryWithWord:(<span class="built_in">NSString</span> *)word;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">"Cat.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">Cat</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSString</span> *)cryWithWord:(<span class="built_in">NSString</span> *)word &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"%s word =%@"</span>, __FUNCTION__, word);</span><br><span class="line"><span class="keyword">return</span> [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"modify by cryWithWord: %@"</span>, word];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>ViewController测试类</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;objc/runtime.h&gt;</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;objc/message.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ViewController</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)touchesBegan:(<span class="built_in">NSSet</span>&lt;<span class="built_in">UITouch</span> *&gt; *)touches withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line"><span class="comment">//    [self testSendMsg1];</span></span><br><span class="line"><span class="comment">//    [self testSendMsg2];</span></span><br><span class="line">[<span class="keyword">self</span> testInvocation];</span><br><span class="line"><span class="comment">//    [self testInvocation2];</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)testInvocation &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  方法实现的签名 &gt;&gt;&gt; 告诉系统实现函数的定义</span></span><br><span class="line"><span class="comment">*  - 返回值类型 &gt;&gt;&gt; id &gt;&gt;&gt; @</span></span><br><span class="line"><span class="comment">*  - 第一个形参是消息接收者 &gt;&gt;&gt; self &gt;&gt;&gt; id &gt;&gt;&gt; @</span></span><br><span class="line"><span class="comment">*  - 第二个形参是SEL &gt;&gt;&gt; _cmd &gt;&gt;&gt; :</span></span><br><span class="line"><span class="comment">*  - 后面的是形参其他用法参数</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="built_in">NSMethodSignature</span> *mSign = [<span class="built_in">NSMethodSignature</span> signatureWithObjCTypes:<span class="string">"@@:@"</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">//2.</span></span><br><span class="line"><span class="built_in">NSInvocation</span> *invocation = [<span class="built_in">NSInvocation</span> invocationWithMethodSignature:mSign];</span><br><span class="line"></span><br><span class="line"><span class="comment">//3.</span></span><br><span class="line">Class cls = objc_getClass(<span class="string">"Cat"</span>);</span><br><span class="line"><span class="keyword">id</span> cat = [[cls alloc] init];</span><br><span class="line">[invocation setTarget:cat];</span><br><span class="line"></span><br><span class="line"><span class="comment">//4.</span></span><br><span class="line">[invocation setSelector:<span class="keyword">@selector</span>(cryWithWord:)];</span><br><span class="line"></span><br><span class="line"><span class="comment">//5.</span></span><br><span class="line"><span class="built_in">NSString</span> *arg = <span class="string">@"传入的值"</span>;</span><br><span class="line">[invocation setArgument:&amp;arg atIndex:<span class="number">2</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">//6.</span></span><br><span class="line">[invocation invoke];</span><br><span class="line"></span><br><span class="line"><span class="comment">//7.</span></span><br><span class="line"><span class="keyword">void</span> *result;</span><br><span class="line">[invocation getReturnValue:&amp;result];</span><br><span class="line"></span><br><span class="line"><span class="comment">//8.</span></span><br><span class="line"><span class="built_in">NSString</span> *ret = (__bridge <span class="built_in">NSString</span> *)(result);</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"%s 接收到的返回值 &gt;&gt;&gt; %@"</span>, __FUNCTION__, ret);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>运行后输出如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-[Cat cryWithWord:] word =传入的值</span><br><span class="line">-[ViewController testInvocation] 接收到的返回值 &gt;&gt;&gt; modify by cryWithWord: 传入的值</span><br></pre></td></tr></table></figure>
+<hr>
+<p>### </p>
+<p>Cat类</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Cat</span> : <span class="title">NSObject</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSString</span> *)cryWithWordA:(<span class="built_in">NSString</span> *)wordA wordB:(<span class="built_in">NSString</span> *)wordB;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">"Cat.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">Cat</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSString</span> *)cryWithWordA:(<span class="built_in">NSString</span> *)wordA wordB:(<span class="built_in">NSString</span> *)wordB &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"%s 接收到的形参wordA = %@, wordB = %@"</span>, __FUNCTION__, wordA, wordB);</span><br><span class="line"><span class="keyword">return</span> [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"The word = %@_%@"</span>, wordA, wordB];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>ViewController测试类</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;objc/runtime.h&gt;</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;objc/message.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ViewController</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)touchesBegan:(<span class="built_in">NSSet</span>&lt;<span class="built_in">UITouch</span> *&gt; *)touches withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line"><span class="comment">//    [self testSendMsg1];</span></span><br><span class="line"><span class="comment">//    [self testSendMsg2];</span></span><br><span class="line"><span class="comment">//    [self testInvocation];</span></span><br><span class="line">[<span class="keyword">self</span> testInvocation2];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)testInvocation2 &#123;</span><br><span class="line"></span><br><span class="line"><span class="built_in">NSMethodSignature</span> *mSign = [<span class="built_in">NSMethodSignature</span> signatureWithObjCTypes:<span class="string">"@@:@@"</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">//2.</span></span><br><span class="line"><span class="built_in">NSInvocation</span> *invocation = [<span class="built_in">NSInvocation</span> invocationWithMethodSignature:mSign];</span><br><span class="line"></span><br><span class="line"><span class="comment">//3.</span></span><br><span class="line">Class cls = objc_getClass(<span class="string">"Cat"</span>);</span><br><span class="line"><span class="keyword">id</span> cat = [[cls alloc] init];</span><br><span class="line">[invocation setTarget:cat];</span><br><span class="line"></span><br><span class="line"><span class="comment">//4.</span></span><br><span class="line">[invocation setSelector:<span class="keyword">@selector</span>(cryWithWordA:wordB:)];</span><br><span class="line"></span><br><span class="line"><span class="comment">//5.</span></span><br><span class="line"><span class="built_in">NSString</span> *arg1 = <span class="string">@"Hello"</span>;</span><br><span class="line"><span class="built_in">NSString</span> *arg2 = <span class="string">@"World"</span>;</span><br><span class="line">[invocation setArgument:&amp;arg1 atIndex:<span class="number">2</span>];</span><br><span class="line">[invocation setArgument:&amp;arg2 atIndex:<span class="number">3</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">//6.</span></span><br><span class="line">[invocation invoke];</span><br><span class="line"></span><br><span class="line"><span class="comment">//7.</span></span><br><span class="line"><span class="keyword">void</span> *result;</span><br><span class="line">[invocation getReturnValue:&amp;result];</span><br><span class="line"></span><br><span class="line"><span class="comment">//8.</span></span><br><span class="line"><span class="built_in">NSString</span> *ret = (__bridge <span class="built_in">NSString</span> *)(result);</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"%s 接收到的返回值 &gt;&gt;&gt; %@"</span>, __FUNCTION__, ret);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-[Cat cryWithWordA:wordB:] 接收到的形参wordA = Hello, wordB = World</span><br><span class="line">-[ViewController testInvocation2] 接收到的返回值 &gt;&gt;&gt; The word = Hello_World</span><br></pre></td></tr></table></figure>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2016/09/25/Runtime-Part11-NSInvocation/" data-title="Runtime Part11 NSInvocation | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2016/09/25/Runtime-Part12-Intercept/" title="Runtime Part12 Intercept">
+  <strong>上一篇：</strong><br>
+  <span>
+  Runtime Part12 Intercept</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/09/24/Runtime-Part10-Forward/" title="Runtime Part10 Forward">
+ <strong>下一篇：</strong><br> 
+ <span>Runtime Part10 Forward
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2016/09/25/Runtime-Part11-NSInvocation/" data-title="Runtime Part11 NSInvocation" data-url="http://yoursite.com/2016/09/25/Runtime-Part11-NSInvocation/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#NSInvocation学习记录"><span class="toc-number">1.</span> <span class="toc-text">NSInvocation学习记录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#通过如上的代码大致可以得出NSInvocation做什么的？"><span class="toc-number">2.</span> <span class="toc-text">通过如上的代码大致可以得出NSInvocation做什么的？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用performSelector-withObject-与NSInvocation发送消息的区别？"><span class="toc-number">3.</span> <span class="toc-text">使用performSelector:withObject:与NSInvocation发送消息的区别？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#如下是调用多参数的简单模板"><span class="toc-number">4.</span> <span class="toc-text">如下是调用多参数的简单模板</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用NSInvocation来扩展-NSObject-performSelector-withObject-withObject-存在的限制"><span class="toc-number">5.</span> <span class="toc-text">使用NSInvocation来扩展-[NSObject performSelector:withObject:withObject:]存在的限制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#如下是从JSPatch中的callSelector-函数中，抽出来的一个NSInvocation使用模板"><span class="toc-number">6.</span> <span class="toc-text">如下是从JSPatch中的callSelector()函数中，抽出来的一个NSInvocation使用模板</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#模拟-cat-cryWithWord-”传入的值”"><span class="toc-number">7.</span> <span class="toc-text">模拟[cat cryWithWord:@”传入的值”];</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

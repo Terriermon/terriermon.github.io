@@ -1,0 +1,498 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>设计模式-命令模式 | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="命令模式、将如下两个部分的工作分割开来  一、谁发出的命令 二、谁来执行命令  也就是说将二者分开:  命令发出者 接收到一个命令后的处理者  命令模式的大概过程:  首先对一条命令进行封装，包含: 指定命令的接收者 指定命令要执行的处理  命令发送方，发送一个命令  命令接收方接收到一个命令，直接执行命令，而接收方  不必关心 命令是谁发送的 只需要直接 让命令Invoke执行即可，做自己应该的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计模式-命令模式">
+<meta property="og:url" content="http://yoursite.com/2016/01/13/设计模式-命令模式/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="命令模式、将如下两个部分的工作分割开来  一、谁发出的命令 二、谁来执行命令  也就是说将二者分开:  命令发出者 接收到一个命令后的处理者  命令模式的大概过程:  首先对一条命令进行封装，包含: 指定命令的接收者 指定命令要执行的处理  命令发送方，发送一个命令  命令接收方接收到一个命令，直接执行命令，而接收方  不必关心 命令是谁发送的 只需要直接 让命令Invoke执行即可，做自己应该的">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-08T12:17:57.361Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="设计模式-命令模式">
+<meta name="twitter:description" content="命令模式、将如下两个部分的工作分割开来  一、谁发出的命令 二、谁来执行命令  也就是说将二者分开:  命令发出者 接收到一个命令后的处理者  命令模式的大概过程:  首先对一条命令进行封装，包含: 指定命令的接收者 指定命令要执行的处理  命令发送方，发送一个命令  命令接收方接收到一个命令，直接执行命令，而接收方  不必关心 命令是谁发送的 只需要直接 让命令Invoke执行即可，做自己应该的">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/01/13/设计模式-命令模式/" title="设计模式-命令模式" itemprop="url">设计模式-命令模式</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2016-01-13T05:12:26.000Z" itemprop="datePublished"> Published 2016-01-13</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#命令模式、"><span class="toc-number">1.</span> <span class="toc-text">命令模式、</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#命令模式需要的角色"><span class="toc-number">2.</span> <span class="toc-text">命令模式需要的角色</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#命令接收者的抽象"><span class="toc-number">3.</span> <span class="toc-text">命令接收者的抽象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#命令的抽象"><span class="toc-number">4.</span> <span class="toc-text">命令的抽象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#命令与接收者的管理者抽象"><span class="toc-number">5.</span> <span class="toc-text">命令与接收者的管理者抽象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#抽象命令默认实现"><span class="toc-number">6.</span> <span class="toc-text">抽象命令默认实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#具体命令1"><span class="toc-number">7.</span> <span class="toc-text">具体命令1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#具体的命令接收者1"><span class="toc-number">8.</span> <span class="toc-text">具体的命令接收者1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#具体的绑定器，绑定命令与接收者"><span class="toc-number">9.</span> <span class="toc-text">具体的绑定器，绑定命令与接收者</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#demo示例"><span class="toc-number">10.</span> <span class="toc-text">demo示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#小结发送命令与接收命令要做的事情"><span class="toc-number">11.</span> <span class="toc-text">小结发送命令与接收命令要做的事情:</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="命令模式、"><a href="#命令模式、" class="headerlink" title="命令模式、"></a>命令模式、</h3><p>将如下两个部分的工作分割开来</p>
+<ul>
+<li>一、谁发出的命令</li>
+<li>二、谁来执行命令</li>
+</ul>
+<p>也就是说将二者分开:</p>
+<ul>
+<li>命令发出者</li>
+<li>接收到一个命令后的处理者</li>
+</ul>
+<p>命令模式的大概过程:</p>
+<ul>
+<li>首先对一条命令进行封装，包含:</li>
+<li>指定命令的接收者</li>
+<li><p>指定命令要执行的处理</p>
+</li>
+<li><p>命令发送方，发送一个命令</p>
+</li>
+<li><p>命令接收方接收到一个命令，直接执行命令，而接收方</p>
+</li>
+<li>不必关心 命令是谁发送的</li>
+<li>只需要直接 让命令Invoke执行即可，做自己应该的处理即可</li>
+</ul>
+<hr>
+<h3 id="命令模式需要的角色"><a href="#命令模式需要的角色" class="headerlink" title="命令模式需要的角色"></a>命令模式需要的角色</h3><ul>
+<li>角色一、命令</li>
+<li>角色二、命令接收者</li>
+<li>角色三、命令与接收者的对于关系的管理者</li>
+</ul>
+<hr>
+<h3 id="命令接收者的抽象"><a href="#命令接收者的抽象" class="headerlink" title="命令接收者的抽象"></a><code>命令接收者</code>的抽象</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Receiver.h</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by xiongzenghui on 14/2/1.</span></span><br><span class="line"><span class="comment">//  Copyright © 2014年 xiongzenghui. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  命令接收者</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">Receiver</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 接收到命令后的处理</span></span><br><span class="line">- (<span class="keyword">void</span>)handle;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="命令的抽象"><a href="#命令的抽象" class="headerlink" title="命令的抽象"></a><code>命令</code>的抽象</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Command.h</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by xiongzenghui on 14/2/1.</span></span><br><span class="line"><span class="comment">//  Copyright © 2014年 xiongzenghui. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//依赖一个接收者</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Receiver.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  命令</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">Command</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  命令需要绑定一个接受者对象作为处理者</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">- (<span class="keyword">void</span>)bindReceiver:(<span class="keyword">id</span>&lt;Receiver&gt;)receiver;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  命令执行</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">- (<span class="keyword">void</span>)execute;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="命令与接收者的管理者抽象"><a href="#命令与接收者的管理者抽象" class="headerlink" title="命令与接收者的管理者抽象"></a><code>命令与接收者的管理者</code>抽象</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Invoker.h</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by xiongzenghui on 14/2/1.</span></span><br><span class="line"><span class="comment">//  Copyright © 2014年 xiongzenghui. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//包含一个命令</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Command.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//包含一个接收者</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Receiver.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">Invoker</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  绑定 命令与接收者 的关系</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">- (<span class="keyword">void</span>)bindCommand:(<span class="keyword">id</span>&lt;Command&gt;)cmd</span><br><span class="line">Receiver:(<span class="keyword">id</span>&lt;Receiver&gt;)receiver;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  执行命令</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">- (<span class="keyword">void</span>)invoke;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>下面是抽象的实现部分</p>
+<h3 id="抽象命令默认实现"><a href="#抽象命令默认实现" class="headerlink" title="抽象命令默认实现"></a>抽象命令默认实现</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  AbstractCommand.h</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by xiongzenghui on 14/2/1.</span></span><br><span class="line"><span class="comment">//  Copyright © 2014年 xiongzenghui. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//依赖一个接收者</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Receiver.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//实现命令接口</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Command.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">AbstractCommand</span> : <span class="title">NSObject</span> &lt;<span class="title">Command</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//持有一个接收者</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>, <span class="keyword">readonly</span>) <span class="keyword">id</span>&lt;Receiver&gt; receiver;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  AbstractCommand.m</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by xiongzenghui on 14/2/1.</span></span><br><span class="line"><span class="comment">//  Copyright © 2014年 xiongzenghui. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"AbstractCommand.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">AbstractCommand</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//绑定接收者</span></span><br><span class="line">- (<span class="keyword">void</span>)bindReceiver:(<span class="keyword">id</span>&lt;Receiver&gt;)receiver &#123;</span><br><span class="line"><span class="comment">//持有接收者对象</span></span><br><span class="line">_receiver = receiver;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//命令被执行</span></span><br><span class="line">- (<span class="keyword">void</span>)execute &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//通知接收者对象处理</span></span><br><span class="line">[_receiver handle];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="具体命令1"><a href="#具体命令1" class="headerlink" title="具体命令1"></a>具体命令1</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Command1.h</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by xiongzenghui on 14/2/1.</span></span><br><span class="line"><span class="comment">//  Copyright © 2014年 xiongzenghui. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"AbstractCommand.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Command1</span> : <span class="title">AbstractCommand</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Command1.m</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by xiongzenghui on 14/2/1.</span></span><br><span class="line"><span class="comment">//  Copyright © 2014年 xiongzenghui. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Command1.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">Command1</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="具体的命令接收者1"><a href="#具体的命令接收者1" class="headerlink" title="具体的命令接收者1"></a>具体的命令接收者1</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Receiver1.h</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by xiongzenghui on 14/2/1.</span></span><br><span class="line"><span class="comment">//  Copyright © 2014年 xiongzenghui. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Receiver.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Receiver1</span> : <span class="title">NSObject</span> &lt;<span class="title">Receiver</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Receiver1.m</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by xiongzenghui on 14/2/1.</span></span><br><span class="line"><span class="comment">//  Copyright © 2014年 xiongzenghui. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Receiver1.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">Receiver1</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)handle &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"Receiver1 正在处理..."</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="具体的绑定器，绑定命令与接收者"><a href="#具体的绑定器，绑定命令与接收者" class="headerlink" title="具体的绑定器，绑定命令与接收者"></a>具体的绑定器，绑定命令与接收者</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  ComcreatInvoker.h</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by xiongzenghui on 14/2/1.</span></span><br><span class="line"><span class="comment">//  Copyright © 2014年 xiongzenghui. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Invoker.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">ComcreatInvoker</span> : <span class="title">NSObject</span> &lt;<span class="title">Invoker</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  持有一个命令，再触发时刻执行命令</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>, <span class="keyword">readonly</span>) <span class="keyword">id</span>&lt;Command&gt; command;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  ComcreatInvoker.m</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by xiongzenghui on 14/2/1.</span></span><br><span class="line"><span class="comment">//  Copyright © 2014年 xiongzenghui. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"ComcreatInvoker.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ComcreatInvoker</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)bindCommand:(<span class="keyword">id</span>&lt;Command&gt;)cmd</span><br><span class="line">Receiver:(<span class="keyword">id</span>&lt;Receiver&gt;)receiver</span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">//1. 但其概念Invoker对象，持有传入的命令，再后续使用</span></span><br><span class="line">_command = cmd;</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 让命令 持有一个 接收者</span></span><br><span class="line">[_command bindReceiver:receiver];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)invoke &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//执行持有的命令</span></span><br><span class="line">[_command execute];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="demo示例"><a href="#demo示例" class="headerlink" title="demo示例"></a>demo示例</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  CommandTest.m</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by xiongzenghui on 14/2/1.</span></span><br><span class="line"><span class="comment">//  Copyright © 2014年 xiongzenghui. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"CommandTest.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//具体命令</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Command1.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//具体接收者</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Receiver1.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//具体绑定器</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"ComcreatInvoker.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">CommandTest</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)test &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//1. 实例化一个具体命令</span></span><br><span class="line"><span class="keyword">id</span>&lt;Command&gt; command = [Command1 new];</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 实例化一个具体接收者（可以使用配置文件动态切换）</span></span><br><span class="line"><span class="keyword">id</span>&lt;Receiver&gt; receiver = [Receiver1 new];</span><br><span class="line"></span><br><span class="line"><span class="comment">//3. 包装器</span></span><br><span class="line"><span class="keyword">id</span>&lt;Invoker&gt; invoker = [ComcreatInvoker new];</span><br><span class="line"></span><br><span class="line"><span class="comment">//4. 包装器绑定 命令与接收者</span></span><br><span class="line">[invoker bindCommand:command</span><br><span class="line">Receiver:receiver];</span><br><span class="line"></span><br><span class="line"><span class="comment">//5. 将这个Invoker对象发送给其他对象</span></span><br><span class="line"><span class="comment">//...</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//6. 接收到这个Invoker对象的对象</span></span><br><span class="line">[invoker invoke];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="小结发送命令与接收命令要做的事情"><a href="#小结发送命令与接收命令要做的事情" class="headerlink" title="小结发送命令与接收命令要做的事情:"></a>小结发送命令与接收命令要做的事情:</h3><ul>
+<li>发送方命令的代码处要做的事情</li>
+<li>构造 Receiver对象</li>
+<li>构造 Command对象</li>
+<li>构造 Invoker对象</li>
+<li>上面三个对象的关系:</li>
+<li>Invoker对象 持有 Command对象</li>
+<li><p>Command对象 持有 Receiver对象</p>
+</li>
+<li><p>命令接收方要做的事情</p>
+</li>
+<li>只需要关系<code>-[Receiver handle]</code>的具体实现逻辑</li>
+</ul>
+<p>就是说<code>命令发送</code>方<code>与命令接收处理者</code>之间通过一个相同的<code>抽象接口</code>进行关联.</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2016/01/13/设计模式-命令模式/" data-title="设计模式-命令模式 | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2016/01/14/设计模式-中介者模式/" title="设计模式-中介者模式">
+  <strong>上一篇：</strong><br>
+  <span>
+  设计模式-中介者模式</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/01/12/设计模式-责任链模式/" title="设计模式-责任链模式">
+ <strong>下一篇：</strong><br> 
+ <span>设计模式-责任链模式
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2016/01/13/设计模式-命令模式/" data-title="设计模式-命令模式" data-url="http://yoursite.com/2016/01/13/设计模式-命令模式/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#命令模式、"><span class="toc-number">1.</span> <span class="toc-text">命令模式、</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#命令模式需要的角色"><span class="toc-number">2.</span> <span class="toc-text">命令模式需要的角色</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#命令接收者的抽象"><span class="toc-number">3.</span> <span class="toc-text">命令接收者的抽象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#命令的抽象"><span class="toc-number">4.</span> <span class="toc-text">命令的抽象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#命令与接收者的管理者抽象"><span class="toc-number">5.</span> <span class="toc-text">命令与接收者的管理者抽象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#抽象命令默认实现"><span class="toc-number">6.</span> <span class="toc-text">抽象命令默认实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#具体命令1"><span class="toc-number">7.</span> <span class="toc-text">具体命令1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#具体的命令接收者1"><span class="toc-number">8.</span> <span class="toc-text">具体的命令接收者1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#具体的绑定器，绑定命令与接收者"><span class="toc-number">9.</span> <span class="toc-text">具体的绑定器，绑定命令与接收者</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#demo示例"><span class="toc-number">10.</span> <span class="toc-text">demo示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#小结发送命令与接收命令要做的事情"><span class="toc-number">11.</span> <span class="toc-text">小结发送命令与接收命令要做的事情:</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

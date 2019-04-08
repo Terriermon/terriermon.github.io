@@ -1,0 +1,459 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>Ping Host Select Best NetworkConnection | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="获取当前手机的dns1234567891011121314#import &amp;lt;netinet/in.h&amp;gt;#import &amp;lt;netdb.h&amp;gt;#import &amp;lt;ifaddrs.h&amp;gt;#import &amp;lt;arpa/inet.h&amp;gt;#import &amp;lt;net/ethernet.h&amp;gt;#import &amp;lt;net/if_dl.h&amp;gt;#include &amp;l">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ping Host Select Best NetworkConnection">
+<meta property="og:url" content="http://yoursite.com/2017/01/05/Ping-Host-Select-Best-NetworkConnection/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="获取当前手机的dns1234567891011121314#import &amp;lt;netinet/in.h&amp;gt;#import &amp;lt;netdb.h&amp;gt;#import &amp;lt;ifaddrs.h&amp;gt;#import &amp;lt;arpa/inet.h&amp;gt;#import &amp;lt;net/ethernet.h&amp;gt;#import &amp;lt;net/if_dl.h&amp;gt;#include &amp;l">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-08T13:09:59.085Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Ping Host Select Best NetworkConnection">
+<meta name="twitter:description" content="获取当前手机的dns1234567891011121314#import &amp;lt;netinet/in.h&amp;gt;#import &amp;lt;netdb.h&amp;gt;#import &amp;lt;ifaddrs.h&amp;gt;#import &amp;lt;arpa/inet.h&amp;gt;#import &amp;lt;net/ethernet.h&amp;gt;#import &amp;lt;net/if_dl.h&amp;gt;#include &amp;l">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/01/05/Ping-Host-Select-Best-NetworkConnection/" title="Ping Host Select Best NetworkConnection" itemprop="url">Ping Host Select Best NetworkConnection</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2017-01-05T03:11:46.000Z" itemprop="datePublished"> Published 2017-01-05</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#获取当前手机的dns"><span class="toc-number">1.</span> <span class="toc-text">获取当前手机的dns</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#通过ping某个host，查看其相应速度，决定选择最快的host进行网络连接"><span class="toc-number">2.</span> <span class="toc-text">通过ping某个host，查看其相应速度，决定选择最快的host进行网络连接</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="获取当前手机的dns"><a href="#获取当前手机的dns" class="headerlink" title="获取当前手机的dns"></a>获取当前手机的dns</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;netinet/in.h&gt;</span><br><span class="line">#import &lt;netdb.h&gt;</span><br><span class="line">#import &lt;ifaddrs.h&gt;</span><br><span class="line">#import &lt;arpa/inet.h&gt;</span><br><span class="line">#import &lt;net/ethernet.h&gt;</span><br><span class="line">#import &lt;net/if_dl.h&gt;</span><br><span class="line">#include &lt;resolv.h&gt;</span><br><span class="line"></span><br><span class="line">#include &lt;dns.h&gt;</span><br><span class="line">#include&lt;stdio.h&gt;</span><br><span class="line">#include&lt;string.h&gt;</span><br><span class="line">#include&lt;stdlib.h&gt;</span><br><span class="line">#include&lt;sys/socket.h&gt;</span><br><span class="line">#include&lt;unistd.h&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">+ (NSString *)getDNSInfos</span><br><span class="line">&#123;</span><br><span class="line">res_state res = (res_state)malloc(sizeof(struct __res_state));</span><br><span class="line">__uint32_t dwDNSIP = 0;</span><br><span class="line">int result = res_ninit(res);</span><br><span class="line">if (result == 0) &#123;</span><br><span class="line">dwDNSIP = res-&gt;nsaddr_list[0].sin_addr.s_addr;</span><br><span class="line">&#125;</span><br><span class="line">NSString *dns = [NSString stringWithUTF8String:inet_ntoa(res-&gt;nsaddr_list[0].sin_addr)];</span><br><span class="line">free(res);</span><br><span class="line">return dns;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果报如下错:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Undefined symbols for architecture arm64: &quot;_res_9_ns_initparse&quot;, referenced from: ....</span><br></pre></td></tr></table></figure>
+<p>在 build-settings中的<code>other linker flags</code>添加<code>-lresolv</code></p>
+<hr>
+<h3 id="通过ping某个host，查看其相应速度，决定选择最快的host进行网络连接"><a href="#通过ping某个host，查看其相应速度，决定选择最快的host进行网络连接" class="headerlink" title="通过ping某个host，查看其相应速度，决定选择最快的host进行网络连接"></a>通过ping某个host，查看其相应速度，决定选择最快的host进行网络连接</h3><hr>
+<blockquote>
+<p>通过ping一个hostName，获取其解析域名服务器dns.</p>
+</blockquote>
+<p>/**<br>方法: 获取host的当前dns</p>
+<p>参数:<br>hostName,必选<br>shortName,可选<br>allDNS,必选;yes,所有dns;no,当前dns<br>pingDNSBlock,必选<br>*/</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">- (void)pingWithHostName:(NSString *)hostName</span><br><span class="line">shortName:(NSString *)shortName</span><br><span class="line">allDNS:(BOOL)allDNS</span><br><span class="line">pingDNSBlock:(VSPingDNSBlock)pingDNSBlock</span><br><span class="line">&#123;</span><br><span class="line">//1. 没有网络 or hostName没有，停止ping</span><br><span class="line">if ([VSDevice deviceNetworkType] == VSDeviceNetworkTypeNone || [hostName length]&lt;=0) &#123;</span><br><span class="line">if (pingDNSBlock) &#123;</span><br><span class="line">pingDNSBlock(nil);</span><br><span class="line">&#125;</span><br><span class="line">return;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//2. 保存数据</span><br><span class="line">self.desript = shortName;</span><br><span class="line">self.allDNS = allDNS;</span><br><span class="line">self.pingDNSBlock = pingDNSBlock;</span><br><span class="line"></span><br><span class="line">//3. 开始ping hostName</span><br><span class="line">[self pingWithHostName:hostName];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">- (void)pingWithHostName:(NSString *)hostName&#123;</span><br><span class="line"></span><br><span class="line">if (hostName &amp;&amp; ![hostName isEqualToString:@&quot;&quot;])</span><br><span class="line">&#123;</span><br><span class="line">//1. 记录当前开始ping的起始时间</span><br><span class="line">self.requestTime = [[NSDate date] timeIntervalSince1970];</span><br><span class="line"></span><br><span class="line">//2. 进行ping</span><br><span class="line">[self pingHost:hostName];</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">- (void)pingHost:(NSString *)hostName &#123;</span><br><span class="line"></span><br><span class="line">//将ping的操作放到全局并发队列，异步执行，可能很耗时</span><br><span class="line">dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^&#123;</span><br><span class="line"></span><br><span class="line">//保存得到的所有dns</span><br><span class="line">NSArray *dns = nil;</span><br><span class="line"></span><br><span class="line">//是否需要得到所有的dns</span><br><span class="line">if (!self.allDNS) &#123;</span><br><span class="line"></span><br><span class="line">//获取当前dns</span><br><span class="line">dns = [self getDNS:hostName];</span><br><span class="line"></span><br><span class="line">&#125; else&#123;</span><br><span class="line"></span><br><span class="line">//获取所有的dns</span><br><span class="line">dns = [self getAllDNS:hostName];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//当前ping操作响应的时间</span><br><span class="line">NSTimeInterval responeTime =[[NSDate date] timeIntervalSince1970];</span><br><span class="line"></span><br><span class="line">//响应时间 - 起始时间 = ping操作执行时间</span><br><span class="line">NSTimeInterval time = responeTime - self.requestTime;</span><br><span class="line"></span><br><span class="line">//组装hostName、dns、短域名、ping操作执行时间</span><br><span class="line">//回传给调用者</span><br><span class="line">VSPingInfo *pingInfo = [[VSPingInfo alloc] init];</span><br><span class="line">pingInfo.hostName = hostName;</span><br><span class="line">pingInfo.dns  = dns;</span><br><span class="line">pingInfo.shortName = self.desript;</span><br><span class="line">pingInfo.time = time;</span><br><span class="line">dispatch_async(dispatch_get_main_queue(), ^&#123;</span><br><span class="line">[self completePingDNSBlock:pingInfo];</span><br><span class="line">&#125;);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>获取所有的dns</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">- (NSArray *)getAllDNS:(NSString *)hostName</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">NSMutableArray *dns = nil;</span><br><span class="line">Boolean result = &apos;\0&apos;;</span><br><span class="line">CFHostRef hostRef;</span><br><span class="line">CFArrayRef addresses = NULL;</span><br><span class="line"></span><br><span class="line">@try &#123;</span><br><span class="line"></span><br><span class="line">hostRef = CFHostCreateWithName(kCFAllocatorDefault, (__bridge CFStringRef)hostName);</span><br><span class="line">if (hostRef) &#123;</span><br><span class="line">result = CFHostStartInfoResolution(hostRef, kCFHostAddresses, NULL); // pass an error instead of NULL here to find out why it failed</span><br><span class="line">if (result == TRUE) &#123;</span><br><span class="line">addresses = CFHostGetAddressing(hostRef, &amp;result);</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">if (result == TRUE) &#123;</span><br><span class="line">dns = [[NSMutableArray alloc] init];</span><br><span class="line">for(int i = 0; i &lt; CFArrayGetCount(addresses); i++)&#123;</span><br><span class="line">struct sockaddr_in* remoteAddr;</span><br><span class="line">CFDataRef saData = (CFDataRef)CFArrayGetValueAtIndex(addresses, i);</span><br><span class="line">remoteAddr = (struct sockaddr_in*)CFDataGetBytePtr(saData);</span><br><span class="line"></span><br><span class="line">if(remoteAddr != NULL)&#123;</span><br><span class="line">NSString *strDNS =[NSString stringWithCString:inet_ntoa(remoteAddr-&gt;sin_addr) encoding:NSASCIIStringEncoding];</span><br><span class="line">[dns addObject:strDNS];</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">@catch (NSException *exception) &#123;</span><br><span class="line"></span><br><span class="line">dns = nil;</span><br><span class="line">&#125;</span><br><span class="line">@finally &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">return dns;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>获取当前dns</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">- (NSArray *)getDNS:(NSString *)hostName</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">NSMutableArray *dns = nil;</span><br><span class="line"></span><br><span class="line">const char* szname = [hostName UTF8String];</span><br><span class="line">struct hostent* phot ;</span><br><span class="line">phot = gethostbyname(szname);</span><br><span class="line">struct in_addr ip_addr;</span><br><span class="line">if (phot == NULL)&#123;</span><br><span class="line">return nil;</span><br><span class="line">&#125;</span><br><span class="line">memcpy(&amp;ip_addr,phot-&gt;h_addr_list[0],4);</span><br><span class="line"></span><br><span class="line">char ip[20] = &#123;0&#125;;</span><br><span class="line">inet_ntop(AF_INET, &amp;ip_addr, ip, sizeof(ip));</span><br><span class="line"></span><br><span class="line">NSString *ipAddr = [NSString stringWithUTF8String:ip];</span><br><span class="line"></span><br><span class="line">if (ipAddr &amp;&amp; ![ipAddr isEqualToString:@&quot;&quot;]) &#123;</span><br><span class="line"></span><br><span class="line">dns = [[NSMutableArray alloc] init];</span><br><span class="line">[dns addObject:ipAddr];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">return dns;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2017/01/05/Ping-Host-Select-Best-NetworkConnection/" data-title="Ping Host Select Best NetworkConnection | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2017/01/05/APNS优化/" title="APNS优化">
+  <strong>上一篇：</strong><br>
+  <span>
+  APNS优化</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/12/20/weibo/" title="weibo">
+ <strong>下一篇：</strong><br> 
+ <span>weibo
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/01/05/Ping-Host-Select-Best-NetworkConnection/" data-title="Ping Host Select Best NetworkConnection" data-url="http://yoursite.com/2017/01/05/Ping-Host-Select-Best-NetworkConnection/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#获取当前手机的dns"><span class="toc-number">1.</span> <span class="toc-text">获取当前手机的dns</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#通过ping某个host，查看其相应速度，决定选择最快的host进行网络连接"><span class="toc-number">2.</span> <span class="toc-text">通过ping某个host，查看其相应速度，决定选择最快的host进行网络连接</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

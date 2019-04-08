@@ -1,0 +1,694 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>Runtime Part12 Intercept | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="方法拦截的途径方法一、执行一个SEL不存在Method的消息 然后不让方法继续执行，直接拦截掉 （resolve）转发给其他具有这个Method实例的Target （forward）方法二、使用runtime api，直接替换掉SEL指向的Method实例，让其找到一个假的函数实现 方法三、写一个子类去继承，然后重写父类方法 第一种方法都已经有文章记录了，这里就主要记录下第二种与第三种，实现方法拦">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Runtime Part12 Intercept">
+<meta property="og:url" content="http://yoursite.com/2016/09/25/Runtime-Part12-Intercept/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="方法拦截的途径方法一、执行一个SEL不存在Method的消息 然后不让方法继续执行，直接拦截掉 （resolve）转发给其他具有这个Method实例的Target （forward）方法二、使用runtime api，直接替换掉SEL指向的Method实例，让其找到一个假的函数实现 方法三、写一个子类去继承，然后重写父类方法 第一种方法都已经有文章记录了，这里就主要记录下第二种与第三种，实现方法拦">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-08T12:51:26.214Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Runtime Part12 Intercept">
+<meta name="twitter:description" content="方法拦截的途径方法一、执行一个SEL不存在Method的消息 然后不让方法继续执行，直接拦截掉 （resolve）转发给其他具有这个Method实例的Target （forward）方法二、使用runtime api，直接替换掉SEL指向的Method实例，让其找到一个假的函数实现 方法三、写一个子类去继承，然后重写父类方法 第一种方法都已经有文章记录了，这里就主要记录下第二种与第三种，实现方法拦">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/09/25/Runtime-Part12-Intercept/" title="Runtime Part12 Intercept" itemprop="url">Runtime Part12 Intercept</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2016-09-25T12:49:50.000Z" itemprop="datePublished"> Published 2016-09-25</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#方法拦截的途径"><span class="toc-number">1.</span> <span class="toc-text">方法拦截的途径</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第二种、主动使用Runtime-Api，在运行时替换掉两个方法的实现指针IMP（确切的是替换掉SEL指向的Method实例），达到拦截目标方法执行的目的"><span class="toc-number">2.</span> <span class="toc-text">第二种、主动使用Runtime Api，在运行时替换掉两个方法的实现指针IMP（确切的是替换掉SEL指向的Method实例），达到拦截目标方法执行的目的</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#拦截目标方法执行的思想-交换方法SEL对应的方法实现IMP指针"><span class="toc-number">2.1.</span> <span class="toc-text">拦截目标方法执行的思想: 交换方法SEL对应的方法实现IMP指针</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#目标方法执行前、执行后，动态插入的着一些代码，而这些动态插入的代码是可以单独封装的，也称为一个切面Aspect。"><span class="toc-number">2.2.</span> <span class="toc-text">目标方法执行前、执行后，动态插入的着一些代码，而这些动态插入的代码是可以单独封装的，也称为一个切面Aspect。</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#那么一个Aspect的作用"><span class="toc-number">2.3.</span> <span class="toc-text">那么一个Aspect的作用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#关于hook封装比较好的开源库，"><span class="toc-number">2.4.</span> <span class="toc-text">关于hook封装比较好的开源库，</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Runtime应用、写一个面向切面的代码结构示例"><span class="toc-number">2.5.</span> <span class="toc-text">Runtime应用、写一个面向切面的代码结构示例</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第三种、写一个子类继承自要拦截方法的所在父类，然后重写其要拦截的方法"><span class="toc-number">3.</span> <span class="toc-text">第三种、写一个子类继承自要拦截方法的所在父类，然后重写其要拦截的方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用Runtime时交换函数实现，防止数组操作不当崩溃的问题"><span class="toc-number">4.</span> <span class="toc-text">使用Runtime时交换函数实现，防止数组操作不当崩溃的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#通过运行时创建动态代理完成拦截"><span class="toc-number">5.</span> <span class="toc-text">通过运行时创建动态代理完成拦截</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="方法拦截的途径"><a href="#方法拦截的途径" class="headerlink" title="方法拦截的途径"></a>方法拦截的途径</h3><p>方法一、执行一个SEL不存在Method的消息</p>
+<p>然后不让方法继续执行，直接拦截掉 （resolve）<br>转发给其他具有这个Method实例的Target （forward）<br>方法二、使用runtime api，直接替换掉SEL指向的Method实例，让其找到一个假的函数实现</p>
+<p>方法三、写一个子类去继承，然后重写父类方法</p>
+<p>第一种方法都已经有文章记录了，这里就主要记录下第二种与第三种，实现方法拦截.</p>
+<h3 id="第二种、主动使用Runtime-Api，在运行时替换掉两个方法的实现指针IMP（确切的是替换掉SEL指向的Method实例），达到拦截目标方法执行的目的"><a href="#第二种、主动使用Runtime-Api，在运行时替换掉两个方法的实现指针IMP（确切的是替换掉SEL指向的Method实例），达到拦截目标方法执行的目的" class="headerlink" title="第二种、主动使用Runtime Api，在运行时替换掉两个方法的实现指针IMP（确切的是替换掉SEL指向的Method实例），达到拦截目标方法执行的目的"></a>第二种、主动使用Runtime Api，在运行时替换掉两个方法的实现指针IMP（确切的是替换掉SEL指向的Method实例），达到拦截目标方法执行的目的</h3><p>Hook目标方法的核心思路</p>
+<h4 id="拦截目标方法执行的思想-交换方法SEL对应的方法实现IMP指针"><a href="#拦截目标方法执行的思想-交换方法SEL对应的方法实现IMP指针" class="headerlink" title="拦截目标方法执行的思想: 交换方法SEL对应的方法实现IMP指针"></a>拦截目标方法执行的思想: 交换方法SEL对应的方法实现IMP指针</h4><p>第一步、运行时替换掉两个方法的SEL指向的函数实现指针IMP（确切的是Method实例）<br>Hook目标方法的核心思路</p>
+<p>第二步、执行完拦截方法之后，重新找到原始方法的实现</p>
+<h4 id="目标方法执行前、执行后，动态插入的着一些代码，而这些动态插入的代码是可以单独封装的，也称为一个切面Aspect。"><a href="#目标方法执行前、执行后，动态插入的着一些代码，而这些动态插入的代码是可以单独封装的，也称为一个切面Aspect。" class="headerlink" title="目标方法执行前、执行后，动态插入的着一些代码，而这些动态插入的代码是可以单独封装的，也称为一个切面Aspect。"></a>目标方法执行前、执行后，动态插入的着一些代码，而这些动态插入的代码是可以单独封装的，也称为一个切面Aspect。</h4><h4 id="那么一个Aspect的作用"><a href="#那么一个Aspect的作用" class="headerlink" title="那么一个Aspect的作用"></a>那么一个Aspect的作用</h4><p>这些Aspect随时可以插入到某个目标方法的执行前或执行后<br>让目标方法根本不知道的情况下，给他附加的做一些事情</p>
+<h4 id="关于hook封装比较好的开源库，"><a href="#关于hook封装比较好的开源库，" class="headerlink" title="关于hook封装比较好的开源库，"></a>关于hook封装比较好的开源库，</h4><p>Aspect，很简单的完成方法拦截，让开发者更专注于切面代码的开发<br>JRSwizzle    ，稍微封装了下使用Runtime Api替换SEL执行的Method实例，不像Aspect封装的那么完美，但是也基本够用了</p>
+<h4 id="Runtime应用、写一个面向切面的代码结构示例"><a href="#Runtime应用、写一个面向切面的代码结构示例" class="headerlink" title="Runtime应用、写一个面向切面的代码结构示例"></a>Runtime应用、写一个面向切面的代码结构示例</h4><p>先写一个原始类（要被拦截方法执行的类）</p>
+<p>#import &lt;Foundation/Foundation.h&gt;</p>
+<p>@interface TargetClass : NSObject</p>
+<ul>
+<li>(void)show;</li>
+</ul>
+<p>@end</p>
+<p>#import “TargetClass.h”</p>
+<p>@implementation TargetClass</p>
+<ul>
+<li>(void)show {<br>NSLog(@”I am SwizzleClass … \n”);<br>}</li>
+</ul>
+<p>@end<br>再写切面Aspect类（用于封装一些需要在拦截目标方法时，动态插入的代码）</p>
+<p>#import &lt;Foundation/Foundation.h&gt;</p>
+<p>@interface AspectClass : NSObject</p>
+<p>/**</p>
+<ul>
+<li>拦截到目标方法执行前，做的事情…<br>*/</li>
+</ul>
+<ul>
+<li>(void)beforeTarget;</li>
+</ul>
+<p>/**</p>
+<ul>
+<li>拦截到目标方法执行后，做的事情…<br>*/</li>
+</ul>
+<ul>
+<li>(void)afterTarget;</li>
+</ul>
+<p>@end</p>
+<p>#import “AspectClass.h”</p>
+<p>@implementation AspectClass</p>
+<ul>
+<li><p>(void)beforeTarget {<br>NSLog(@”我是Aspect，在目标方法【执行前】做的事情…\n”);<br>}</p>
+</li>
+<li><p>(void)afterTarget {<br>NSLog(@”我是Aspect，在目标方法【执行后】做的事情…\n”);<br>}</p>
+</li>
+</ul>
+<p>@end<br>然后是在原始类的一个分类，并重写其load时交换方法实现（在类的load方法交互，为了保证只交换一次，否则就会很乱）</p>
+<p>在分类里面做交换操作，为了不影响原始类里面的逻辑</p>
+<p>#import “TargetClass.h”</p>
+<p>@interface TargetClass (Swizzle)</p>
+<p>@end</p>
+<p>#import “TargetClass+Swizzle.h”</p>
+<p>//导入切面类</p>
+<p>#import “AspectClass.h”</p>
+<p>//导入实现交换函数实现的助手类</p>
+<p>#import “JRSwizzle.h”</p>
+<p>@implementation TargetClass (Swizzle)</p>
+<p>//load方法会在类第一次加载的时候被调用<br>//调用的时间比较靠前，适合在这个方法里做方法交换</p>
+<ul>
+<li>(void)load {<br>static dispatch_once_t onceToken;<br>dispatch_once(&amp;onceToken, ^{</li>
+</ul>
+<p>NSError *error = nil;</p>
+<p>[TargetClass jr_swizzleMethod:@selector(show)<br>withMethod:@selector(aspect_show)<br>error:&amp;error];<br>});<br>}</p>
+<p>/**</p>
+<ul>
+<li>被替换成的方法实现<br>*/</li>
+</ul>
+<ul>
+<li>(void)aspect_show {</li>
+</ul>
+<p>//1. 目标方法执行前 (统计、对目标方法的参数进行处理..)<br>[AspectClass beforeTarget];</p>
+<p>//2. 目标方法执行<br>[self aspect_show];</p>
+<p>//3. 目标方法执行后 (统计…)<br>[AspectClass afterTarget];<br>}</p>
+<p>@end<br>最终上面的代码执行后的结果</p>
+<ol>
+<li>我是Aspect，在目标方法【执行前】做的事情…</li>
+<li>I am TargetClass … </li>
+<li>我是Aspect，在目标方法【执行后】做的事情…<h3 id="第三种、写一个子类继承自要拦截方法的所在父类，然后重写其要拦截的方法"><a href="#第三种、写一个子类继承自要拦截方法的所在父类，然后重写其要拦截的方法" class="headerlink" title="第三种、写一个子类继承自要拦截方法的所在父类，然后重写其要拦截的方法"></a>第三种、写一个子类继承自要拦截方法的所在父类，然后重写其要拦截的方法</h3></li>
+</ol>
+<p>主要的步骤<br>第一步、重写要拦截的父类方法<br>第二步、重写方法中，先做自己的代码操作<br>第三步、重写方法中，最后执行父类的这个方法<br>现在我要拦截UINavigationController的pushViewController:animated:方法</p>
+<p>首先，定义一个继承自UINavigationController子类<br>@interface ZSYBaseNavController : UINavigationController</p>
+<p>@end</p>
+<p>#pragma mark - 重写系统方法，进行拦截</p>
+<p>//拦截pushViewController方法</p>
+<ul>
+<li>(void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated<br>{<br>//1. 做点什么<br>//…</li>
+</ul>
+<p>//2, 最后执行父类的push操作<br>[super pushViewController:viewController animated:animated];<br>}</p>
+<p>//拦截popToViewController操作</p>
+<ul>
+<li>(NSArray <em>)popToViewController:(UIViewController </em>)viewController animated:(BOOL)animated<br>{<br>//1. 做点什么<br>//…</li>
+</ul>
+<p>//2, 最后执行父类的pop操作<br>return [super popToViewController:viewController animated:animated];<br>}</p>
+<p>//拦截popToRootViewControllerAnimated操作</p>
+<ul>
+<li>(NSArray *)popToRootViewControllerAnimated:(BOOL)animated<br>{<br>//1. 做点什么<br>//…</li>
+</ul>
+<p>//2, 最后执行父类的pop操作<br>return [super popToRootViewControllerAnimated:animated];<br>}</p>
+<p>//拦截popViewControllerAnimated操作</p>
+<ul>
+<li>(UIViewController *)popViewControllerAnimated:(BOOL)animated<br>{<br>//1. 做点什么<br>//…</li>
+</ul>
+<p>//2, 最后执行父类的pop操作<br>return [super popViewControllerAnimated:animated];<br>}</p>
+<p>//拦截setViewControllers操作</p>
+<ul>
+<li>(void)setViewControllers:(NSArray *)viewControllers animated:(BOOL)animated<br>{<br>//1. 做点什么<br>//…</li>
+</ul>
+<p>//2, 最后执行父类的set操作<br>[super setViewControllers:viewControllers animated:animated];<br>}</p>
+<p>@end<br>然后，程序代码中使用我们自己定义的UINavigationController子类即可</p>
+<h3 id="使用Runtime时交换函数实现，防止数组操作不当崩溃的问题"><a href="#使用Runtime时交换函数实现，防止数组操作不当崩溃的问题" class="headerlink" title="使用Runtime时交换函数实现，防止数组操作不当崩溃的问题"></a>使用Runtime时交换函数实现，防止数组操作不当崩溃的问题</h3><p>例子1. 写一个NSArray+Safe的分类完成交换方法实现，并且防止数组越界处理<br>注意: 只需要写好这个分类就可以了，并不需要手动的在项目里#import</p>
+<p>#import &lt;Foundation/Foundation.h&gt;</p>
+<p>@interface NSArray (Safe)</p>
+<ul>
+<li>(id)safe_objectAtIndex:(NSUInteger)index;</li>
+</ul>
+<p>@end</p>
+<p>#import “NSArray+Safe.h”</p>
+<p>#import “JRSwizzle.h”</p>
+<p>@implementation NSArray (Safe)</p>
+<ul>
+<li>(void)load {</li>
+</ul>
+<p>static dispatch_once_t onceToken;<br>dispatch_once(&amp;onceToken, ^{</p>
+<p>//1. 获取要替换方法实现的Class<br>Class arrayClass = [[NSArray array] class];</p>
+<p>//2. 替换方法实现<br>NSError *error = nil;<br>[arrayClass jr_swizzleMethod:@selector(objectAtIndex:)<br>withMethod:@selector(safe_objectAtIndex:)<br>error:&amp;error];<br>});<br>}</p>
+<p>/**</p>
+<ul>
+<li>拦截掉系统方法，进行数组越界处理<br>*/</li>
+</ul>
+<ul>
+<li>(id)safe_objectAtIndex:(NSUInteger)index {</li>
+</ul>
+<p>if (index &lt; self.count) {</p>
+<p>//让被拦截的系统方法继续执行<br>return [self safe_objectAtIndex:index];</p>
+<p>} else {</p>
+<p>NSLog(@”数组越界，取消系统函数执行…\n”);</p>
+<p>//停止系统方法执行<br>return nil;<br>}<br>}</p>
+<p>@end<br>例子2. 写一个NSMutableArray+Safe分类，在运行时防止NSMutableArray添加nil导致崩溃的实现</p>
+<p>#import &lt;Foundation/Foundation.h&gt;</p>
+<p>@interface NSMutableArray (Safe)</p>
+<ul>
+<li>(void)safe_addObject:(id)anObject;</li>
+</ul>
+<p>@end</p>
+<p>#import “NSMutableArray+Safe.h”</p>
+<p>#import “JRSwizzle.h”</p>
+<p>@implementation NSMutableArray (Safe)</p>
+<ul>
+<li>(void)load {</li>
+</ul>
+<p>static dispatch_once_t onceToken;<br>dispatch_once(&amp;onceToken, ^{</p>
+<p>//1. 获取Class<br>Class arrayClass = [[NSMutableArray array] class];</p>
+<p>//2. 调用类方法完成方法实现交换<br>NSError *error = nil;<br>[arrayClass jr_swizzleMethod:@selector(addObject:)<br>withMethod:@selector(safe_addObject:)<br>error:&amp;error];<br>});<br>}</p>
+<ul>
+<li>(void)safe_addObject:(id)anObject {</li>
+</ul>
+<p>if ((anObject == nil) || [anObject isEqual:[NSNull null]]) {<br>NSLog(@”当前待添加到数组的数据不合法…\n”);<br>} else {<br>[self safe_addObject:anObject];<br>}<br>}</p>
+<p>@end<br>小结如上两个例子:</p>
+<p>使用Runtime来交换系统方法实现与分类中我们自己写的方法实现<br>这样做可以不用在其他地方写#import “NSArray+safe.h”导入头文件<br>对于其他任何地方，使用NSArray的相关代码并没有任何改变，他们并不知道给他替换了函数实现<br>所有的修改逻辑，都在一个分类里面<br>注意的问题</p>
+<p>必须要找对交换方法实现的Class<br>只能对函数实现交换一次<br>找到某个系统类的真正的Class的方法</p>
+<p>//1. 先得到这个系统类的一个示例<br>系统类 *实例指针 = [系统类 获取示例的方法];</p>
+<p>//2. 再通过这个实例得到Class<br>Class cls = [实例指针 class];</p>
+<h3 id="通过运行时创建动态代理完成拦截"><a href="#通过运行时创建动态代理完成拦截" class="headerlink" title="通过运行时创建动态代理完成拦截"></a>通过运行时创建动态代理完成拦截</h3><p>(1) 对于拦截目标对象的某个方法实现执行时，封装所有拦截逻辑的抽象协议<br>@protocol Aspect <nsobject></nsobject></p>
+<p>@required</p>
+<ul>
+<li>(void)preInvoke:(NSInvocation *)invocation withTarget:(id)target;</li>
+<li>(void)afterInvoke:(NSInvocation *)invocation withTarget:(id)target;</li>
+</ul>
+<p>@end<br>(2) 抽象切面的具体实现切面类<br>@interface ConcreateAspect : NSObject <aspect><br>@end</aspect></p>
+<p>@implementation ConcreateAspect</p>
+<ul>
+<li><p>(void)preInvoke:(NSInvocation *)invocation withTarget:(id)target {<br>NSLog(@”preInvoke: %@, target: %@”, invocation, target);<br>}</p>
+</li>
+<li><p>(void)afterInvoke:(NSInvocation *)invocation withTarget:(id)target {<br>NSLog(@”afterInvoke: %@, target: %@”, invocation, target);<br>}</p>
+</li>
+</ul>
+<p>@end<br>(3) 所有切面的管理类、以及目标对象的代理类<br>@interface AspectProxy : NSProxy</p>
+<p>/**</p>
+<ul>
+<li>被拦截的目标对象<br>*/<br>@property (nonatomic, strong) id proxyTarget;</li>
+</ul>
+<p>/**</p>
+<ul>
+<li>拦截之后执行逻辑的切面<br>*/<br>@property (nonatomic, strong) id<aspect> aspect;</aspect></li>
+</ul>
+<p>/**</p>
+<ul>
+<li>目标对象被拦截的所有消息sel<br><em>/<br>@property (nonatomic, strong, readonly) NSMutableArray </em>selectors;</li>
+</ul>
+<p>// 传入代理哪一个目标对象、要拦截目标对象哪些sel的消息、执行拦截的切面对象、</p>
+<ul>
+<li>(instancetype)initWithObject:(id)object andAspect:(id<aspect>)aspect;</aspect></li>
+<li>(instancetype)initWithObject:(id)object selectors:(NSArray *)selectors andAspect:(id<aspect>)aspect;</aspect></li>
+</ul>
+<p>// 添加要拦截的消息对应的sel</p>
+<ul>
+<li>(void)registerSelector:(SEL)selector;</li>
+</ul>
+<p>@end</p>
+<p>@implementation AspectProxy</p>
+<ul>
+<li>(instancetype)initWithObject:(id)object<br>selectors:(NSArray *)selectors<br>andAspect:(id<aspect>)aspect<br>{<br>// 保存被拦截的目标对象<br>_proxyTarget = object;</aspect></li>
+</ul>
+<p>// 拦截之后执行处理的切面对象<br>_aspect = aspect;</p>
+<p>// 要拦截的消息对应的sel<br>_selectors = [selectors mutableCopy];</p>
+<p>return self;<br>}</p>
+<ul>
+<li>(instancetype)initWithObject:(id)object<br>andAspect:(id<aspect>)aspect<br>{<br>return [self initWithObject:object<br>selectors:nil<br>andAspect:aspect];<br>}</aspect></li>
+</ul>
+<p>#pragma mark - 重写消息转发函数，完成目标对象方法实现拦截，并执行切面逻辑</p>
+<ul>
+<li>(NSMethodSignature *)methodSignatureForSelector:(SEL)sel {</li>
+</ul>
+<p>// 从被代理的目标对象查找SEL对应的方法签名<br>return [_proxyTarget methodSignatureForSelector:sel];<br>}</p>
+<ul>
+<li>(void)forwardInvocation:(NSInvocation *)invocation {</li>
+</ul>
+<p>//1. 调用前拦截<br>if ([_aspect respondsToSelector:@selector(preInvoke:withTarget:)]) {<br>if (_selectors) {<br>SEL sel = [invocation selector];<br>for (NSValue *value in _selectors) {<br>if (sel == [value pointerValue]) {<br>[_aspect preInvoke:invocation withTarget:_proxyTarget];<br>}<br>}<br>} else {<br>[_aspect preInvoke:invocation withTarget:_proxyTarget];<br>}<br>}</p>
+<p>//2. 目标方法执行<br>[invocation invokeWithTarget:_proxyTarget];</p>
+<p>//3. 调用后拦截<br>if ([_aspect respondsToSelector:@selector(afterInvoke:withTarget:)]) {<br>if (_selectors) {<br>SEL sel = [invocation selector];<br>for (NSValue *value in _selectors) {<br>if (sel == [value pointerValue]) {<br>[_aspect afterInvoke:invocation withTarget:_proxyTarget];<br>}<br>}<br>} else {<br>[_aspect afterInvoke:invocation withTarget:_proxyTarget];<br>}<br>}<br>}</p>
+<ul>
+<li>(void)registerSelector:(SEL)selector {<br>NSValue *value = [NSValue valueWithPointer:selector];<br>[_selectors addObject:value];<br>}</li>
+</ul>
+<p>@end<br>(4) 任意一个将要被拦截的目标类<br>@interface Invoker : NSObject</p>
+<ul>
+<li>(void)doWork1;</li>
+<li>(void)doWork2;</li>
+<li>(void)doWork3;</li>
+</ul>
+<p>@end</p>
+<p>@implementation Invoker</p>
+<ul>
+<li><p>(void)doWork1 {<br>NSLog(@”Invoker doWork 1”);<br>}</p>
+</li>
+<li><p>(void)doWork2 {<br>NSLog(@”Invoker doWork 2”);<br>}</p>
+</li>
+<li><p>(void)doWork3 {<br>NSLog(@”Invoker doWork 3”);<br>}</p>
+</li>
+</ul>
+<p>@end<br>(5) 拦截测试类</p>
+<ul>
+<li>(void)demo9 {</li>
+</ul>
+<p>//1. 目标类对象<br>Invoker *target = [Invoker new];</p>
+<p>//2. 要拦截目标对象的哪一些sel的消息<br>NSValue <em>value1 = [NSValue valueWithPointer:@selector(doWork1)];<br>NSArray </em>selectors = @[value1];</p>
+<p>//3. 切面对象<br>ConcreateAspect *aspect = [[ConcreateAspect alloc] init];</p>
+<p>//4. 管理切面的Proxy对象<br>id proxy = [[AspectProxy alloc] initWithObject:target<br>selectors:selectors<br>andAspect:aspect];</p>
+<p>//5. 让Proxy对象进入消息转发<br>[proxy doWork1];</p>
+<p>//6. 继续添加拦截另外的消息sel，并且也让Proxy对象进入消息转发<br>[proxy registerSelector:@selector(doWork2)];<br>[proxy doWork2];</p>
+<p>//7. 让Proxy对象进入消息转发，但是没有添加拦截的消息sel<br>//因为未保存到AspectProxy对象的 _selectors数组中<br>[proxy doWork3];<br>}<br>运行结果</p>
+<p>2016-08-01 00:00:41.769 Demos[31990:463123] preInvoke: &lt;NSInvocation: 0x7fddc1c2cd80&gt;, target: &lt;Invoker: 0x7fddc1c4cdc0&gt;<br>2016-08-01 00:00:41.769 Demos[31990:463123] Invoker doWork 1<br>2016-08-01 00:00:41.769 Demos[31990:463123] afterInvoke: &lt;NSInvocation: 0x7fddc1c2cd80&gt;, target: &lt;Invoker: 0x7fddc1c4cdc0&gt;<br>2016-08-01 00:00:41.769 Demos[31990:463123] preInvoke: &lt;NSInvocation: 0x7fddc1e2b170&gt;, target: &lt;Invoker: 0x7fddc1c4cdc0&gt;<br>2016-08-01 00:00:41.770 Demos[31990:463123] Invoker doWork 2<br>2016-08-01 00:00:41.770 Demos[31990:463123] afterInvoke: &lt;NSInvocation: 0x7fddc1e2b170&gt;, target: &lt;Invoker: 0x7fddc1c4cdc0&gt;<br>2016-08-01 00:00:41.770 Demos[31990:463123] Invoker doWork 3<br>从结果可以看到，doWork1与doWork2这两个sel对应的方法实现调用时，之前和之后都加了拦截逻辑。但是doWork3函数实现执行没有加拦截的。</p>
+<p>小结下吧:</p>
+<p>(1) 向Proxy类发送一个不存在实现的SEL消息<br>(2) Proxy类对象的消息转发函数被系统调用<br>(3) 在消息转发函数中，完成拦截逻辑调用<br>之前做一点什么<br>[invocation invokeWithTarget:被代理的目标对象]将消息转发给目标对象去处理<br>之后做一点什么<br>Some content has been disabled in this document</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2016/09/25/Runtime-Part12-Intercept/" data-title="Runtime Part12 Intercept | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2016/09/26/Runtime-Part13-TypeEncodings/" title="Runtime Part13 TypeEncodings">
+  <strong>上一篇：</strong><br>
+  <span>
+  Runtime Part13 TypeEncodings</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/09/25/Runtime-Part11-NSInvocation/" title="Runtime Part11 NSInvocation">
+ <strong>下一篇：</strong><br> 
+ <span>Runtime Part11 NSInvocation
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2016/09/25/Runtime-Part12-Intercept/" data-title="Runtime Part12 Intercept" data-url="http://yoursite.com/2016/09/25/Runtime-Part12-Intercept/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#方法拦截的途径"><span class="toc-number">1.</span> <span class="toc-text">方法拦截的途径</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第二种、主动使用Runtime-Api，在运行时替换掉两个方法的实现指针IMP（确切的是替换掉SEL指向的Method实例），达到拦截目标方法执行的目的"><span class="toc-number">2.</span> <span class="toc-text">第二种、主动使用Runtime Api，在运行时替换掉两个方法的实现指针IMP（确切的是替换掉SEL指向的Method实例），达到拦截目标方法执行的目的</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#拦截目标方法执行的思想-交换方法SEL对应的方法实现IMP指针"><span class="toc-number">2.1.</span> <span class="toc-text">拦截目标方法执行的思想: 交换方法SEL对应的方法实现IMP指针</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#目标方法执行前、执行后，动态插入的着一些代码，而这些动态插入的代码是可以单独封装的，也称为一个切面Aspect。"><span class="toc-number">2.2.</span> <span class="toc-text">目标方法执行前、执行后，动态插入的着一些代码，而这些动态插入的代码是可以单独封装的，也称为一个切面Aspect。</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#那么一个Aspect的作用"><span class="toc-number">2.3.</span> <span class="toc-text">那么一个Aspect的作用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#关于hook封装比较好的开源库，"><span class="toc-number">2.4.</span> <span class="toc-text">关于hook封装比较好的开源库，</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Runtime应用、写一个面向切面的代码结构示例"><span class="toc-number">2.5.</span> <span class="toc-text">Runtime应用、写一个面向切面的代码结构示例</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第三种、写一个子类继承自要拦截方法的所在父类，然后重写其要拦截的方法"><span class="toc-number">3.</span> <span class="toc-text">第三种、写一个子类继承自要拦截方法的所在父类，然后重写其要拦截的方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用Runtime时交换函数实现，防止数组操作不当崩溃的问题"><span class="toc-number">4.</span> <span class="toc-text">使用Runtime时交换函数实现，防止数组操作不当崩溃的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#通过运行时创建动态代理完成拦截"><span class="toc-number">5.</span> <span class="toc-text">通过运行时创建动态代理完成拦截</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

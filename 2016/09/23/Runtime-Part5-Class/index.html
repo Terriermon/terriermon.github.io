@@ -1,0 +1,632 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>Runtime Part5 Class | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="通常我们编写一个类并继承自NSObject，然后编写所有的变量、所有的方法、以及实现的所有的协议….Foundation中提供了两个根类NSObject、平时使用最多的根类，提供了很多我们常用的api基本的功能  (BOOL)isEqual:(id)object;@property (readonly) NSUInteger hash;@property (readonly, copy) NSSt">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Runtime Part5 Class">
+<meta property="og:url" content="http://yoursite.com/2016/09/23/Runtime-Part5-Class/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="通常我们编写一个类并继承自NSObject，然后编写所有的变量、所有的方法、以及实现的所有的协议….Foundation中提供了两个根类NSObject、平时使用最多的根类，提供了很多我们常用的api基本的功能  (BOOL)isEqual:(id)object;@property (readonly) NSUInteger hash;@property (readonly, copy) NSSt">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-08T12:41:16.051Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Runtime Part5 Class">
+<meta name="twitter:description" content="通常我们编写一个类并继承自NSObject，然后编写所有的变量、所有的方法、以及实现的所有的协议….Foundation中提供了两个根类NSObject、平时使用最多的根类，提供了很多我们常用的api基本的功能  (BOOL)isEqual:(id)object;@property (readonly) NSUInteger hash;@property (readonly, copy) NSSt">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/09/23/Runtime-Part5-Class/" title="Runtime Part5 Class" itemprop="url">Runtime Part5 Class</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2016-09-23T12:39:52.000Z" itemprop="datePublished"> Published 2016-09-23</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#通常我们编写一个类并继承自NSObject，然后编写所有的变量、所有的方法、以及实现的所有的协议…"><span class="toc-number">1.</span> <span class="toc-text">通常我们编写一个类并继承自NSObject，然后编写所有的变量、所有的方法、以及实现的所有的协议….</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Foundation中提供了两个根类"><span class="toc-number">2.</span> <span class="toc-text">Foundation中提供了两个根类</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#NSObject、平时使用最多的根类，提供了很多我们常用的api"><span class="toc-number">2.1.</span> <span class="toc-text">NSObject、平时使用最多的根类，提供了很多我们常用的api</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#NSProxy、用的比较少，只有需要实现代理对象的时候才会使用"><span class="toc-number">2.2.</span> <span class="toc-text">NSProxy、用的比较少，只有需要实现代理对象的时候才会使用</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#我很久以前对NSObject类的一个疑惑？"><span class="toc-number">3.</span> <span class="toc-text">我很久以前对NSObject类的一个疑惑？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#找到Class指针类型所指向的结构体类型是objc-class，其恰好完整的描述了一个类所应该具备的数据"><span class="toc-number">4.</span> <span class="toc-text">找到Class指针类型所指向的结构体类型是objc_class，其恰好完整的描述了一个类所应该具备的数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#继续回到-NSObject-class-这个函数实现"><span class="toc-number">5.</span> <span class="toc-text">继续回到+[NSObject class]这个函数实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NSObjct类中的isa指针-与-NSObject对象中的isa指针"><span class="toc-number">6.</span> <span class="toc-text">NSObjct类中的isa指针 与 NSObject对象中的isa指针:</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#搜索SEL对应的Method过程"><span class="toc-number">6.1.</span> <span class="toc-text">搜索SEL对应的Method过程:</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#区分-调用对象方法-or-调用类方法"><span class="toc-number">7.</span> <span class="toc-text">区分 调用对象方法 or 调用类方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#看下经常使用类的几个系统方法的源码实现"><span class="toc-number">8.</span> <span class="toc-text">看下经常使用类的几个系统方法的源码实现</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#重写父类的方法"><span class="toc-number">8.1.</span> <span class="toc-text">重写父类的方法</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#举例获取一个Block的最终真实Class类型"><span class="toc-number">9.</span> <span class="toc-text">举例获取一个Block的最终真实Class类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#一直查找一个对象的类的super-class，结束条件是null"><span class="toc-number">10.</span> <span class="toc-text">一直查找一个对象的类的super_class，结束条件是null</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#运行时创建并注册一个类"><span class="toc-number">11.</span> <span class="toc-text">运行时创建并注册一个类</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="通常我们编写一个类并继承自NSObject，然后编写所有的变量、所有的方法、以及实现的所有的协议…"><a href="#通常我们编写一个类并继承自NSObject，然后编写所有的变量、所有的方法、以及实现的所有的协议…" class="headerlink" title="通常我们编写一个类并继承自NSObject，然后编写所有的变量、所有的方法、以及实现的所有的协议…."></a>通常我们编写一个类并继承自NSObject，然后编写所有的变量、所有的方法、以及实现的所有的协议….</h3><h3 id="Foundation中提供了两个根类"><a href="#Foundation中提供了两个根类" class="headerlink" title="Foundation中提供了两个根类"></a>Foundation中提供了两个根类</h3><h4 id="NSObject、平时使用最多的根类，提供了很多我们常用的api"><a href="#NSObject、平时使用最多的根类，提供了很多我们常用的api" class="headerlink" title="NSObject、平时使用最多的根类，提供了很多我们常用的api"></a>NSObject、平时使用最多的根类，提供了很多我们常用的api</h4><p>基本的功能</p>
+<ul>
+<li>(BOOL)isEqual:(id)object;<br>@property (readonly) NSUInteger hash;<br>@property (readonly, copy) NSString *description;</li>
+</ul>
+<p>…等等很多<br>发送消息</p>
+<ul>
+<li>(id)performSelector:(SEL)aSelector;</li>
+<li>(id)performSelector:(SEL)aSelector withObject:(id)object;</li>
+<li>(id)performSelector:(SEL)aSelector withObject:(id)object1 withObject:(id)object2;<br>类的初始化</li>
+</ul>
+<ul>
+<li>(void)initialize {<br>if (self == [NyClass class]) {<br>// 初始化逻辑<br>}<br>}<h4 id="NSProxy、用的比较少，只有需要实现代理对象的时候才会使用"><a href="#NSProxy、用的比较少，只有需要实现代理对象的时候才会使用" class="headerlink" title="NSProxy、用的比较少，只有需要实现代理对象的时候才会使用"></a>NSProxy、用的比较少，只有需要实现代理对象的时候才会使用</h4></li>
+</ul>
+<p>NSProxy和NSObject层级一样的类，并作为抽象模板类，通常用于实现代理模式。</p>
+<p>比如，经常我需要给一个对象的某一个方法实现在运行时添加一些额外的处理逻辑，那么此时的办法有这几种（注意，是运行时，而不是通过修改目标类的代码达到）:</p>
+<p>第一种、重写一个子类继承自目标类，然后重写其扩展逻辑的方法实现<br>第二种、使用一个代理对象去代理目标类的对象，让代理对象接收一切这个目标类对象的消息<br>对于第一种方式，就直接使用一个子类去重写方法实现就没啥说的了。对于第二种，比较灵活一些，不用去子类化重写其方法实现，实现代理主要的步骤就是重写消息转发函数，在消息转发函数中做一些处理之后然后将消息再次转发给目标对象:</p>
+<p>实现形式一、</p>
+<p>// 直接消息转发给某个对象</p>
+<ul>
+<li>(id)forwardingTargetForSelector:(SEL)aSelector;<br>实现形式二、</li>
+</ul>
+<p>// 目标函数签名</p>
+<ul>
+<li>(NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector;</li>
+</ul>
+<p>// 完整的消息转发</p>
+<ul>
+<li>(void)forwardInvocation:(NSInvocation *)anInvocation;<br>因为NSProxy类是作为抽象类，所以NSProxy类中没有init对象方法的实现。</li>
+</ul>
+<p>也意味着NSProxy的子类必须实现至少一个init方法，才能符合OC中对象初始化规则。</p>
+<h3 id="我很久以前对NSObject类的一个疑惑？"><a href="#我很久以前对NSObject类的一个疑惑？" class="headerlink" title="我很久以前对NSObject类的一个疑惑？"></a>我很久以前对NSObject类的一个疑惑？</h3><p>在runtime的开源代码中，找到[NSObject class]的实现代码如下</p>
+<p>苹果的runtime开源地址: <a href="http://opensource.apple.com/source/objc4/" target="_blank" rel="noopener">http://opensource.apple.com/source/objc4/</a></p>
+<ul>
+<li>(Class)class<br>{<br>return self;<br>}<br>疑点一、该方法返回的就是NSObject类自己<br>疑点二、NSObject类自己是objc_class结构体类型的值<br>疑点三、self一般都是作为当前对象，难道当前类是objc_class结构体的一个实例？<br>根据这些疑问，我想是否可以有这种假设:</li>
+</ul>
+<p>一个NSObject类，就是objc_class结构体的一个实例。</p>
+<h3 id="找到Class指针类型所指向的结构体类型是objc-class，其恰好完整的描述了一个类所应该具备的数据"><a href="#找到Class指针类型所指向的结构体类型是objc-class，其恰好完整的描述了一个类所应该具备的数据" class="headerlink" title="找到Class指针类型所指向的结构体类型是objc_class，其恰好完整的描述了一个类所应该具备的数据"></a>找到Class指针类型所指向的结构体类型是objc_class，其恰好完整的描述了一个类所应该具备的数据</h3><p>图示objc_class结构</p>
+<p>Snip20160521_4.png</p>
+<p>代码显示objc_class结构</p>
+<p>struct objc_class {</p>
+<p>/<em> 指向该类的 MetaClass </em>/<br>Class isa  OBJC_ISA_AVAILABILITY;</p>
+<p>#if !<strong>OBJC2</strong></p>
+<p>/<em> 指向其父类，如果该类为<code>RootClass</code>则值为 NULL </em>/<br>Class super_class                                        OBJC2_UNAVAILABLE;</p>
+<p>/<em> 类名字 </em>/<br>const char *name                                         OBJC2_UNAVAILABLE;</p>
+<p>/<em> 版本信息，默认为0 </em>/<br>long version                                             OBJC2_UNAVAILABLE;</p>
+<p>/<em> 类信息 </em>/<br>long info                                                OBJC2_UNAVAILABLE;</p>
+<p>/<em> 实例的总大小 </em>/<br>long instance_size                                       OBJC2_UNAVAILABLE;</p>
+<p>/<em> 实例变量Ivar链表 </em>/<br>struct objc_ivar_list *ivars                             OBJC2_UNAVAILABLE;</p>
+<p>/<em> 实例Method链表 </em>/<br>struct objc_method_list **methodLists                    OBJC2_UNAVAILABLE;</p>
+<p>/<em> 实例Method的缓存 </em>/<br>struct objc_cache *cache                                 OBJC2_UNAVAILABLE;</p>
+<p>/<em> 实现的所有协议链表 </em>/<br>struct objc_protocol_list *protocols                     OBJC2_UNAVAILABLE;</p>
+<p>#endif</p>
+<p>} OBJC2_UNAVAILABLE;<br>/<em> Use <code>Class</code> instead of `struct objc_class </em>` */<br>再从上面扣下 objc_class 中经常使用的属性</p>
+<p>/<em> 实例变量Ivar链表 </em>/<br>struct objc_ivar_list *ivars                             OBJC2_UNAVAILABLE;</p>
+<p>/<em> 实例Method链表 </em>/<br>struct objc_method_list **methodLists                    OBJC2_UNAVAILABLE;</p>
+<p>/<em> 实例Method的缓存 </em>/<br>struct objc_cache *cache                                 OBJC2_UNAVAILABLE;</p>
+<p>/<em> 实现的所有协议链表 </em>/<br>struct objc_protocol_list *protocols                     OBJC2_UNAVAILABLE;<br>从objc_class结构体的定义来看，我们所编写的NSObject子类的结构和objc_class结构体的结构几乎是完全吻合的（Ivar、Method、Property…等等）。</p>
+<h3 id="继续回到-NSObject-class-这个函数实现"><a href="#继续回到-NSObject-class-这个函数实现" class="headerlink" title="继续回到+[NSObject class]这个函数实现"></a>继续回到+[NSObject class]这个函数实现</h3><ul>
+<li>(Class)class<br>{<br>return self;<br>}<br>从表面意思来看:</li>
+</ul>
+<p>self代表的是当前NSObject类，也就是说当前NSObject类是一个对象</p>
+<p>而对象的类型就是Class指针指向的类型 &gt;&gt;&gt; objc_class结构体类型</p>
+<p>结合起来，就是说:</p>
+<p>我们编写的一个NSObject类，就是一个objc_class结构体的实例。<br>乍听起来有点别扭，我们编写的类源文件就他妈一个本地文件，怎么就成了一个内存对象了？我是想了好久，也没弄明白啥意思。</p>
+<p>关于NSObject类到底是谁的对象，我搜了很多的帖子和苹果文档都没有找到确切的答案。这样的话，可能就要去看苹果的底层源码了，这样的话对于我这样的菜鸟真的是太难了。</p>
+<p>但是可以换一个角度去思考:</p>
+<p>在代码编写阶段，我们所创建的一个NSObject类都是死的，就是Xcode工程里面的一个源文件而已</p>
+<p>没有分配内存的东西都是死的<br>而编译器编译阶段时，将我们写的 NSObject类 编译成 objc_class结构体这样的c语言源码，继而编译成二进制可执行文件</p>
+<p>可执行程序运行阶段时，创建出objc_class实例并为其分配内存，来保存我们编写的NSObject类包含的信息:</p>
+<p>Ivar成员变量<br>Proeprty属性<br>Method方法实现<br>实现的Protocol<br>….等等，都记录在内存中的一个 objc_class结构体实例中<br>那么从这个角度来看，得到两个点:</p>
+<ol>
+<li>NSObject类是死的</li>
+<li>而程序运行时在内存中，用来表示NSObject类的objc_class结构体实例才是真正活的<br>那么一个代码中死的NSObejct类如何去与一个内存中的objc_class实例产生关系了？</li>
+</ol>
+<p>我想可能是这样的，NSObject类 和 objc_class结构体之间可能通过某种方法进行互相转换。而且，在C++中的class与struct可以互相继承。</p>
+<p>但都只是个人的一些猜测，那么一个NSObject类是一个objc_class结构体实例这句话好像是有点牵强，但可以肯定的是:一个NSObject类在内存中运行时，一定对应一个唯一的objc_class实例.</p>
+<p>就目前个人能力，我无法彻底搞清楚NSObject类是如何作为一个objc_class结构体实例的过程，那可能得去看苹果更深的底层代码，可是暂时没这个时间，先放着吧….</p>
+<p>但总之，我们编写的一个NSObject类文件是死的，但其对应的内存中的表示形式就是一个objc_class结构体实例。那我想，对于我这种喜欢走捷径的懒货来说，理解到这样的程度也已经够了。</p>
+<h3 id="NSObjct类中的isa指针-与-NSObject对象中的isa指针"><a href="#NSObjct类中的isa指针-与-NSObject对象中的isa指针" class="headerlink" title="NSObjct类中的isa指针 与 NSObject对象中的isa指针:"></a>NSObjct类中的isa指针 与 NSObject对象中的isa指针:</h3><p>NSObjct类 中的 isa指针</p>
+<p>指向 当前 类 的 Meta Class 元类<br>NSObjct对象 中的 isa指针</p>
+<p>指向 当前 对象 的 所属类（NSObject子类）<br>objc_cache 结构体 对 使用SEL 查询 Method List 做的缓存优化<br>struct objc_cache {</p>
+<p>//总缓存长度<br>unsigned int mask /<em> total = mask + 1 </em>/ OBJC2_UNAVAILABLE; </p>
+<p>//当前缓存长度<br>unsigned int occupied OBJC2_UNAVAILABLE; </p>
+<p>//保存Method实例的数组<br>Method buckets[1] OBJC2_UNAVAILABLE;<br>};</p>
+<h4 id="搜索SEL对应的Method过程"><a href="#搜索SEL对应的Method过程" class="headerlink" title="搜索SEL对应的Method过程:"></a>搜索SEL对应的Method过程:</h4><p>注意:</p>
+<p>发送对象消息、查询 所属类的 method_list<br>发送类消息、查询 Meta Class的 method_list<br>对象接到一个消息（包含SEL，参数列表）<br>根据 对象的isa指针 查找到 所属类（NSObject子类）<br>如果objc_cache存在这个SEL对应的Method，直接方法调用，并结束后面的步骤<br>如果objc_ objc_cache不存在，那么就开始遍历isa指针指向的所属类的method_list<br>找到SEL对应的Method<br>找到函数实现的IMP<br>完成函数执行<br>8)（最重要）将当前查找过的Method保存到 objc_cache</p>
+<h3 id="区分-调用对象方法-or-调用类方法"><a href="#区分-调用对象方法-or-调用类方法" class="headerlink" title="区分 调用对象方法 or 调用类方法"></a>区分 调用对象方法 or 调用类方法</h3><p>对象方法</p>
+<p>根据 对象 的isa指针，找到所属的 类<br>然后查询其 method_list 或 cache<br>类方法</p>
+<p>根据 类 的isa指针，找到所属的 Meta Class 元类<br>然后查询其 method_list 或 cache</p>
+<h3 id="看下经常使用类的几个系统方法的源码实现"><a href="#看下经常使用类的几个系统方法的源码实现" class="headerlink" title="看下经常使用类的几个系统方法的源码实现"></a>看下经常使用类的几个系统方法的源码实现</h3><p>Objective-C中的</p>
+<ul>
+<li>(BOOL)isMemberOfClass:(Class)cls {<br>return [self class] == cls;<br>}</li>
+<li>(Class)class {<br>return object_getClass(self);<br>}<br>最后调用的runtime c函数<br>//c函数<br>Class object_getClass(id obj)<br>{<br>return _object_getClass(obj);<br>}<br>//静态内联c函数<br>static inline Class _object_getClass(id obj)<br>{<br>if (obj)<br>return obj-&gt;isa;//对象isa执行的所属类，类返回MetaClass<br>else<br>return Nil;<br>}<br>所以也就是说[self class]返回的就是当前对象-&gt;isa指向的类型</li>
+</ul>
+<p>//对象的方法</p>
+<ul>
+<li>(Class)class<br>{<br>//返回对象的isa指针<br>return (id)isa;<br>}  </li>
+</ul>
+<p>//类的方法</p>
+<ul>
+<li>(Class)class<br>{<br>//返回自己<br>return self;<br>}  <h4 id="重写父类的方法"><a href="#重写父类的方法" class="headerlink" title="重写父类的方法"></a>重写父类的方法</h4></li>
+</ul>
+<p>重写父类的方法之后，并不是覆盖掉了父类的方法，只是在当前子类对象中找到了这个方法后就不会再去父类中找了。</p>
+<p>但是如果，想执行了子类的方法之后，还要去执行父类的方法，那么只需要执行[super 方法的SEL]</p>
+<p>给出一个父类与子类重写方法的模板，通常用于拦截父类的方法执行，在之前和之后做一些hook处理:</p>
+<p>@interface Tool : NSObject</p>
+<ul>
+<li>(void)doWork;</li>
+</ul>
+<p>@end<br>@implementation Tool</p>
+<ul>
+<li>(void)doWork {<br>NSLog(@”Tool的方法实现”);<br>}</li>
+</ul>
+<p>@end<br>有时候由于Tool这个类的代码是闭源的拿不到，但是又需要测试一下，或者拦截做一些额外的处理，此时就可以继承自这个Tool类得到一个子类来重写要拦截的方法实现:</p>
+<p>@interface ToolIntercepltor : Tool</p>
+<p>@end<br>@implementation ToolIntercepltor</p>
+<ul>
+<li>(void)doWork {</li>
+</ul>
+<p>//1.<br>NSLog(@”Tool doWork previous”);</p>
+<p>//2.<br>[super doWork];</p>
+<p>//3.<br>NSLog(@”Tool doWork after”);<br>}</p>
+<p>@end<br>这样即可拦截Tool的doWork方法实现，在之前和之后做一些自己的处理。或者直接不让Tool的doWork方法实现执行。</p>
+<h3 id="举例获取一个Block的最终真实Class类型"><a href="#举例获取一个Block的最终真实Class类型" class="headerlink" title="举例获取一个Block的最终真实Class类型"></a>举例获取一个Block的最终真实Class类型</h3><p>static force_inline Class XZHNSBlockClassGet() {<br>static Class cls;<br>static dispatch_once_t onceToken;<br>dispatch_once(&amp;onceToken, ^{</p>
+<p>//1. 获取一个NSBlock的对象<br>void (^block)(void) = ^(){};</p>
+<p>//2. 获取当前Block的Class<br>//通过对象的isa指针<br>Class cls = [(NSObject *)block class];</p>
+<p>//3. 一直找到Block最终的superClass<br>while (class_getSuperclass(cls) != [NSObject class]) {<br>cls = class_getSuperclass(cls);<br>}<br>});<br>return cls;<br>}<br>注意，后面知道这样获取得到是Block的类簇类NSBlock，但其实不是真正的Block对象类型。</p>
+<h3 id="一直查找一个对象的类的super-class，结束条件是null"><a href="#一直查找一个对象的类的super-class，结束条件是null" class="headerlink" title="一直查找一个对象的类的super_class，结束条件是null"></a>一直查找一个对象的类的super_class，结束条件是null</h3><p>@implementation ViewController</p>
+<ul>
+<li>(void)test {</li>
+</ul>
+<p>Class cls = [self class];</p>
+<p>while (1) {<br>NSLog(@”%@”, cls);<br>cls = class_getSuperclass(cls);<br>}<br>}</p>
+<p>@end<br>输出结果</p>
+<p>2016-03-30 12:03:35.008 JSPatchDeme[12220:83909] ViewController<br>2016-03-30 12:03:35.009 JSPatchDeme[12220:83909] UIViewController<br>2016-03-30 12:03:35.009 JSPatchDeme[12220:83909] UIResponder<br>2016-03-30 12:03:35.009 JSPatchDeme[12220:83909] NSObject<br>2016-03-30 12:03:35.009 JSPatchDeme[12220:83909] (null)<br>2016-03-30 12:03:35.009 JSPatchDeme[12220:83909] (null)<br>2016-03-30 12:03:35.010 JSPatchDeme[12220:83909] (null)<br>2016-03-30 12:03:35.010 JSPatchDeme[12220:83909] (null)<br>2016-03-30 12:03:35.010 JSPatchDeme[12220:83909] (null)<br>…无限输出 null<br>也就是说OC中的顶层父类是NSObject，再获取super_class就是null了。</p>
+<h3 id="运行时创建并注册一个类"><a href="#运行时创建并注册一个类" class="headerlink" title="运行时创建并注册一个类"></a>运行时创建并注册一个类</h3><p>#import “DynamicRegistClass.h”</p>
+<p>#import &lt;objc/runtime.h&gt;</p>
+<p>#import &lt;objc/message.h&gt;</p>
+<p>static Class WidgetClass;</p>
+<p>static void display(id self, SEL _cmd) {<br>NSLog(@”被添加的方法实现被调用”);</p>
+<p>//7. 设置实例变量值一、直接使用KVC<br>[self setValue:@(0.99) forKey:@”height”];<br>NSLog(@”height = %@”, [self valueForKey:@”height”]);</p>
+<p>//8. 设置实例变量值一、runtime函数<br>Ivar iavr = class_getInstanceVariable([self class], “height”);<br>object_setIvar(self, iavr, @(1.9999));<br>float num = [object_getIvar(self, iavr) floatValue];<br>NSLog(@”height = %f”, num);<br>}</p>
+<p>@implementation DynamicRegistClass</p>
+<ul>
+<li>(void)initialize {</li>
+</ul>
+<p>//1. 创建一个继承自NSObject的子类<br>WidgetClass = objc_allocateClassPair([NSObject class], “Widget”, 0);</p>
+<p>//2. 向类添加一个OC方法<br>const char *typeEncodings = “v@:”;//void、id、sel<br>class_addMethod(WidgetClass, @selector(display), (IMP)display, typeEncodings);</p>
+<p>//3. 向类添加一个实例变量<br>const char *height = “height”;<br>class_addIvar(WidgetClass, height, sizeof(float), 0, @encode(float));</p>
+<p>//4. 注册类到运行时系统<br>objc_registerClassPair(WidgetClass);<br>}</p>
+<ul>
+<li>(void)test {</li>
+</ul>
+<p>//1. 得到一个对象<br>id obj = [[WidgetClass alloc] init];</p>
+<p>//2. 调用对象方法<br>((void (<em>)(id, SEL))(void </em>) objc_msgSend)(obj, @selector(display));<br>}</p>
+<p>// 这个函数只是为了 @selector(display) 取消警告</p>
+<ul>
+<li>(void)display {}</li>
+</ul>
+<p>@end<br>运行结果</p>
+<p>2016-07-31 23:10:32.005 Demos[29027:419821] 被添加的方法实现被调用<br>2016-07-31 23:10:32.006 Demos[29027:419821] height = 0.99<br>2016-07-31 23:10:32.006 Demos[29027:419821] height = 1.999900<br>OK，和我们手动创建一个NSObject类文件的效果其实是一样的。</p>
+<p>注意，只有通过运行时创建注册的类，才可以添加Ivar。如果是已经存在类文件.h和.m的类，是不能够再添加Ivar的。原因是对象的Ivar实例变量的内存布局是按照顺序一个接着一个排列的，如果运行时修改Ivar布局，就会导致全部的Ivar布局错乱。</p>
+<p>几种respondsToSelector使用<br>@interface Person : NSObject</p>
+<ul>
+<li>(void)log1;</li>
+</ul>
+<ul>
+<li>(void)log2;</li>
+<li>(void)log3;</li>
+</ul>
+<ul>
+<li>(void)log4;<br>@end<br>@implementation Person</li>
+</ul>
+<ul>
+<li>(void)log3 {}</li>
+</ul>
+<ul>
+<li>(void)log4 {}<br>@end</li>
+</ul>
+<ul>
+<li>(void)testClassImplMethod {</li>
+</ul>
+<p>/////////////////// via meta class ///////////////////</p>
+<p>//1. meta class<br>Class metaCls = object_getClass([Person class]);</p>
+<p>//2. meta class respondsToSelector:<br>BOOL ret1 = NO;<br>if (class_isMetaClass(metaCls)) {<br>ret1 = class_respondsToSelector(metaCls, @selector(log1));<br>}</p>
+<p>BOOL ret2 = NO;<br>if (class_isMetaClass(metaCls)) {<br>ret2 = class_respondsToSelector(metaCls, @selector(log4));<br>}</p>
+<p>NSLog(@”\n”);</p>
+<p>/////////////////// NSObject respondsToSelector ///////////////////</p>
+<p>BOOL ret3 = [[Person class] instancesRespondToSelector:@selector(log1)];<br>BOOL ret4 = [[Person class] instancesRespondToSelector:@selector(log2)];<br>BOOL ret5 = [[Person class] instancesRespondToSelector:@selector(log3)];<br>BOOL ret6 = [[Person class] instancesRespondToSelector:@selector(log4)];//错误、无法判断类方法实现</p>
+<p>NSLog(@”\n”);</p>
+<p>BOOL ret7 = [[Person class] respondsToSelector:@selector(log1)];<br>BOOL ret8 = [[Person class] respondsToSelector:@selector(log2)];<br>BOOL ret9 = [[Person class] respondsToSelector:@selector(log3)];//错误、无法判断对象方法实现<br>BOOL ret10 = [[Person class] respondsToSelector:@selector(log4)];</p>
+<p>NSLog(@””);<br>}<br>(Class) metaCls = 0x0000000101083928<br>(BOOL) ret1 = NO<br>(BOOL) ret2 = YES<br>(BOOL) ret3 = NO<br>(BOOL) ret4 = NO<br>(BOOL) ret5 = YES<br>(BOOL) ret6 = NO<br>(BOOL) ret7 = NO<br>(BOOL) ret8 = NO<br>(BOOL) ret9 = NO<br>(BOOL) ret10 = YES<br>Some content has been disabled in this document</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2016/09/23/Runtime-Part5-Class/" data-title="Runtime Part5 Class | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2016/09/23/Runtime-Part7-Method/" title="Runtime Part7 Method">
+  <strong>上一篇：</strong><br>
+  <span>
+  Runtime Part7 Method</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/09/23/Runtime-Part4-Ivar-Property/" title="Runtime Part4 Ivar Property">
+ <strong>下一篇：</strong><br> 
+ <span>Runtime Part4 Ivar Property
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2016/09/23/Runtime-Part5-Class/" data-title="Runtime Part5 Class" data-url="http://yoursite.com/2016/09/23/Runtime-Part5-Class/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#通常我们编写一个类并继承自NSObject，然后编写所有的变量、所有的方法、以及实现的所有的协议…"><span class="toc-number">1.</span> <span class="toc-text">通常我们编写一个类并继承自NSObject，然后编写所有的变量、所有的方法、以及实现的所有的协议….</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Foundation中提供了两个根类"><span class="toc-number">2.</span> <span class="toc-text">Foundation中提供了两个根类</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#NSObject、平时使用最多的根类，提供了很多我们常用的api"><span class="toc-number">2.1.</span> <span class="toc-text">NSObject、平时使用最多的根类，提供了很多我们常用的api</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#NSProxy、用的比较少，只有需要实现代理对象的时候才会使用"><span class="toc-number">2.2.</span> <span class="toc-text">NSProxy、用的比较少，只有需要实现代理对象的时候才会使用</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#我很久以前对NSObject类的一个疑惑？"><span class="toc-number">3.</span> <span class="toc-text">我很久以前对NSObject类的一个疑惑？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#找到Class指针类型所指向的结构体类型是objc-class，其恰好完整的描述了一个类所应该具备的数据"><span class="toc-number">4.</span> <span class="toc-text">找到Class指针类型所指向的结构体类型是objc_class，其恰好完整的描述了一个类所应该具备的数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#继续回到-NSObject-class-这个函数实现"><span class="toc-number">5.</span> <span class="toc-text">继续回到+[NSObject class]这个函数实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NSObjct类中的isa指针-与-NSObject对象中的isa指针"><span class="toc-number">6.</span> <span class="toc-text">NSObjct类中的isa指针 与 NSObject对象中的isa指针:</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#搜索SEL对应的Method过程"><span class="toc-number">6.1.</span> <span class="toc-text">搜索SEL对应的Method过程:</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#区分-调用对象方法-or-调用类方法"><span class="toc-number">7.</span> <span class="toc-text">区分 调用对象方法 or 调用类方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#看下经常使用类的几个系统方法的源码实现"><span class="toc-number">8.</span> <span class="toc-text">看下经常使用类的几个系统方法的源码实现</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#重写父类的方法"><span class="toc-number">8.1.</span> <span class="toc-text">重写父类的方法</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#举例获取一个Block的最终真实Class类型"><span class="toc-number">9.</span> <span class="toc-text">举例获取一个Block的最终真实Class类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#一直查找一个对象的类的super-class，结束条件是null"><span class="toc-number">10.</span> <span class="toc-text">一直查找一个对象的类的super_class，结束条件是null</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#运行时创建并注册一个类"><span class="toc-number">11.</span> <span class="toc-text">运行时创建并注册一个类</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

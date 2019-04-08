@@ -1,0 +1,454 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>设计模式-状态模式 | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="状态机、将一个事物的不同的状态执行的业务逻辑，单独封装到一个对应状态实现类中去. 抽象状态12345678910111213141516171819202122////  State.h//  demos//#import &amp;lt;Foundation/Foundation.h&amp;gt;//当前状态对象，需要设置到哪个状态机对象/** 因为StateObject接口中已经#import了State接">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计模式-状态模式">
+<meta property="og:url" content="http://yoursite.com/2016/01/16/设计模式-状态模式/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="状态机、将一个事物的不同的状态执行的业务逻辑，单独封装到一个对应状态实现类中去. 抽象状态12345678910111213141516171819202122////  State.h//  demos//#import &amp;lt;Foundation/Foundation.h&amp;gt;//当前状态对象，需要设置到哪个状态机对象/** 因为StateObject接口中已经#import了State接">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-08T12:20:49.789Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="设计模式-状态模式">
+<meta name="twitter:description" content="状态机、将一个事物的不同的状态执行的业务逻辑，单独封装到一个对应状态实现类中去. 抽象状态12345678910111213141516171819202122////  State.h//  demos//#import &amp;lt;Foundation/Foundation.h&amp;gt;//当前状态对象，需要设置到哪个状态机对象/** 因为StateObject接口中已经#import了State接">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/01/16/设计模式-状态模式/" title="设计模式-状态模式" itemprop="url">设计模式-状态模式</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2016-01-16T08:11:54.000Z" itemprop="datePublished"> Published 2016-01-16</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#状态机、将一个事物的不同的状态执行的业务逻辑，单独封装到一个对应状态实现类中去"><span class="toc-number">1.</span> <span class="toc-text">状态机、将一个事物的不同的状态执行的业务逻辑，单独封装到一个对应状态实现类中去.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#抽象状态"><span class="toc-number">2.</span> <span class="toc-text">抽象状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#抽象状态机"><span class="toc-number">3.</span> <span class="toc-text">抽象状态机</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#默认状态实现（抽象类）"><span class="toc-number">4.</span> <span class="toc-text">默认状态实现（抽象类）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#具体状态1，提供切到此状态时的附加代码逻辑"><span class="toc-number">5.</span> <span class="toc-text">具体状态1，提供切到此状态时的附加代码逻辑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#具体状态2，提供切到此状态时的附加代码逻辑"><span class="toc-number">6.</span> <span class="toc-text">具体状态2，提供切到此状态时的附加代码逻辑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#具体状态3，提供切到此状态时的附加代码逻辑"><span class="toc-number">7.</span> <span class="toc-text">具体状态3，提供切到此状态时的附加代码逻辑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#具体状态机1"><span class="toc-number">8.</span> <span class="toc-text">具体状态机1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#demo示例"><span class="toc-number">9.</span> <span class="toc-text">demo示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#好处-每一种状态封装对应的处理逻辑"><span class="toc-number">10.</span> <span class="toc-text">好处: 每一种状态封装对应的处理逻辑.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#缺点-状态很多时候，实现类也很多"><span class="toc-number">11.</span> <span class="toc-text">缺点: 状态很多时候，实现类也很多.</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="状态机、将一个事物的不同的状态执行的业务逻辑，单独封装到一个对应状态实现类中去"><a href="#状态机、将一个事物的不同的状态执行的业务逻辑，单独封装到一个对应状态实现类中去" class="headerlink" title="状态机、将一个事物的不同的状态执行的业务逻辑，单独封装到一个对应状态实现类中去."></a>状态机、将一个事物的<code>不同的状态执行的业务逻辑</code>，单独封装到<code>一个对应状态实现类</code>中去.</h3><hr>
+<h3 id="抽象状态"><a href="#抽象状态" class="headerlink" title="抽象状态"></a>抽象状态</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  State.h</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//当前状态对象，需要设置到哪个状态机对象</span></span><br><span class="line"><span class="comment">/** 因为StateObject接口中已经#import了State接口，所以使用@protocol声明 */</span></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">StateObject</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  抽象状态</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">State</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  当前状态设置到哪一个状态机</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">- (<span class="keyword">void</span>)handleState:(<span class="keyword">id</span>&lt;StateObject&gt;)object;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="抽象状态机"><a href="#抽象状态机" class="headerlink" title="抽象状态机"></a>抽象状态机</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  StateObject.h</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//依赖一个状态</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"State.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  状态管理器</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">StateObject</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  切换状态</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">- (<span class="keyword">void</span>)changeToState:(<span class="keyword">id</span>&lt;State&gt;)state;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  当前状态</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">- (<span class="keyword">id</span>&lt;State&gt;)currentState;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="默认状态实现（抽象类）"><a href="#默认状态实现（抽象类）" class="headerlink" title="默认状态实现（抽象类）"></a>默认状态实现（抽象类）</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  AbstactState.h</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"State.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">AbstactState</span> : <span class="title">NSObject</span> &lt;<span class="title">State</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//单例所有状态对象</span></span><br><span class="line">+ (<span class="keyword">instancetype</span>)sharedInstance;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  AbstactState.m</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"AbstactState.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"StateObject.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">AbstactState</span></span></span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">instancetype</span>)sharedInstance &#123;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">id</span> state = <span class="literal">nil</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="built_in">dispatch_once_t</span> onceToken;</span><br><span class="line"><span class="built_in">dispatch_once</span>(&amp;onceToken, ^&#123;</span><br><span class="line">state = [[<span class="keyword">self</span> alloc] init];</span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">return</span> state;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)handleState:(<span class="keyword">id</span>&lt;StateObject&gt;)object &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//将新的State设置给状态机对象</span></span><br><span class="line"><span class="comment">//并由状态机提供对应的状态的附加代码</span></span><br><span class="line">[object changeToState:<span class="keyword">self</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="具体状态1，提供切到此状态时的附加代码逻辑"><a href="#具体状态1，提供切到此状态时的附加代码逻辑" class="headerlink" title="具体状态1，提供切到此状态时的附加代码逻辑"></a>具体状态1，提供切到此状态时的附加代码逻辑</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  State1.h</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"AbstactState.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">State1</span> : <span class="title">AbstactState</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  State1.m</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"State1.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">State1</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)handleState:(<span class="keyword">id</span>&lt;StateObject&gt;)object &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//1. 执行父类修改state</span></span><br><span class="line">[<span class="keyword">super</span> handleState:object];</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 做自己的处理</span></span><br><span class="line"><span class="comment">//......</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="具体状态2，提供切到此状态时的附加代码逻辑"><a href="#具体状态2，提供切到此状态时的附加代码逻辑" class="headerlink" title="具体状态2，提供切到此状态时的附加代码逻辑"></a>具体状态2，提供切到此状态时的附加代码逻辑</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  State2.h</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"AbstactState.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">State2</span> : <span class="title">AbstactState</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  State2.m</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"State2.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"StateObject.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">State2</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)handleState:(<span class="keyword">id</span>&lt;StateObject&gt;)object &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//1. 执行父类修改state</span></span><br><span class="line">[<span class="keyword">super</span> handleState:object];</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 做自己的处理</span></span><br><span class="line"><span class="comment">//......</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="具体状态3，提供切到此状态时的附加代码逻辑"><a href="#具体状态3，提供切到此状态时的附加代码逻辑" class="headerlink" title="具体状态3，提供切到此状态时的附加代码逻辑"></a>具体状态3，提供切到此状态时的附加代码逻辑</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  State3.h</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"AbstactState.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">State3</span> : <span class="title">AbstactState</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  State3.m</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"State3.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"StateObject.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">State3</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)handleState:(<span class="keyword">id</span>&lt;StateObject&gt;)object &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//1. 执行父类修改state</span></span><br><span class="line">[<span class="keyword">super</span> handleState:object];</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 做自己的处理</span></span><br><span class="line"><span class="comment">//......</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="具体状态机1"><a href="#具体状态机1" class="headerlink" title="具体状态机1"></a>具体状态机1</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  StateObject1.h</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//实现接口</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"StateObject.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*  一个具体的状态管理器</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">StateObject1</span> : <span class="title">NSObject</span> &lt;<span class="title">StateObject</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  StateObject1.m</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"StateObject1.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">StateObject1</span> ()</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//保存当前状态对象</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) <span class="keyword">id</span>&lt;State&gt; state;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">StateObject1</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)changeToState:(<span class="keyword">id</span>&lt;State&gt;)state &#123;</span><br><span class="line">_state = state;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">id</span>&lt;State&gt;)currentState &#123;</span><br><span class="line"><span class="keyword">return</span> _state;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="demo示例"><a href="#demo示例" class="headerlink" title="demo示例"></a>demo示例</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  StateTest.m</span></span><br><span class="line"><span class="comment">//  demos</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"StateTest.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"State1.h"</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"State2.h"</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"State3.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"StateObject1.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">StateTest</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)test &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//1. 状态机</span></span><br><span class="line"><span class="keyword">id</span>&lt;StateObject&gt; manager = [StateObject1 new];</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 所有的状态（附加逻辑）</span></span><br><span class="line"><span class="keyword">id</span>&lt;State&gt; state1 = [State1 sharedInstance];</span><br><span class="line"><span class="keyword">id</span>&lt;State&gt; state2 = [State2 sharedInstance];</span><br><span class="line"><span class="keyword">id</span>&lt;State&gt; state3 = [State3 sharedInstance];</span><br><span class="line"></span><br><span class="line"><span class="comment">//3. 切换状态</span></span><br><span class="line">[manager changeToState:state1];</span><br><span class="line"></span><br><span class="line"><span class="comment">//4. 切换状态</span></span><br><span class="line">[manager changeToState:state2];</span><br><span class="line"></span><br><span class="line"><span class="comment">//5. 切换状态</span></span><br><span class="line">[manager changeToState:state3];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="好处-每一种状态封装对应的处理逻辑"><a href="#好处-每一种状态封装对应的处理逻辑" class="headerlink" title="好处: 每一种状态封装对应的处理逻辑."></a>好处: 每一种状态封装对应的处理逻辑.</h3><h3 id="缺点-状态很多时候，实现类也很多"><a href="#缺点-状态很多时候，实现类也很多" class="headerlink" title="缺点: 状态很多时候，实现类也很多."></a>缺点: 状态很多时候，实现类也很多.</h3>  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2016/01/16/设计模式-状态模式/" data-title="设计模式-状态模式 | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2016/01/17/设计模式-策略模式/" title="设计模式-策略模式">
+  <strong>上一篇：</strong><br>
+  <span>
+  设计模式-策略模式</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/01/15/设计模式-观察者模式/" title="设计模式-观察者模式">
+ <strong>下一篇：</strong><br> 
+ <span>设计模式-观察者模式
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2016/01/16/设计模式-状态模式/" data-title="设计模式-状态模式" data-url="http://yoursite.com/2016/01/16/设计模式-状态模式/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#状态机、将一个事物的不同的状态执行的业务逻辑，单独封装到一个对应状态实现类中去"><span class="toc-number">1.</span> <span class="toc-text">状态机、将一个事物的不同的状态执行的业务逻辑，单独封装到一个对应状态实现类中去.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#抽象状态"><span class="toc-number">2.</span> <span class="toc-text">抽象状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#抽象状态机"><span class="toc-number">3.</span> <span class="toc-text">抽象状态机</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#默认状态实现（抽象类）"><span class="toc-number">4.</span> <span class="toc-text">默认状态实现（抽象类）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#具体状态1，提供切到此状态时的附加代码逻辑"><span class="toc-number">5.</span> <span class="toc-text">具体状态1，提供切到此状态时的附加代码逻辑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#具体状态2，提供切到此状态时的附加代码逻辑"><span class="toc-number">6.</span> <span class="toc-text">具体状态2，提供切到此状态时的附加代码逻辑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#具体状态3，提供切到此状态时的附加代码逻辑"><span class="toc-number">7.</span> <span class="toc-text">具体状态3，提供切到此状态时的附加代码逻辑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#具体状态机1"><span class="toc-number">8.</span> <span class="toc-text">具体状态机1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#demo示例"><span class="toc-number">9.</span> <span class="toc-text">demo示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#好处-每一种状态封装对应的处理逻辑"><span class="toc-number">10.</span> <span class="toc-text">好处: 每一种状态封装对应的处理逻辑.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#缺点-状态很多时候，实现类也很多"><span class="toc-number">11.</span> <span class="toc-text">缺点: 状态很多时候，实现类也很多.</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

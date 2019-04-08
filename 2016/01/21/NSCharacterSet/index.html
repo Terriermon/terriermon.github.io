@@ -1,0 +1,469 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>NSCharacterSet | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="NSCharacterSet和NSMutableCharacterSet是用来表示一组Unicode字符 常见系统的 字符集组合CharSet123456789101112131415[NSCharacterSet alphanumericCharacterSet];          //所有数字和字母(大小写)  [NSCharacterSet decimalDigitCharacterSet">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NSCharacterSet">
+<meta property="og:url" content="http://yoursite.com/2016/01/21/NSCharacterSet/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="NSCharacterSet和NSMutableCharacterSet是用来表示一组Unicode字符 常见系统的 字符集组合CharSet123456789101112131415[NSCharacterSet alphanumericCharacterSet];          //所有数字和字母(大小写)  [NSCharacterSet decimalDigitCharacterSet">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-08T12:23:21.972Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="NSCharacterSet">
+<meta name="twitter:description" content="NSCharacterSet和NSMutableCharacterSet是用来表示一组Unicode字符 常见系统的 字符集组合CharSet123456789101112131415[NSCharacterSet alphanumericCharacterSet];          //所有数字和字母(大小写)  [NSCharacterSet decimalDigitCharacterSet">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/01/21/NSCharacterSet/" title="NSCharacterSet" itemprop="url">NSCharacterSet</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2016-01-21T15:05:36.000Z" itemprop="datePublished"> Published 2016-01-21</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#NSCharacterSet和NSMutableCharacterSet是用来表示一组Unicode字符"><span class="toc-number">1.</span> <span class="toc-text">NSCharacterSet和NSMutableCharacterSet是用来表示一组Unicode字符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#常见系统的-字符集组合CharSet"><span class="toc-number">2.</span> <span class="toc-text">常见系统的 字符集组合CharSet</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#查找字符串中的一个字符-‘-’"><span class="toc-number">3.</span> <span class="toc-text">查找字符串中的一个字符 ‘.’</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#去除一个NSArray中的重复元素"><span class="toc-number">4.</span> <span class="toc-text">去除一个NSArray中的重复元素</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#截取一个NSArray的部分元素，同时去除重复元素"><span class="toc-number">5.</span> <span class="toc-text">截取一个NSArray的部分元素，同时去除重复元素</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#将多个NSObject对象组装成NSOrderSet"><span class="toc-number">6.</span> <span class="toc-text">将多个NSObject对象组装成NSOrderSet</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#从NSOrderSet中查询某个元素"><span class="toc-number">7.</span> <span class="toc-text">从NSOrderSet中查询某个元素</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NSOrderSet遍历，以及去除重复元素的规则"><span class="toc-number">8.</span> <span class="toc-text">NSOrderSet遍历，以及去除重复元素的规则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NSOrderSet的集合运算"><span class="toc-number">9.</span> <span class="toc-text">NSOrderSet的集合运算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NSOrderSet过滤元素"><span class="toc-number">10.</span> <span class="toc-text">NSOrderSet过滤元素</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#自定义创建NSCharacterSet"><span class="toc-number">11.</span> <span class="toc-text">自定义创建NSCharacterSet</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#判断-数字0-（字符编码为48）是否存在于-十进制数的字符集中"><span class="toc-number">12.</span> <span class="toc-text">判断 数字0 （字符编码为48）是否存在于 十进制数的字符集中</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NSMutableCharacter的使用"><span class="toc-number">13.</span> <span class="toc-text">NSMutableCharacter的使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#去除-两端-的空格"><span class="toc-number">14.</span> <span class="toc-text">去除 两端 的空格</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#通过数字把字符串变成数组"><span class="toc-number">15.</span> <span class="toc-text">通过数字把字符串变成数组</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#过滤URL中的特殊字符"><span class="toc-number">16.</span> <span class="toc-text">过滤URL中的特殊字符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#去除单词中的-多余空格"><span class="toc-number">17.</span> <span class="toc-text">去除单词中的 多余空格</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="NSCharacterSet和NSMutableCharacterSet是用来表示一组Unicode字符"><a href="#NSCharacterSet和NSMutableCharacterSet是用来表示一组Unicode字符" class="headerlink" title="NSCharacterSet和NSMutableCharacterSet是用来表示一组Unicode字符"></a>NSCharacterSet和NSMutableCharacterSet是用来表示一组Unicode字符</h3><hr>
+<h3 id="常见系统的-字符集组合CharSet"><a href="#常见系统的-字符集组合CharSet" class="headerlink" title="常见系统的 字符集组合CharSet"></a>常见系统的 字符集组合CharSet</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[<span class="built_in">NSCharacterSet</span> alphanumericCharacterSet];          <span class="comment">//所有数字和字母(大小写)  </span></span><br><span class="line"></span><br><span class="line">[<span class="built_in">NSCharacterSet</span> decimalDigitCharacterSet];          <span class="comment">//0-9的数字  </span></span><br><span class="line"></span><br><span class="line">[<span class="built_in">NSCharacterSet</span> letterCharacterSet];                <span class="comment">//所有字母  </span></span><br><span class="line"></span><br><span class="line">[<span class="built_in">NSCharacterSet</span> lowercaseLetterCharacterSet];       <span class="comment">//小写字母  </span></span><br><span class="line"></span><br><span class="line">[<span class="built_in">NSCharacterSet</span> uppercaseLetterCharacterSet];       <span class="comment">//大写字母  </span></span><br><span class="line"></span><br><span class="line">[<span class="built_in">NSCharacterSet</span> punctuationCharacterSet];           <span class="comment">//标点符号  </span></span><br><span class="line"></span><br><span class="line">[<span class="built_in">NSCharacterSet</span> whitespaceAndNewlineCharacterSet];  <span class="comment">//空格和换行符  </span></span><br><span class="line"></span><br><span class="line">[<span class="built_in">NSCharacterSet</span> whitespaceCharacterSet];            <span class="comment">//空格</span></span><br></pre></td></tr></table></figure>
+<p>还有很多iOS7之后新添加的</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">NSCharacterSet</span> (<span class="title">NSURLUtilities</span>)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Predefined character sets for the six URL components and subcomponents which allow percent encoding. These character sets are passed to -stringByAddingPercentEncodingWithAllowedCharacters:.</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Returns a character set containing the characters allowed in an URL's user subcomponent.</span></span><br><span class="line">+ (<span class="built_in">NSCharacterSet</span> *)URLUserAllowedCharacterSet <span class="built_in">NS_AVAILABLE</span>(<span class="number">10</span>_9, <span class="number">7</span>_0);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Returns a character set containing the characters allowed in an URL's password subcomponent.</span></span><br><span class="line">+ (<span class="built_in">NSCharacterSet</span> *)URLPasswordAllowedCharacterSet <span class="built_in">NS_AVAILABLE</span>(<span class="number">10</span>_9, <span class="number">7</span>_0);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Returns a character set containing the characters allowed in an URL's host subcomponent.</span></span><br><span class="line">+ (<span class="built_in">NSCharacterSet</span> *)URLHostAllowedCharacterSet <span class="built_in">NS_AVAILABLE</span>(<span class="number">10</span>_9, <span class="number">7</span>_0);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Returns a character set containing the characters allowed in an URL's path component. ';' is a legal path character, but it is recommended that it be percent-encoded for best compatibility with NSURL (-stringByAddingPercentEncodingWithAllowedCharacters: will percent-encode any ';' characters if you pass the URLPathAllowedCharacterSet).</span></span><br><span class="line">+ (<span class="built_in">NSCharacterSet</span> *)URLPathAllowedCharacterSet <span class="built_in">NS_AVAILABLE</span>(<span class="number">10</span>_9, <span class="number">7</span>_0);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Returns a character set containing the characters allowed in an URL's query component.</span></span><br><span class="line">+ (<span class="built_in">NSCharacterSet</span> *)URLQueryAllowedCharacterSet <span class="built_in">NS_AVAILABLE</span>(<span class="number">10</span>_9, <span class="number">7</span>_0);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Returns a character set containing the characters allowed in an URL's fragment component.</span></span><br><span class="line">+ (<span class="built_in">NSCharacterSet</span> *)URLFragmentAllowedCharacterSet <span class="built_in">NS_AVAILABLE</span>(<span class="number">10</span>_9, <span class="number">7</span>_0);</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="查找字符串中的一个字符-‘-’"><a href="#查找字符串中的一个字符-‘-’" class="headerlink" title="查找字符串中的一个字符 ‘.’"></a>查找字符串中的一个字符 ‘.’</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSCharacterSet</span> *set = [<span class="built_in">NSCharacterSet</span> characterSetWithRange:<span class="built_in">NSMakeRange</span>(<span class="string">'.'</span>, <span class="number">1</span>)];</span><br><span class="line"></span><br><span class="line"><span class="built_in">NSString</span> *str = <span class="string">@"dawd.awdawdwdawd.dawd"</span>;</span><br><span class="line"></span><br><span class="line"><span class="built_in">NSRange</span> range = [str rangeOfCharacterFromSet:set];</span><br></pre></td></tr></table></figure>
+<h3 id="去除一个NSArray中的重复元素"><a href="#去除一个NSArray中的重复元素" class="headerlink" title="去除一个NSArray中的重复元素"></a>去除一个NSArray中的重复元素</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSOrderedSet</span> *set1 = [<span class="built_in">NSOrderedSet</span> orderedSetWithArray:@[@<span class="number">3</span>,@<span class="number">7</span>,@<span class="number">3</span>,@<span class="number">3</span>,@<span class="number">0</span>]];</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"%@"</span>,set1);</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">输出结果:</span><br><span class="line"></span><br><span class="line">&#123;(</span><br><span class="line">3,</span><br><span class="line">7,</span><br><span class="line">0</span><br><span class="line">)&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="截取一个NSArray的部分元素，同时去除重复元素"><a href="#截取一个NSArray的部分元素，同时去除重复元素" class="headerlink" title="截取一个NSArray的部分元素，同时去除重复元素"></a>截取一个NSArray的部分元素，同时去除重复元素</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSArray</span> *array = @[@<span class="number">3</span>,@<span class="number">7</span>,@<span class="number">3</span>,@<span class="number">3</span>,@<span class="number">0</span>];</span><br><span class="line"><span class="built_in">NSOrderedSet</span> *set2 = [<span class="built_in">NSOrderedSet</span> orderedSetWithArray:array range:<span class="built_in">NSMakeRange</span>(<span class="number">0</span>, <span class="number">4</span>) copyItems:<span class="literal">NO</span>];</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"%@"</span>,set2);</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">输出结果:</span><br><span class="line"></span><br><span class="line">&#123;(</span><br><span class="line">3,</span><br><span class="line">7</span><br><span class="line">)&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="将多个NSObject对象组装成NSOrderSet"><a href="#将多个NSObject对象组装成NSOrderSet" class="headerlink" title="将多个NSObject对象组装成NSOrderSet"></a>将多个NSObject对象组装成NSOrderSet</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSOrderedSet</span> *set3 = [<span class="built_in">NSOrderedSet</span> orderedSetWithObjects:<span class="string">@"aaaa"</span>,@<span class="number">4</span>, <span class="literal">nil</span>];</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"%@"</span>,set3);</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">输出结果:</span><br><span class="line"></span><br><span class="line">&#123;(</span><br><span class="line">aaaa,</span><br><span class="line">4</span><br><span class="line">)&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="从NSOrderSet中查询某个元素"><a href="#从NSOrderSet中查询某个元素" class="headerlink" title="从NSOrderSet中查询某个元素"></a>从NSOrderSet中查询某个元素</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSOrderedSet</span> *set1 = [<span class="built_in">NSOrderedSet</span> orderedSetWithArray:@[@<span class="number">3</span>,@<span class="number">7</span>,@<span class="number">3</span>,@<span class="number">3</span>,@<span class="number">0</span>]];</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"%@"</span>,set1);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> ([set1 containsObject:@<span class="number">3</span>]) &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"EXIST"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">输出结果:</span><br><span class="line"></span><br><span class="line">&#123;(</span><br><span class="line">3,</span><br><span class="line">7,</span><br><span class="line">0</span><br><span class="line">)&#125;</span><br><span class="line"></span><br><span class="line">EXIST</span><br></pre></td></tr></table></figure>
+<h3 id="NSOrderSet遍历，以及去除重复元素的规则"><a href="#NSOrderSet遍历，以及去除重复元素的规则" class="headerlink" title="NSOrderSet遍历，以及去除重复元素的规则"></a>NSOrderSet遍历，以及去除重复元素的规则</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSOrderedSet</span> *set1 = [<span class="built_in">NSOrderedSet</span> orderedSetWithArray:@[@<span class="number">3</span>,@<span class="number">7</span>,@<span class="number">3</span>,@<span class="number">3</span>,@<span class="number">0</span>]];</span><br><span class="line"></span><br><span class="line">[set1 enumerateObjectsUsingBlock:^(<span class="keyword">id</span>  _Nonnull obj, <span class="built_in">NSUInteger</span> idx, <span class="built_in">BOOL</span> * _Nonnull stop) &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"obj = %@， idx = %ld"</span>, obj, idx);</span><br><span class="line"></span><br><span class="line">&#125;];</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">输出结果:</span><br><span class="line"></span><br><span class="line">obj = 3， idx = 0</span><br><span class="line">obj = 7， idx = 1</span><br><span class="line">obj = 0， idx = 2</span><br></pre></td></tr></table></figure>
+<h3 id="NSOrderSet的集合运算"><a href="#NSOrderSet的集合运算" class="headerlink" title="NSOrderSet的集合运算"></a>NSOrderSet的集合运算</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSOrderedSet</span> *set1 = [<span class="built_in">NSOrderedSet</span> orderedSetWithObjects:@<span class="number">4</span>,@<span class="number">5</span>,@<span class="number">6</span>,@<span class="number">7</span>,<span class="literal">nil</span>];</span><br><span class="line"></span><br><span class="line"><span class="built_in">NSMutableOrderedSet</span> *set2 = [<span class="built_in">NSMutableOrderedSet</span> orderedSetWithObjects:@<span class="number">8</span>,@<span class="number">9</span>,@<span class="number">10</span>, <span class="literal">nil</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">//判断 set1中是否存在至少一个元素，是否存在于set2中</span></span><br><span class="line"><span class="keyword">if</span> ([set1 intersectsOrderedSet:set2]) &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"intersectsOrderedSet -- yes"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//判断 set1中所有元素，是否存在于set2中（是否是字串）</span></span><br><span class="line"><span class="keyword">if</span> ([set1 isSubsetOfOrderedSet:set2]) &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"isSubsetOfOrderedSet -- yes"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//合并两个order set</span></span><br><span class="line"><span class="comment">//可变set主动合并</span></span><br><span class="line">[set2 unionOrderedSet:set1];</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">输出结果:</span><br><span class="line"></span><br><span class="line">&#123;(</span><br><span class="line">8,</span><br><span class="line">9,</span><br><span class="line">10,</span><br><span class="line">4,</span><br><span class="line">5,</span><br><span class="line">6,</span><br><span class="line">7</span><br><span class="line">)&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="NSOrderSet过滤元素"><a href="#NSOrderSet过滤元素" class="headerlink" title="NSOrderSet过滤元素"></a>NSOrderSet过滤元素</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSOrderedSet</span> *set = [<span class="built_in">NSOrderedSet</span> orderedSetWithObjects:@<span class="number">3</span>,@<span class="number">1</span>,@<span class="number">8</span>,@<span class="number">6</span>,@<span class="number">12</span>, <span class="literal">nil</span>];</span><br><span class="line"></span><br><span class="line"><span class="built_in">NSIndexSet</span> *indexs = [set indexesOfObjectsWithOptions:<span class="built_in">NSEnumerationConcurrent</span></span><br><span class="line">passingTest:^<span class="built_in">BOOL</span>(<span class="keyword">id</span>  _Nonnull obj, <span class="built_in">NSUInteger</span> idx, <span class="built_in">BOOL</span> * _Nonnull stop)</span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">//返回YES，当前遍历元素会被添加到NSIndexSet</span></span><br><span class="line"><span class="comment">//返回NO，被过滤掉</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> ([obj integerValue] &gt;= <span class="number">6</span>) &#123;</span><br><span class="line"><span class="keyword">return</span> <span class="literal">YES</span>;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"><span class="keyword">return</span> <span class="literal">NO</span>;</span><br><span class="line">&#125;</span><br><span class="line">&#125;];</span><br><span class="line"></span><br><span class="line"><span class="built_in">NSArray</span> *valueArray = [set objectsAtIndexes:indexs];</span><br><span class="line"></span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"%@"</span>,valueArray);</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">输出结果:</span><br><span class="line"></span><br><span class="line">(</span><br><span class="line">8,</span><br><span class="line">6,</span><br><span class="line">12</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<h3 id="自定义创建NSCharacterSet"><a href="#自定义创建NSCharacterSet" class="headerlink" title="自定义创建NSCharacterSet"></a>自定义创建NSCharacterSet</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">使用给定的字符串组成一个CharSet</span><br><span class="line"></span><br><span class="line">[<span class="built_in">NSCharacterSet</span> characterSetWithCharactersInString:<span class="string">@"Hello"</span>];</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="判断-数字0-（字符编码为48）是否存在于-十进制数的字符集中"><a href="#判断-数字0-（字符编码为48）是否存在于-十进制数的字符集中" class="headerlink" title="判断 数字0 （字符编码为48）是否存在于 十进制数的字符集中"></a>判断 <code>数字0 （字符编码为48）</code>是否存在于 <code>十进制数的字符集</code>中</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//1. 十进制数字的字符集</span></span><br><span class="line">[<span class="built_in">NSCharacterSet</span> alphanumericCharacterSet]</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 判断数字0是否存在于字符集</span></span><br><span class="line"><span class="built_in">BOOL</span> isExist = [charSet characterIsMember:<span class="number">48</span>];</span><br></pre></td></tr></table></figure>
+<h3 id="NSMutableCharacter的使用"><a href="#NSMutableCharacter的使用" class="headerlink" title="NSMutableCharacter的使用"></a>NSMutableCharacter的使用</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSMutableCharacterSet</span> *set1 = [<span class="built_in">NSMutableCharacterSet</span> characterSetWithCharactersInString:<span class="string">@"Hell"</span>];  </span><br><span class="line"><span class="built_in">NSMutableCharacterSet</span> *set2 = [<span class="built_in">NSMutableCharacterSet</span> characterSetWithCharactersInString:<span class="string">@"ello"</span>];  </span><br><span class="line"></span><br><span class="line"><span class="comment">//去掉某些字符  </span></span><br><span class="line">[set2 removeCharactersInString:<span class="string">@"e"</span>]; <span class="comment">//---&gt;l, o  </span></span><br><span class="line"></span><br><span class="line"><span class="comment">//加上某些字符  </span></span><br><span class="line">[set2 addCharactersInString:<span class="string">@"e"</span>];    <span class="comment">//---&gt;e, l, o  </span></span><br><span class="line"></span><br><span class="line"><span class="comment">//set相加  </span></span><br><span class="line">[set2 formUnionWithCharacterSet:set1]; <span class="comment">//---&gt;H,e,l,o  </span></span><br><span class="line"></span><br><span class="line"><span class="comment">//本身加上另外一个的set相交  </span></span><br><span class="line">[set2 formIntersectionWithCharacterSet:set1]; <span class="comment">//---&gt;H,e,l   </span></span><br><span class="line"></span><br><span class="line"><span class="comment">//除以包含的以外的set  </span></span><br><span class="line">[set2 invert];</span><br></pre></td></tr></table></figure>
+<h3 id="去除-两端-的空格"><a href="#去除-两端-的空格" class="headerlink" title="去除 两端 的空格"></a>去除 <code>两端</code> 的空格</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//1. 空格的字符集</span></span><br><span class="line"><span class="built_in">NSCharacterSet</span> *whiteSpaceSet = [<span class="built_in">NSCharacterSet</span> whitespaceCharacterSet];</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 去除字符集中的字符</span></span><br><span class="line">[<span class="string">@"  aaa   "</span> stringByTrimmingCharactersInSet: whiteSpaceSet];</span><br></pre></td></tr></table></figure>
+<h3 id="通过数字把字符串变成数组"><a href="#通过数字把字符串变成数组" class="headerlink" title="通过数字把字符串变成数组"></a>通过数字把字符串变成数组</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">@"a1aa2aaa3aaaa4aaaaa"</span> componentsSeparatedByCharactersInSet:[<span class="built_in">NSCharacterSet</span> decimalDigitCharacterSet]];</span><br></pre></td></tr></table></figure>
+<h3 id="过滤URL中的特殊字符"><a href="#过滤URL中的特殊字符" class="headerlink" title="过滤URL中的特殊字符"></a>过滤URL中的特殊字符</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="built_in">NSString</span> * AFPercentEscapedStringFromString(<span class="built_in">NSString</span> *string) &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//对URL中包含的特殊字符（:#[]@）替换成 %</span></span><br><span class="line"><span class="comment">// does not include "?" or "/" due to RFC 3986 - Section 3.4</span></span><br><span class="line"><span class="keyword">static</span> <span class="built_in">NSString</span> * <span class="keyword">const</span> kAFCharactersGeneralDelimitersToEncode = <span class="string">@":#[]@"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="built_in">NSString</span> * <span class="keyword">const</span> kAFCharactersSubDelimitersToEncode = <span class="string">@"!$&amp;'()*+,;="</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//创建一个用于URL的字符集</span></span><br><span class="line"><span class="built_in">NSMutableCharacterSet</span> * allowedCharacterSet = [[<span class="built_in">NSCharacterSet</span> URLQueryAllowedCharacterSet] mutableCopy];</span><br><span class="line"></span><br><span class="line"><span class="comment">//:#[]@ + !$&amp;'()*+,;=</span></span><br><span class="line"><span class="built_in">NSString</span> *temp = [kAFCharactersGeneralDelimitersToEncode stringByAppendingString:kAFCharactersSubDelimitersToEncode];</span><br><span class="line"></span><br><span class="line"><span class="comment">//从字符集中移除上面的所有 特殊字符</span></span><br><span class="line">[allowedCharacterSet removeCharactersInString:temp];</span><br><span class="line"></span><br><span class="line"><span class="comment">// <span class="doctag">FIXME:</span> https://github.com/AFNetworking/AFNetworking/pull/3028</span></span><br><span class="line"><span class="comment">// return [string stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacterSet];</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//下面是从传入的string中</span></span><br><span class="line"><span class="keyword">static</span> <span class="built_in">NSUInteger</span> <span class="keyword">const</span> batchSize = <span class="number">50</span>;</span><br><span class="line"></span><br><span class="line"><span class="built_in">NSUInteger</span> index = <span class="number">0</span>;</span><br><span class="line"><span class="built_in">NSMutableString</span> *escaped = <span class="string">@""</span>.mutableCopy;</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> (index &lt; string.length) &#123;</span><br><span class="line"><span class="meta">#pragma GCC diagnostic push</span></span><br><span class="line"><span class="meta">#pragma GCC diagnostic ignored <span class="meta-string">"-Wgnu"</span></span></span><br><span class="line"><span class="built_in">NSUInteger</span> length = MIN(string.length - index, batchSize);</span><br><span class="line"><span class="meta">#pragma GCC diagnostic pop</span></span><br><span class="line"><span class="built_in">NSRange</span> range = <span class="built_in">NSMakeRange</span>(index, length);</span><br><span class="line"></span><br><span class="line"><span class="comment">// To avoid breaking up character sequences such as 👴🏻👮🏽</span></span><br><span class="line">range = [string rangeOfComposedCharacterSequencesForRange:range];</span><br><span class="line"></span><br><span class="line"><span class="built_in">NSString</span> *substring = [string substringWithRange:range];</span><br><span class="line"></span><br><span class="line"><span class="comment">//从substring中 替换掉 不存在于allowedCharacterSet字符集中的 其他字符</span></span><br><span class="line"><span class="built_in">NSString</span> *encoded = [substring stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacterSet];</span><br><span class="line"></span><br><span class="line">[escaped appendString:encoded];</span><br><span class="line"></span><br><span class="line">index += range.length;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> escaped;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="去除单词中的-多余空格"><a href="#去除单词中的-多余空格" class="headerlink" title="去除单词中的 多余空格"></a>去除单词中的 <code>多余空格</code></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@&quot;  My     name    is     Johnny!  &quot;</span><br><span class="line"></span><br><span class="line">变成</span><br><span class="line"></span><br><span class="line">@&quot;My name is Johnny!&quot;</span><br></pre></td></tr></table></figure>
+<p>实现代码如下，主要使用NSCharSet + NSPredicate + 数组截取、过滤、拼接</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSString</span> *exampleStr = <span class="string">@"   My    name    is    Johnny!     "</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//1. 去掉两端的空格</span></span><br><span class="line">exampleStr = [exampleStr stringByTrimmingCharactersInSet:[<span class="built_in">NSCharacterSet</span> whitespaceCharacterSet]];</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 然后以空格字符集截取成数组（很多空格也被截取成一个数组元素）</span></span><br><span class="line"><span class="built_in">NSArray</span> *exampleArr = [exampleStr componentsSeparatedByCharactersInSet:[<span class="built_in">NSCharacterSet</span> whitespaceCharacterSet]];</span><br><span class="line"></span><br><span class="line"><span class="comment">//3. 创建一个过滤条件: 不等于空字符</span></span><br><span class="line"><span class="built_in">NSPredicate</span> *predicate = [<span class="built_in">NSPredicate</span> predicateWithFormat:<span class="string">@"self &lt;&gt; ''"</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">//4. 数组过滤掉空格字符的元素</span></span><br><span class="line">exampleArr = [exampleArr filteredArrayUsingPredicate:predicate];</span><br><span class="line"></span><br><span class="line"><span class="comment">//5. 数组组装成字符串</span></span><br><span class="line">exampleStr = [exampleArr componentsJoinedByString:<span class="string">@" "</span>];</span><br></pre></td></tr></table></figure>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2016/01/21/NSCharacterSet/" data-title="NSCharacterSet | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2016/02/16/枚举Mask/" title="枚举Mask">
+  <strong>上一篇：</strong><br>
+  <span>
+  枚举Mask</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/01/18/设计模式-访问者模式/" title="设计模式-访问者模式">
+ <strong>下一篇：</strong><br> 
+ <span>设计模式-访问者模式
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2016/01/21/NSCharacterSet/" data-title="NSCharacterSet" data-url="http://yoursite.com/2016/01/21/NSCharacterSet/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#NSCharacterSet和NSMutableCharacterSet是用来表示一组Unicode字符"><span class="toc-number">1.</span> <span class="toc-text">NSCharacterSet和NSMutableCharacterSet是用来表示一组Unicode字符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#常见系统的-字符集组合CharSet"><span class="toc-number">2.</span> <span class="toc-text">常见系统的 字符集组合CharSet</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#查找字符串中的一个字符-‘-’"><span class="toc-number">3.</span> <span class="toc-text">查找字符串中的一个字符 ‘.’</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#去除一个NSArray中的重复元素"><span class="toc-number">4.</span> <span class="toc-text">去除一个NSArray中的重复元素</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#截取一个NSArray的部分元素，同时去除重复元素"><span class="toc-number">5.</span> <span class="toc-text">截取一个NSArray的部分元素，同时去除重复元素</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#将多个NSObject对象组装成NSOrderSet"><span class="toc-number">6.</span> <span class="toc-text">将多个NSObject对象组装成NSOrderSet</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#从NSOrderSet中查询某个元素"><span class="toc-number">7.</span> <span class="toc-text">从NSOrderSet中查询某个元素</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NSOrderSet遍历，以及去除重复元素的规则"><span class="toc-number">8.</span> <span class="toc-text">NSOrderSet遍历，以及去除重复元素的规则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NSOrderSet的集合运算"><span class="toc-number">9.</span> <span class="toc-text">NSOrderSet的集合运算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NSOrderSet过滤元素"><span class="toc-number">10.</span> <span class="toc-text">NSOrderSet过滤元素</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#自定义创建NSCharacterSet"><span class="toc-number">11.</span> <span class="toc-text">自定义创建NSCharacterSet</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#判断-数字0-（字符编码为48）是否存在于-十进制数的字符集中"><span class="toc-number">12.</span> <span class="toc-text">判断 数字0 （字符编码为48）是否存在于 十进制数的字符集中</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NSMutableCharacter的使用"><span class="toc-number">13.</span> <span class="toc-text">NSMutableCharacter的使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#去除-两端-的空格"><span class="toc-number">14.</span> <span class="toc-text">去除 两端 的空格</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#通过数字把字符串变成数组"><span class="toc-number">15.</span> <span class="toc-text">通过数字把字符串变成数组</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#过滤URL中的特殊字符"><span class="toc-number">16.</span> <span class="toc-text">过滤URL中的特殊字符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#去除单词中的-多余空格"><span class="toc-number">17.</span> <span class="toc-text">去除单词中的 多余空格</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

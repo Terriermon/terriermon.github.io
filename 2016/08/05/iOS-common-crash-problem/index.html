@@ -1,0 +1,489 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>iOS common crash problem | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="常见问题整理 Array的一些崩溃 (1) 数组对象是id类型，并不清楚到底是可变还是不可变  12id array = [NSArray new];[array addObject:@&quot;111&quot;];  (2) 添加一个nil到数组对象  12id array = [NSMutableArray new];[array addObject:nil]; 12NSString *str = nil;@">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS common crash problem">
+<meta property="og:url" content="http://yoursite.com/2016/08/05/iOS-common-crash-problem/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="常见问题整理 Array的一些崩溃 (1) 数组对象是id类型，并不清楚到底是可变还是不可变  12id array = [NSArray new];[array addObject:@&quot;111&quot;];  (2) 添加一个nil到数组对象  12id array = [NSMutableArray new];[array addObject:nil]; 12NSString *str = nil;@">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-08T12:33:49.034Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS common crash problem">
+<meta name="twitter:description" content="常见问题整理 Array的一些崩溃 (1) 数组对象是id类型，并不清楚到底是可变还是不可变  12id array = [NSArray new];[array addObject:@&quot;111&quot;];  (2) 添加一个nil到数组对象  12id array = [NSMutableArray new];[array addObject:nil]; 12NSString *str = nil;@">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/08/05/iOS-common-crash-problem/" title="iOS common crash problem" itemprop="url">iOS common crash problem</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2016-08-05T03:47:42.000Z" itemprop="datePublished"> Published 2016-08-05</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#常见问题整理"><span class="toc-number">1.</span> <span class="toc-text">常见问题整理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Array的一些崩溃"><span class="toc-number">2.</span> <span class="toc-text">Array的一些崩溃</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Dic-的一些崩溃"><span class="toc-number">3.</span> <span class="toc-text">Dic 的一些崩溃</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NSString的一些崩溃"><span class="toc-number">4.</span> <span class="toc-text">NSString的一些崩溃</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#application-windows-are-expected-to-have-a-root-view-controller-启动的时候可能由于一些提示框Window没有设置rootViewController导致程序崩溃"><span class="toc-number">5.</span> <span class="toc-text">application windows are expected to have a root view controller 启动的时候可能由于一些提示框Window没有设置rootViewController导致程序崩溃</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="常见问题整理"><a href="#常见问题整理" class="headerlink" title="常见问题整理"></a>常见问题整理</h3><hr>
+<h3 id="Array的一些崩溃"><a href="#Array的一些崩溃" class="headerlink" title="Array的一些崩溃"></a>Array的一些崩溃</h3><ul>
+<li>(1) 数组对象是id类型，并不清楚到底是可变还是不可变</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">id</span> array = [<span class="built_in">NSArray</span> new];</span><br><span class="line">[array addObject:<span class="string">@"111"</span>];</span><br></pre></td></tr></table></figure>
+<ul>
+<li>(2) 添加一个nil到数组对象</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">id</span> array = [<span class="built_in">NSMutableArray</span> new];</span><br><span class="line">[array addObject:<span class="literal">nil</span>];</span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSString</span> *str = <span class="literal">nil</span>;</span><br><span class="line">@[<span class="string">@"1"</span>, str, <span class="string">@"2"</span>];</span><br></pre></td></tr></table></figure>
+<p>如果一定要加一个空，起到占位作用</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">id</span> array = [<span class="built_in">NSMutableArray</span> new];</span><br><span class="line">[array addObject:(<span class="keyword">id</span>)kCFNull];</span><br><span class="line">[array addObject:[<span class="built_in">NSNull</span> null]];</span><br></pre></td></tr></table></figure>
+<p>运行输出</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;__NSArrayM 0x7fe5c8726450&gt;(</span><br><span class="line">&lt;null&gt;,</span><br><span class="line">&lt;null&gt;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>可以了解下 nil、Nil、kCFNull、NSNUll之间的区别。</p>
+<ul>
+<li>(3) 数组越界</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">id</span> array = [<span class="built_in">NSMutableArray</span> new];</span><br><span class="line">[array objectAtIndex:<span class="number">100000</span>];</span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">id</span> array = [<span class="built_in">NSMutableArray</span> new];</span><br><span class="line">[array insertObject:[<span class="built_in">NSObject</span> new] atIndex:<span class="number">10000</span>];</span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">id</span> array = [<span class="built_in">NSMutableArray</span> new];</span><br><span class="line">[array removeObjectAtIndex:<span class="number">10000</span>];</span><br></pre></td></tr></table></figure>
+<p>总之一切有关index下标取值的方法，都要注意下标是否越界。还有有关<code>Rnage</code>操作数组对象的也要注意。</p>
+<hr>
+<h3 id="Dic-的一些崩溃"><a href="#Dic-的一些崩溃" class="headerlink" title="Dic 的一些崩溃"></a>Dic 的一些崩溃</h3><ul>
+<li>使用@{}快速构建字典，value如果为nil，就会崩溃</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">id</span> dic = @&#123;</span><br><span class="line"><span class="string">@"key"</span> : [[<span class="built_in">NSUserDefaults</span> standardUserDefaults] objectForKey:<span class="string">@"wocao"</span>],</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>修改就是对value做一次防止nil处理</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">id</span> dic = @&#123;</span><br><span class="line"><span class="string">@"key"</span> : ([[<span class="built_in">NSUserDefaults</span> standardUserDefaults] objectForKey:<span class="string">@"wocao"</span>] ? [[<span class="built_in">NSUserDefaults</span> standardUserDefaults] objectForKey:<span class="string">@"wocao"</span>] : (<span class="keyword">id</span>)kCFNull),</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>对于key也是不能为nil的，同样会崩溃</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">id</span>&lt;<span class="built_in">NSCopying</span>&gt; key = <span class="literal">nil</span>;</span><br><span class="line"><span class="keyword">id</span> dic = @&#123;</span><br><span class="line">key :  (<span class="keyword">id</span>)kCFNull,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>取出对象后必须判断对象类型再去发送消息给这个取出对象</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSDictionary</span> *dic = @&#123;<span class="string">@"obj"</span> : [<span class="built_in">NSObject</span> new]&#125;;</span><br><span class="line"><span class="built_in">UIViewController</span> *vc = [dic objectForKey:<span class="string">@"obj"</span>];</span><br><span class="line"><span class="comment">// 当做UIViewController去操作</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSDictionary</span> *dic = @&#123;<span class="string">@"num"</span> : <span class="string">@"Hello World"</span>&#125;;</span><br><span class="line"><span class="built_in">NSInteger</span> count = [[dic objectForKey:<span class="string">@"num"</span>] count];</span><br></pre></td></tr></table></figure>
+<p>所以一定要对从字典取出的对象进行类型判断之后再去发送消息</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSDictionary</span> *dic = @&#123;<span class="string">@"num"</span> : <span class="string">@"Hello World"</span>&#125;;</span><br><span class="line"><span class="comment">//    NSInteger count = [[dic objectForKey:@"num"] count];</span></span><br><span class="line"><span class="built_in">NSArray</span> *array = [dic objectForKey:<span class="string">@"num"</span>];</span><br><span class="line"><span class="keyword">if</span> ([array isKindOfClass:[<span class="built_in">NSArray</span> <span class="keyword">class</span>]]) &#123;</span><br><span class="line"><span class="built_in">NSInteger</span> count = array.count;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意对象类型比较问题，对于常见集合类型（Array、Set、Dic）都是属于<code>类簇类</code>，所以不能使用如下方法进行类型判断:</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSArray</span> *array = @[<span class="string">@"1"</span>, <span class="string">@"2"</span>, <span class="string">@"3"</span>];</span><br><span class="line"><span class="keyword">if</span> ([array <span class="keyword">class</span>] == [<span class="built_in">NSArray</span> <span class="keyword">class</span>]) &#123;</span><br><span class="line">[array count];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>但是对于一些我们自己的一些类对象（非类簇类的对象）是可以的:</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Car *car = [[Car alloc] initWithName:<span class="string">@"car1"</span> cid:<span class="string">@"cid1"</span>];</span><br><span class="line"><span class="keyword">if</span> ([car <span class="keyword">class</span>] == [car <span class="keyword">class</span>]) &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"car.name = %@"</span>, car.name);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>至于什么是类簇类可以参考网上其他文章，此处就细说。</p>
+<hr>
+<h3 id="NSString的一些崩溃"><a href="#NSString的一些崩溃" class="headerlink" title="NSString的一些崩溃"></a>NSString的一些崩溃</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="built_in">NSString</span> stringWithString:<span class="literal">nil</span>];</span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSString</span> *str1 = <span class="literal">nil</span>;</span><br><span class="line"><span class="built_in">NSString</span> *str2 = <span class="string">@"Hello world!"</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 崩溃</span></span><br><span class="line"><span class="keyword">if</span> ([str2 hasPrefix:str1]) &#123;</span><br><span class="line"><span class="comment">//.....</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 崩溃</span></span><br><span class="line"><span class="keyword">if</span> ([str2 hasSuffix:str1]) &#123;</span><br><span class="line"><span class="comment">//.....       </span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 崩溃</span></span><br><span class="line">[str2 containsString:str1];</span><br></pre></td></tr></table></figure>
+<p>总之对于NSString的这些方法，都应该防止传入一个nil的NSString对象。</p>
+<hr>
+<h3 id="application-windows-are-expected-to-have-a-root-view-controller-启动的时候可能由于一些提示框Window没有设置rootViewController导致程序崩溃"><a href="#application-windows-are-expected-to-have-a-root-view-controller-启动的时候可能由于一些提示框Window没有设置rootViewController导致程序崩溃" class="headerlink" title="application windows are expected to have a root view controller 启动的时候可能由于一些提示框Window没有设置rootViewController导致程序崩溃"></a>application windows are expected to have a root view controller 启动的时候可能由于一些提示框Window没有设置rootViewController导致程序崩溃</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">BOOL</span>)application:(<span class="built_in">UIApplication</span> *)application didFinishLaunchingWithOptions:    (<span class="built_in">NSDictionary</span> *)launchOptions &#123;</span><br><span class="line"><span class="comment">//....</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 防止启动时Window缺少root vc导致程序崩溃</span></span><br><span class="line"><span class="built_in">NSArray</span> *windows = [[<span class="built_in">UIApplication</span> sharedApplication] windows];</span><br><span class="line"><span class="keyword">for</span>(<span class="built_in">UIWindow</span> *window <span class="keyword">in</span> windows) &#123;</span><br><span class="line"><span class="keyword">if</span>(window.rootViewController == <span class="literal">nil</span>)&#123;</span><br><span class="line"><span class="built_in">UIViewController</span>* vc = [[<span class="built_in">UIViewController</span> alloc]initWithNibName:<span class="literal">nil</span> bundle:<span class="literal">nil</span>];</span><br><span class="line">window.rootViewController = vc;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> <span class="literal">YES</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2016/08/05/iOS-common-crash-problem/" data-title="iOS common crash problem | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2016/09/21/Runtime-Part1-认识/" title="Runtime Part1 认识">
+  <strong>上一篇：</strong><br>
+  <span>
+  Runtime Part1 认识</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/08/01/APNS远程推送/" title="APNS远程推送">
+ <strong>下一篇：</strong><br> 
+ <span>APNS远程推送
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2016/08/05/iOS-common-crash-problem/" data-title="iOS common crash problem" data-url="http://yoursite.com/2016/08/05/iOS-common-crash-problem/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#常见问题整理"><span class="toc-number">1.</span> <span class="toc-text">常见问题整理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Array的一些崩溃"><span class="toc-number">2.</span> <span class="toc-text">Array的一些崩溃</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Dic-的一些崩溃"><span class="toc-number">3.</span> <span class="toc-text">Dic 的一些崩溃</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NSString的一些崩溃"><span class="toc-number">4.</span> <span class="toc-text">NSString的一些崩溃</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#application-windows-are-expected-to-have-a-root-view-controller-启动的时候可能由于一些提示框Window没有设置rootViewController导致程序崩溃"><span class="toc-number">5.</span> <span class="toc-text">application windows are expected to have a root view controller 启动的时候可能由于一些提示框Window没有设置rootViewController导致程序崩溃</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

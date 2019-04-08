@@ -1,0 +1,608 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>UIWindow | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="UIScreen、UIWindow、UIView三者之间的关系 (1) UIScreen为硬件设备的屏幕抽象，其中一个属性是整个屏幕区域bounds  (2) UIWindow为内容显示提供背景平台，一个App程序必须至少要有一个UIWindow，否则不会显示任何的东西   12345NS_CLASS_AVAILABLE_IOS(2_0) @interface UIWindow : UIView.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="UIWindow">
+<meta property="og:url" content="http://yoursite.com/2016/11/20/UIWindow/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="UIScreen、UIWindow、UIView三者之间的关系 (1) UIScreen为硬件设备的屏幕抽象，其中一个属性是整个屏幕区域bounds  (2) UIWindow为内容显示提供背景平台，一个App程序必须至少要有一个UIWindow，否则不会显示任何的东西   12345NS_CLASS_AVAILABLE_IOS(2_0) @interface UIWindow : UIView.">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://i5.tietuku.com/6091b49f911305f8.png">
+<meta property="og:image" content="http://i2.buimg.com/4851/ac1dad4a6dbb5bfb.png">
+<meta property="og:image" content="http://i2.buimg.com/4851/7689780a39d6ac2e.png">
+<meta property="og:image" content="http://i2.buimg.com/4851/da3814e23a7ef9dc.png">
+<meta property="og:image" content="http://i4.buimg.com/4851/05572e49b04d4b2f.png">
+<meta property="og:image" content="http://i12.tietuku.com/b6478850ece2edc7.png">
+<meta property="og:updated_time" content="2019-04-08T12:53:36.856Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="UIWindow">
+<meta name="twitter:description" content="UIScreen、UIWindow、UIView三者之间的关系 (1) UIScreen为硬件设备的屏幕抽象，其中一个属性是整个屏幕区域bounds  (2) UIWindow为内容显示提供背景平台，一个App程序必须至少要有一个UIWindow，否则不会显示任何的东西   12345NS_CLASS_AVAILABLE_IOS(2_0) @interface UIWindow : UIView.">
+<meta name="twitter:image" content="http://i5.tietuku.com/6091b49f911305f8.png">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/11/20/UIWindow/" title="UIWindow" itemprop="url">UIWindow</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2016-11-20T09:21:06.000Z" itemprop="datePublished"> Published 2016-11-20</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#UIScreen、UIWindow、UIView三者之间的关系"><span class="toc-number">1.</span> <span class="toc-text">UIScreen、UIWindow、UIView三者之间的关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#从main-m开始"><span class="toc-number">2.</span> <span class="toc-text">从main.m开始</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#然后就会执行Appdelegate实例的回调方法，告诉我们UIApplication已经创建完毕"><span class="toc-number">3.</span> <span class="toc-text">然后就会执行Appdelegate实例的回调方法，告诉我们UIApplication已经创建完毕</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#图示-UIApplication、AppDelegate、UIWindow、UIViewController之间的关系"><span class="toc-number">4.</span> <span class="toc-text">图示: UIApplication、AppDelegate、UIWindow、UIViewController之间的关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#UIWindowLevel是系统规定出的window的三个级别"><span class="toc-number">5.</span> <span class="toc-text">UIWindowLevel是系统规定出的window的三个级别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#UIWindow状态发生变化时，发出如下对应的系统通知"><span class="toc-number">6.</span> <span class="toc-text">UIWindow状态发生变化时，发出如下对应的系统通知</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取window的几种方法"><span class="toc-number">7.</span> <span class="toc-text">获取window的几种方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#UIApplication实例，添加多个UIWindow，并作为keyWindow"><span class="toc-number">8.</span> <span class="toc-text">UIApplication实例，添加多个UIWindow，并作为keyWindow</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#winodw-hide-NO也是可以显示window，完成将window添加到application"><span class="toc-number">9.</span> <span class="toc-text">winodw.hide = NO也是可以显示window，完成将window添加到application</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#UIView-window-获取的window不一定是keyWindow，而是view当前所在window"><span class="toc-number">10.</span> <span class="toc-text">-[UIView window]获取的window不一定是keyWindow，而是view当前所在window</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#查找当前App程序中的主事件keyWindow的代码"><span class="toc-number">11.</span> <span class="toc-text">查找当前App程序中的主事件keyWindow的代码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取当前显示的UIViewController"><span class="toc-number">12.</span> <span class="toc-text">获取当前显示的UIViewController</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#最上层的UIWindow是-UITextEffectsWindow"><span class="toc-number">13.</span> <span class="toc-text">最上层的UIWindow是: UITextEffectsWindow</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#最终显示UI的容器是UIWindow"><span class="toc-number">14.</span> <span class="toc-text">最终显示UI的容器是UIWindow</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#将一个View插入到一个superView上如下四种方法"><span class="toc-number">15.</span> <span class="toc-text">将一个View插入到一个superView上如下四种方法</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="UIScreen、UIWindow、UIView三者之间的关系"><a href="#UIScreen、UIWindow、UIView三者之间的关系" class="headerlink" title="UIScreen、UIWindow、UIView三者之间的关系"></a>UIScreen、UIWindow、UIView三者之间的关系</h3><ul>
+<li><p>(1) UIScreen为<code>硬件设备</code>的屏幕抽象，其中一个属性是整个屏幕区域bounds</p>
+</li>
+<li><p>(2) UIWindow为<code>内容显示</code>提供背景平台，一个App程序必须至少要有一个UIWindow，否则不会显示任何的东西</p>
+</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NS_CLASS_AVAILABLE_IOS</span>(<span class="number">2</span>_0) <span class="class"><span class="keyword">@interface</span> <span class="title">UIWindow</span> : <span class="title">UIView</span></span></span><br><span class="line"></span><br><span class="line">.....</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>可以看到UIWindow继承自UIView，所以可以将其看做成一个UI控件使用即可。</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">window1 = [[<span class="built_in">UIWindow</span> alloc] init];</span><br><span class="line">window1.backgroundColor = [<span class="built_in">UIColor</span> redColor];</span><br><span class="line">window1.rootViewController = [[<span class="built_in">UIViewController</span> alloc] init];</span><br><span class="line">window1.frame = <span class="built_in">CGRectMake</span>(<span class="number">20</span>, <span class="number">70</span>, <span class="number">200</span>, <span class="number">200</span>);</span><br><span class="line">window1.hidden = <span class="literal">NO</span>;    <span class="comment">//或者 [window1 makeKeyAndVisible];</span></span><br><span class="line">[window1 addSubview:[<span class="built_in">UIView</span> new]];</span><br></pre></td></tr></table></figure>
+<ul>
+<li>(3) UIView负责绝大部分的内容描画，并负责响应用户的交互、管理子视图，最终被添加到UIWindow上进行显示</li>
+</ul>
+<p>通常我们在一个<code>-[UIViewController.view addSubviews:]</code>添加很多UIView对象时，其实最终会自动被添加到所在的<code>keyWindow</code>上进行显示.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">- UIScreen 屏幕对象 选取一个window进行显示，并作为主事件keyWindow</span><br><span class="line">- UIWindow for `状态栏`</span><br><span class="line">- root view controller</span><br><span class="line">- subview 1</span><br><span class="line">- subview 2</span><br><span class="line">- .....</span><br><span class="line">- UIWindow for `键盘输入`</span><br><span class="line">- root view controller</span><br><span class="line">- subview 1</span><br><span class="line">- subview 2</span><br><span class="line">- .....</span><br><span class="line">- UIWindow for `Alert弹框`</span><br><span class="line">- root view controller</span><br><span class="line">- subview 1</span><br><span class="line">- subview 2</span><br><span class="line">- .....</span><br><span class="line">- UIWindow for `我们自己创建的各种Window`</span><br><span class="line">- root view controller</span><br><span class="line">- subview 1</span><br><span class="line">- subview 2</span><br><span class="line">- .....</span><br></pre></td></tr></table></figure>
+<h3 id="从main-m开始"><a href="#从main-m开始" class="headerlink" title="从main.m开始"></a>从main.m开始</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">int main(int argc, char * argv[]) &#123;</span><br><span class="line">@autoreleasepool &#123;</span><br><span class="line">return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>完成创建<code>UIApplication</code>对象，来表示一个App程序运行</li>
+<li>创建<code>UIApplicationDelegate</code>对象，作为<code>UIApplication</code>对象状态改变时回调的对象</li>
+<li>创建<code>Main NSRunLopp</code>，负责整个App进程的事件接收</li>
+</ul>
+<hr>
+<h3 id="然后就会执行Appdelegate实例的回调方法，告诉我们UIApplication已经创建完毕"><a href="#然后就会执行Appdelegate实例的回调方法，告诉我们UIApplication已经创建完毕" class="headerlink" title="然后就会执行Appdelegate实例的回调方法，告诉我们UIApplication已经创建完毕"></a>然后就会执行Appdelegate实例的回调方法，告诉我们<code>UIApplication已经创建完毕</code></h3><p>如下是一个AppDelegate如何完成UIWindow、RootViewController的步骤demo</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">@implementation AppDelegate</span><br><span class="line"></span><br><span class="line">#pragma mark - UIApplicationDelegate 实现方法</span><br><span class="line"></span><br><span class="line">- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions &#123;</span><br><span class="line"></span><br><span class="line">//1. UIApplication实例创建完毕</span><br><span class="line">NSLog(@&quot;application = %@\n&quot;, application);</span><br><span class="line"></span><br><span class="line">//2. 创建一个UIWdinwo实例</span><br><span class="line">UIWindow *window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];</span><br><span class="line">NSLog(@&quot;windowLevel = %lf\n&quot;, window.windowLevel);</span><br><span class="line"></span><br><span class="line">//3. 将创建出来的Window实例，设置为UIApplication实例的window</span><br><span class="line">//其实这里是通过设置给AppDelegate完成</span><br><span class="line">self.window = window;</span><br><span class="line"></span><br><span class="line">//4. 虽然给AppDelegate添加了一个window，完成间接给UIApplication添加了一个window</span><br><span class="line">//但是UIApplication仍然没有一个keyWindow，也就是可见的window</span><br><span class="line">NSLog(@&quot;appdelegate.keyWindow = %@\n&quot;, application.keyWindow);</span><br><span class="line"></span><br><span class="line">//5. 那么让添加到UIApplication的window，成为可见的窗口</span><br><span class="line">[self.window setWindowLevel:3000.0];</span><br><span class="line">[self.window makeKeyAndVisible];</span><br><span class="line"></span><br><span class="line">//6. 设置keyWindow的背景色</span><br><span class="line">self.window.backgroundColor = [UIColor whiteColor];</span><br><span class="line"></span><br><span class="line">//7. 再看UIApplication是否有keyWindow</span><br><span class="line">NSLog(@&quot;appdelegate.keyWindow = %@\n&quot;, application.keyWindow);</span><br><span class="line"></span><br><span class="line">//8. 再看keyWindow的level</span><br><span class="line">NSLog(@&quot;windowLevel = %lf\n&quot;, self.window.windowLevel);</span><br><span class="line"></span><br><span class="line">//9. 设置keyWindow的rootViewController</span><br><span class="line">UIViewController *vc = [[UIViewController alloc] init];</span><br><span class="line">self.window.rootViewController = vc;</span><br><span class="line"></span><br><span class="line">return YES;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//....</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<p>打印结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">2015-09-04 21:33:10.271 UICodes[17470:269909] application = &lt;UIApplication: 0x7f95b9c04550&gt;</span><br><span class="line">2015-09-04 21:33:10.285 UICodes[17470:269909] windowLevel = 0.000000</span><br><span class="line">2016-09-04 21:33:10.285 UICodes[17470:269909] appdelegate.keyWindow = (null)</span><br><span class="line">2015-09-04 21:33:10.287 UICodes[17470:269909] appdelegate.keyWindow = &lt;UIWindow: 0x7f95b9e38630; frame = (0 0; 375 667); gestureRecognizers = &lt;NSArray: 0x7f95b9d19410&gt;; layer = &lt;UIWindowLayer: 0x7f95b9e1c740&gt;&gt;</span><br><span class="line">2015-09-04 21:33:10.287 UICodes[17470:269909] windowLevel = 3000.000000</span><br></pre></td></tr></table></figure>
+<p>对如上代码总结</p>
+<ul>
+<li><p>1、最终显示元素，依赖一个<code>keyWindow</code></p>
+</li>
+<li><p>2、让一个normalWindow可见，必须执行<code>-[UIWindow makeKeyAndVisible]</code>（错误的）</p>
+</li>
+</ul>
+<p>这样既让window可见，但是又称为了keyWindow，但是有时候可能只需要让window显示而已:</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">_myWindow = [[<span class="built_in">UIWindow</span> alloc] initWithFrame:<span class="built_in">CGRectMake</span>(<span class="number">20</span>, <span class="number">80</span>, <span class="number">100</span>, <span class="number">100</span>)];</span><br><span class="line">_myWindow.backgroundColor = [<span class="built_in">UIColor</span> redColor];</span><br><span class="line"></span><br><span class="line"><span class="comment">//让其显示</span></span><br><span class="line">_myWindow.hidden = <span class="literal">NO</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>3、<code>keyWindow</code>.level = <code>normalWindow</code>.level = 0.0</p>
+</li>
+<li><p>4、UIWindow实例，是通过我们设置给<code>AppDelegate单例</code>，达到间接的设置给UIApplication实例</p>
+</li>
+<li><p>5、UIApplication会读取AppDelegate实例的window属性指向的UIWindow实例</p>
+</li>
+</ul>
+<hr>
+<h3 id="图示-UIApplication、AppDelegate、UIWindow、UIViewController之间的关系"><a href="#图示-UIApplication、AppDelegate、UIWindow、UIViewController之间的关系" class="headerlink" title="图示: UIApplication、AppDelegate、UIWindow、UIViewController之间的关系"></a>图示: UIApplication、AppDelegate、UIWindow、UIViewController之间的关系</h3><p><img src="http://i5.tietuku.com/6091b49f911305f8.png" alt></p>
+<hr>
+<h3 id="UIWindowLevel是系统规定出的window的三个级别"><a href="#UIWindowLevel是系统规定出的window的三个级别" class="headerlink" title="UIWindowLevel是系统规定出的window的三个级别"></a>UIWindowLevel是系统规定出的window的三个级别</h3><ul>
+<li>(1) Normal = 0</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UIKIT_EXTERN const UIWindowLevel UIWindowLevelNormal;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>(2) StatusBar = 1000</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UIKIT_EXTERN const UIWindowLevel UIWindowLevelStatusBar;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>(3) Alert = 2000</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UIKIT_EXTERN const UIWindowLevel UIWindowLevelAlert;</span><br></pre></td></tr></table></figure>
+<p>从上面三个值可以看出，三个级别的大小</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Alert &gt; StatusBar &gt; Normal</span><br></pre></td></tr></table></figure>
+<p>而UIApplication实例，是根据<code>-[UIWindow windowLevel]</code>值的大小来排序显示，值<code>越大</code>就显示在越靠<code>上面</code>    </p>
+<p>我们还可以任意指定一个window的level</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[window setWindowLevel:<span class="number">9999.0</span>];</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="UIWindow状态发生变化时，发出如下对应的系统通知"><a href="#UIWindow状态发生变化时，发出如下对应的系统通知" class="headerlink" title="UIWindow状态发生变化时，发出如下对应的系统通知"></a>UIWindow<code>状态发生变化</code>时，发出如下对应的系统通知</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//成为可见</span></span><br><span class="line"><span class="built_in">UIKIT_EXTERN</span> <span class="built_in">NSString</span> *<span class="keyword">const</span> <span class="built_in">UIWindowDidBecomeVisibleNotification</span>; <span class="comment">// nil</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//成为隐藏</span></span><br><span class="line"><span class="built_in">UIKIT_EXTERN</span> <span class="built_in">NSString</span> *<span class="keyword">const</span> <span class="built_in">UIWindowDidBecomeHiddenNotification</span>;  <span class="comment">// nil</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//成为主事件窗口</span></span><br><span class="line"><span class="built_in">UIKIT_EXTERN</span> <span class="built_in">NSString</span> *<span class="keyword">const</span> <span class="built_in">UIWindowDidBecomeKeyNotification</span>;     <span class="comment">// nil</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//失去成为主事件窗口</span></span><br><span class="line"><span class="built_in">UIKIT_EXTERN</span> <span class="built_in">NSString</span> *<span class="keyword">const</span> <span class="built_in">UIWindowDidResignKeyNotification</span>;     <span class="comment">// nil</span></span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="获取window的几种方法"><a href="#获取window的几种方法" class="headerlink" title="获取window的几种方法"></a>获取window的几种方法</h3><p>主要获取window的方式</p>
+<ul>
+<li>(1) <code>[UIApplication sharedApplication].keyWindow</code> </li>
+<li>(2) <code>[UIApplication sharedApplication].windows</code> </li>
+<li>(3) <code>[UIApplication sharedApplication].delegate.window</code></li>
+</ul>
+<p><code>[UIApplication sharedApplication].keyWindow</code> &gt;&gt;&gt;&gt;&gt;&gt; <code>国家主席</code></p>
+<ul>
+<li>记录当前App程序唯一的一个能够<code>接收事件</code>的主窗口</li>
+<li>记录的窗口是App程序的<code>所有子窗口</code>中，<code>最牛逼</code>的一个<code>主事件窗口</code></li>
+<li>iOS并没有提供一种叫做keyWindow的api类，所以window创建的时候，都是一样的</li>
+<li>而是在App程序内<code>所有的window</code>中选出一个window，作为App程序的的<code>keyWindow</code></li>
+<li>注意，避免直接使用<code>[UIApplication sharedApplication].keyWindow</code>，因为很有可能是<code>系统的window</code>，而不是我们自己的window</li>
+<li>Status Bar Window</li>
+<li>UItextFiled Keyboard Window</li>
+<li>Alert Window</li>
+<li>…..等等系统window</li>
+</ul>
+<p><code>[UIApplication sharedApplication].windows</code> &gt;&gt;&gt;&gt;&gt;&gt; <code>候选者</code></p>
+<ul>
+<li>记录了App程序的所有的<code>候选window</code></li>
+<li>一旦某个UIView实例所在的windiw被系统推选为keyWindow，那么就<code>成功竞选成国家主席</code></li>
+<li>任何UIWindow不是一开始就是<code>keyWindow</code>，最开始都是<code>normalWindow</code>。只是<code>某一个Window内部UIView实例触发事件</code>时，然后系统将这个<code>window</code>提升为<code>主事件keyWindow</code>。</li>
+</ul>
+<p><code>[UIApplication sharedApplication].delegate.window</code> &gt;&gt;&gt; App程序创建时创建的<code>root window</code></p>
+<ul>
+<li>获取的永远都是单例window，并且是App程序的<code>主window</code></li>
+</ul>
+<hr>
+<h3 id="UIApplication实例，添加多个UIWindow，并作为keyWindow"><a href="#UIApplication实例，添加多个UIWindow，并作为keyWindow" class="headerlink" title="UIApplication实例，添加多个UIWindow，并作为keyWindow"></a>UIApplication实例，添加多个UIWindow，并作为<code>keyWindow</code></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">static UIWindow *window1;</span><br><span class="line">static UIWindow *window2;</span><br><span class="line">static UIWindow *window3;</span><br><span class="line"></span><br><span class="line">@implementation AppDelegate</span><br><span class="line"></span><br><span class="line">- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions</span><br><span class="line">&#123;</span><br><span class="line">//主Window</span><br><span class="line">UIWindow *window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];</span><br><span class="line">self.window = window;</span><br><span class="line">self.window.backgroundColor = [UIColor grayColor];</span><br><span class="line">HomePage_RootViewController *vc = [[HomePage_RootViewController alloc] init];</span><br><span class="line">vc.title = @&quot;HomePage&quot;;</span><br><span class="line">UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];</span><br><span class="line">self.window.rootViewController = nav;</span><br><span class="line">[self.window makeKeyAndVisible];</span><br><span class="line"></span><br><span class="line">//window1</span><br><span class="line">window1 = [[UIWindow alloc] init];</span><br><span class="line">window1.backgroundColor = [UIColor redColor];</span><br><span class="line">window1.rootViewController = [[UIViewController alloc] init];</span><br><span class="line">window1.origin = CGPointMake(5, 70);</span><br><span class="line">window1.width = 180;</span><br><span class="line">window1.height = 180;</span><br><span class="line">[window1 makeKeyAndVisible];</span><br><span class="line"></span><br><span class="line">//window2</span><br><span class="line">window2 = [[UIWindow alloc] init];</span><br><span class="line">window2.backgroundColor = [UIColor blueColor];</span><br><span class="line">window2.rootViewController = [[UIViewController alloc] init];</span><br><span class="line">window2.origin = CGPointMake(50, 180);</span><br><span class="line">window2.width = 180;</span><br><span class="line">window2.height = 180;</span><br><span class="line">[window2 makeKeyAndVisible];</span><br><span class="line"></span><br><span class="line">//window3</span><br><span class="line">window3 = [[UIWindow alloc] init];</span><br><span class="line">window3.backgroundColor = [UIColor yellowColor];</span><br><span class="line">window3.rootViewController = [[UIViewController alloc] init];</span><br><span class="line">window3.origin = CGPointMake(100, 100);</span><br><span class="line">window3.width = 180;</span><br><span class="line">window3.height = 180;</span><br><span class="line">[window3 makeKeyAndVisible];</span><br><span class="line"></span><br><span class="line">return YES;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="http://i2.buimg.com/4851/ac1dad4a6dbb5bfb.png" alt></p>
+<p>可以看到，<code>越晚执行makeKeyAndVisible</code>方法出现在<code>最上面</code>显示，但实际上是因为window对象被创建的顺序，也就是添加到UIApplication对象的顺序。</p>
+<p>上面代码中我们并没使用<code>-[UIApplication addWindow:]</code>这样类似的代码，就只是创建了UIWindow对象，然后执行<code>-[UIWindow makeKeyAndVisible]</code>就显示出来了。也就是说<code>-[UIWindow makeKeyAndVisible]</code>就相当于<code>-[UIApplication addWindo w:]</code>。那么<code>最晚</code>执行<code>addWindow:</code>的自然就在<code>最上面</code>。</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">BOOL</span>)application:(<span class="built_in">UIApplication</span> *)application didFinishLaunchingWithOptions:(<span class="built_in">NSDictionary</span> *)launchOptions</span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">//主Window</span></span><br><span class="line"><span class="keyword">self</span>.window = [[<span class="built_in">UIWindow</span> alloc] initWithFrame:[<span class="built_in">UIScreen</span> mainScreen].bounds];</span><br><span class="line"><span class="keyword">self</span>.window.backgroundColor = [<span class="built_in">UIColor</span> grayColor];</span><br><span class="line"><span class="built_in">UIViewController</span> *vc = [[<span class="built_in">UIViewController</span> alloc] init];</span><br><span class="line">vc.title = <span class="string">@"HomePage"</span>;</span><br><span class="line"><span class="built_in">UINavigationController</span> *nav = [[<span class="built_in">UINavigationController</span> alloc] initWithRootViewController:vc];</span><br><span class="line"><span class="keyword">self</span>.window.rootViewController = nav;</span><br><span class="line">[<span class="keyword">self</span>.window makeKeyAndVisible];</span><br><span class="line"></span><br><span class="line"><span class="comment">//window1 redColor</span></span><br><span class="line">window1 = [[<span class="built_in">UIWindow</span> alloc] init];</span><br><span class="line">window1.backgroundColor = [<span class="built_in">UIColor</span> redColor];</span><br><span class="line">window1.rootViewController = [[<span class="built_in">UIViewController</span> alloc] init];</span><br><span class="line">window1.frame = <span class="built_in">CGRectMake</span>(<span class="number">20</span>, <span class="number">70</span>, <span class="number">200</span>, <span class="number">200</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//window2 blueColor</span></span><br><span class="line">window2 = [[<span class="built_in">UIWindow</span> alloc] init];</span><br><span class="line">window2.backgroundColor = [<span class="built_in">UIColor</span> blueColor];</span><br><span class="line">window2.rootViewController = [[<span class="built_in">UIViewController</span> alloc] init];</span><br><span class="line">window2.frame = <span class="built_in">CGRectMake</span>(<span class="number">100</span>, <span class="number">100</span>, <span class="number">200</span>, <span class="number">200</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//window3 yellowColor</span></span><br><span class="line">window3 = [[<span class="built_in">UIWindow</span> alloc] init];</span><br><span class="line">window3.backgroundColor = [<span class="built_in">UIColor</span> yellowColor];</span><br><span class="line">window3.rootViewController = [[<span class="built_in">UIViewController</span> alloc] init];</span><br><span class="line">window3.frame = <span class="built_in">CGRectMake</span>(<span class="number">80</span>, <span class="number">200</span>, <span class="number">200</span>, <span class="number">200</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 改变添加window的顺序</span></span><br><span class="line">[window3 makeKeyAndVisible];</span><br><span class="line">[window2 makeKeyAndVisible];</span><br><span class="line">[window1 makeKeyAndVisible];</span><br><span class="line"></span><br><span class="line"><span class="comment">// 打印windows</span></span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"application.windows = %@"</span>, [<span class="built_in">UIApplication</span> sharedApplication].windows);</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"application.keyWindow = %@"</span>, [<span class="built_in">UIApplication</span> sharedApplication].keyWindow);</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> <span class="literal">YES</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="http://i2.buimg.com/4851/7689780a39d6ac2e.png" alt></p>
+<p>最晚执行makeKeyAndVisible的红色window，显示在最上面。</p>
+<hr>
+<h3 id="winodw-hide-NO也是可以显示window，完成将window添加到application"><a href="#winodw-hide-NO也是可以显示window，完成将window添加到application" class="headerlink" title="winodw.hide = NO也是可以显示window，完成将window添加到application"></a><code>winodw.hide = NO</code>也是可以显示window，完成将window添加到application</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">BOOL</span>)application:(<span class="built_in">UIApplication</span> *)application didFinishLaunchingWithOptions:(<span class="built_in">NSDictionary</span> *)launchOptions</span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">//主Window</span></span><br><span class="line"><span class="keyword">self</span>.window = [[<span class="built_in">UIWindow</span> alloc] initWithFrame:[<span class="built_in">UIScreen</span> mainScreen].bounds];</span><br><span class="line"><span class="keyword">self</span>.window.backgroundColor = [<span class="built_in">UIColor</span> grayColor];</span><br><span class="line"><span class="built_in">UIViewController</span> *vc = [[<span class="built_in">UIViewController</span> alloc] init];</span><br><span class="line">vc.title = <span class="string">@"HomePage"</span>;</span><br><span class="line"><span class="built_in">UINavigationController</span> *nav = [[<span class="built_in">UINavigationController</span> alloc] initWithRootViewController:vc];</span><br><span class="line"><span class="keyword">self</span>.window.rootViewController = nav;</span><br><span class="line">[<span class="keyword">self</span>.window makeKeyAndVisible];</span><br><span class="line"></span><br><span class="line"><span class="comment">//window1 redColor</span></span><br><span class="line">window1 = [[<span class="built_in">UIWindow</span> alloc] init];</span><br><span class="line">window1.backgroundColor = [<span class="built_in">UIColor</span> redColor];</span><br><span class="line">window1.rootViewController = [[<span class="built_in">UIViewController</span> alloc] init];</span><br><span class="line">window1.frame = <span class="built_in">CGRectMake</span>(<span class="number">20</span>, <span class="number">70</span>, <span class="number">200</span>, <span class="number">200</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//window2 blueColor</span></span><br><span class="line">window2 = [[<span class="built_in">UIWindow</span> alloc] init];</span><br><span class="line">window2.backgroundColor = [<span class="built_in">UIColor</span> blueColor];</span><br><span class="line">window2.rootViewController = [[<span class="built_in">UIViewController</span> alloc] init];</span><br><span class="line">window2.frame = <span class="built_in">CGRectMake</span>(<span class="number">100</span>, <span class="number">100</span>, <span class="number">200</span>, <span class="number">200</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//window3 yellowColor</span></span><br><span class="line">window3 = [[<span class="built_in">UIWindow</span> alloc] init];</span><br><span class="line">window3.backgroundColor = [<span class="built_in">UIColor</span> yellowColor];</span><br><span class="line">window3.rootViewController = [[<span class="built_in">UIViewController</span> alloc] init];</span><br><span class="line">window3.frame = <span class="built_in">CGRectMake</span>(<span class="number">80</span>, <span class="number">200</span>, <span class="number">200</span>, <span class="number">200</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//    [window3 makeKeyAndVisible];</span></span><br><span class="line"><span class="comment">//    [window2 makeKeyAndVisible];</span></span><br><span class="line"><span class="comment">//    [window1 makeKeyAndVisible];</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//    window3.hidden = NO;</span></span><br><span class="line"><span class="comment">//    window2.hidden = NO;</span></span><br><span class="line"><span class="comment">//    window1.hidden = NO;</span></span><br><span class="line"></span><br><span class="line">window1.hidden = <span class="literal">NO</span>;</span><br><span class="line">window2.hidden = <span class="literal">NO</span>;</span><br><span class="line">window3.hidden = <span class="literal">NO</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 打印windows</span></span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"application.windows = %@"</span>, [<span class="built_in">UIApplication</span> sharedApplication].windows);</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"application.keyWindow = %@"</span>, [<span class="built_in">UIApplication</span> sharedApplication].keyWindow);</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> <span class="literal">YES</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="http://i2.buimg.com/4851/da3814e23a7ef9dc.png" alt></p>
+<p>可以看到和之前makeKeyAndVisble的效果一样的，但是并不是keyWindow。</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">BOOL</span>)application:(<span class="built_in">UIApplication</span> *)application didFinishLaunchingWithOptions:(<span class="built_in">NSDictionary</span> *)launchOptions</span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">//主Window</span></span><br><span class="line"><span class="keyword">self</span>.window = [[<span class="built_in">UIWindow</span> alloc] initWithFrame:[<span class="built_in">UIScreen</span> mainScreen].bounds];</span><br><span class="line"><span class="keyword">self</span>.window.backgroundColor = [<span class="built_in">UIColor</span> grayColor];</span><br><span class="line"><span class="built_in">UIViewController</span> *vc = [[<span class="built_in">UIViewController</span> alloc] init];</span><br><span class="line">vc.title = <span class="string">@"HomePage"</span>;</span><br><span class="line"><span class="built_in">UINavigationController</span> *nav = [[<span class="built_in">UINavigationController</span> alloc] initWithRootViewController:vc];</span><br><span class="line"><span class="keyword">self</span>.window.rootViewController = nav;</span><br><span class="line">[<span class="keyword">self</span>.window makeKeyAndVisible];</span><br><span class="line"></span><br><span class="line"><span class="comment">//window1 redColor</span></span><br><span class="line">window1 = [[<span class="built_in">UIWindow</span> alloc] init];</span><br><span class="line">window1.backgroundColor = [<span class="built_in">UIColor</span> redColor];</span><br><span class="line">window1.rootViewController = [[<span class="built_in">UIViewController</span> alloc] init];</span><br><span class="line">window1.frame = <span class="built_in">CGRectMake</span>(<span class="number">20</span>, <span class="number">70</span>, <span class="number">200</span>, <span class="number">200</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//window2 blueColor</span></span><br><span class="line">window2 = [[<span class="built_in">UIWindow</span> alloc] init];</span><br><span class="line">window2.backgroundColor = [<span class="built_in">UIColor</span> blueColor];</span><br><span class="line">window2.rootViewController = [[<span class="built_in">UIViewController</span> alloc] init];</span><br><span class="line">window2.frame = <span class="built_in">CGRectMake</span>(<span class="number">100</span>, <span class="number">100</span>, <span class="number">200</span>, <span class="number">200</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//window3 yellowColor</span></span><br><span class="line">window3 = [[<span class="built_in">UIWindow</span> alloc] init];</span><br><span class="line">window3.backgroundColor = [<span class="built_in">UIColor</span> yellowColor];</span><br><span class="line">window3.rootViewController = [[<span class="built_in">UIViewController</span> alloc] init];</span><br><span class="line">window3.frame = <span class="built_in">CGRectMake</span>(<span class="number">80</span>, <span class="number">200</span>, <span class="number">200</span>, <span class="number">200</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//    [window3 makeKeyAndVisible];</span></span><br><span class="line"><span class="comment">//    [window2 makeKeyAndVisible];</span></span><br><span class="line"><span class="comment">//    [window1 makeKeyAndVisible];</span></span><br><span class="line"></span><br><span class="line">window3.hidden = <span class="literal">NO</span>;</span><br><span class="line">window2.hidden = <span class="literal">NO</span>;</span><br><span class="line">window1.hidden = <span class="literal">NO</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//    window1.hidden = NO;</span></span><br><span class="line"><span class="comment">//    window2.hidden = NO;</span></span><br><span class="line"><span class="comment">//    window3.hidden = NO;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 打印windows</span></span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"application.windows = %@"</span>, [<span class="built_in">UIApplication</span> sharedApplication].windows);</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"application.keyWindow = %@"</span>, [<span class="built_in">UIApplication</span> sharedApplication].keyWindow);</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> <span class="literal">YES</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="http://i4.buimg.com/4851/05572e49b04d4b2f.png" alt></p>
+<hr>
+<h3 id="UIView-window-获取的window不一定是keyWindow，而是view当前所在window"><a href="#UIView-window-获取的window不一定是keyWindow，而是view当前所在window" class="headerlink" title="-[UIView window]获取的window不一定是keyWindow，而是view当前所在window"></a><code>-[UIView window]</code>获取的window不一定是<code>keyWindow</code>，而是view当前所在window</h3><ul>
+<li><p>当前<code>UIView实例所在window</code>，如果刚好是keyWindow，那么调用次方返回的就是keyWindow</p>
+</li>
+<li><p>如果UIView实例是<code>键盘View</code>的某一个subview，那么通过<code>view.window</code>返回的就是<code>键盘的window</code>，而并非<code>keyWindow</code></p>
+</li>
+</ul>
+<h3 id="查找当前App程序中的主事件keyWindow的代码"><a href="#查找当前App程序中的主事件keyWindow的代码" class="headerlink" title="查找当前App程序中的主事件keyWindow的代码"></a>查找当前App程序中的<code>主事件keyWindow</code>的代码</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">UIWindow</span> (<span class="title">Tools</span>)</span></span><br><span class="line"></span><br><span class="line">+ (<span class="built_in">UIWindow</span> *)findKeyWindow &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//逆序遍历 当前应用程序的`所有的UIWindow实例`，然后依次找出keyWindow</span></span><br><span class="line"><span class="built_in">NSEnumerator</span> *frontToBackWindows = [<span class="built_in">UIApplication</span>.sharedApplication.windows reverseObjectEnumerator];</span><br><span class="line"></span><br><span class="line"><span class="comment">//记录找到的keyWindow实例</span></span><br><span class="line"><span class="built_in">UIWindow</span> *keyWindow = <span class="literal">nil</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//遍历当前App所有的UIWindow对象</span></span><br><span class="line"><span class="keyword">for</span> (<span class="built_in">UIWindow</span> *window <span class="keyword">in</span> frontToBackWindows)&#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">//条件1. 是否处于当前主屏幕</span></span><br><span class="line"><span class="built_in">BOOL</span> windowOnMainScreen = window.screen == <span class="built_in">UIScreen</span>.mainScreen;</span><br><span class="line"></span><br><span class="line"><span class="comment">//条件2. 屏幕是否可见</span></span><br><span class="line"><span class="built_in">BOOL</span> windowIsVisible = !window.hidden &amp;&amp; window.alpha &gt; <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//条件3. 屏幕的优先级为normal（排除AlertView所在的Window、排除StatusBar所在的Window）</span></span><br><span class="line"><span class="built_in">BOOL</span> windowLevelNormal = window.windowLevel == <span class="built_in">UIWindowLevelNormal</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">Window有三个优先级</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">排序: Normal &lt; StatusBar &lt; Alert</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">1. Level层级相同的时候，只有第一个设置为KeyWindow的显示出来 [window makeKeyAndVisible]</span></span><br><span class="line"><span class="comment">2. Level层级不相同的时候，最高Level的始终显示在最前面</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">UIKIT_EXTERN const UIWindowLevel UIWindowLevelNormal;</span></span><br><span class="line"><span class="comment">UIKIT_EXTERN const UIWindowLevel UIWindowLevelAlert;</span></span><br><span class="line"><span class="comment">UIKIT_EXTERN const UIWindowLevel UIWindowLevelStatusBar;</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//找到正常显示的Window</span></span><br><span class="line"><span class="keyword">if</span> (windowOnMainScreen &amp;&amp; windowIsVisible &amp;&amp; windowLevelNormal) &#123;</span><br><span class="line">keyWindow = window;</span><br><span class="line"><span class="keyword">break</span>;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> keyWindow;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="获取当前显示的UIViewController"><a href="#获取当前显示的UIViewController" class="headerlink" title="获取当前显示的UIViewController"></a>获取<code>当前显示</code>的UIViewController</h3><ul>
+<li>第一步、找到找到接收事件的主窗口 – keyWindow</li>
+<li>第二步、获取keyWindow 的 rootVIewController</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">- (UIViewController *)getCurrentVC  </span><br><span class="line">&#123;  </span><br><span class="line">UIViewController *result = nil;  </span><br><span class="line"></span><br><span class="line">//第一步、找到接收事件的主窗口</span><br><span class="line">UIWindow * window = [[UIApplication sharedApplication] keyWindow];  </span><br><span class="line"></span><br><span class="line">if (window.windowLevel != UIWindowLevelNormal)  </span><br><span class="line">&#123;  </span><br><span class="line">NSArray *windows = [[UIApplication sharedApplication] windows];  </span><br><span class="line"></span><br><span class="line">for(UIWindow * tmpWin in windows)  </span><br><span class="line">&#123;  </span><br><span class="line">if (tmpWin.windowLevel == UIWindowLevelNormal)  </span><br><span class="line">&#123;  </span><br><span class="line">window = tmpWin;  </span><br><span class="line">break;  </span><br><span class="line">&#125;  </span><br><span class="line">&#125;  </span><br><span class="line">&#125;  </span><br><span class="line"></span><br><span class="line">//第二步、 根据主事件窗口内的subview，找到当前屏幕出现的控制器对象</span><br><span class="line"></span><br><span class="line">//1. 取出window上所有subviews中的`最上面`的一个subview   </span><br><span class="line">UIView *frontView = [[window subviews] objectAtIndex:0];  </span><br><span class="line"></span><br><span class="line">//2. subview是否有下一个事件处理对象</span><br><span class="line">id nextResponder = [frontView nextResponder];  </span><br><span class="line"></span><br><span class="line">//3. 根据有没有下一个事件处理对象，来判断返回哪一个viewController</span><br><span class="line">if ([nextResponder isKindOfClass:[UIViewController class]]) &#123;</span><br><span class="line"></span><br><span class="line">//3.1 找到了subview的事件处理对象UIViewController，将找到的这个控制器对象返回</span><br><span class="line">result = nextResponder;  </span><br><span class="line"></span><br><span class="line">&#125; else &#123;</span><br><span class="line"></span><br><span class="line">//3.2 未找到susbview的事件处理对象，那么将window.rootViewController作为找到的控制器对象返回</span><br><span class="line">result = window.rootViewController;  </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">return result;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="最上层的UIWindow是-UITextEffectsWindow"><a href="#最上层的UIWindow是-UITextEffectsWindow" class="headerlink" title="最上层的UIWindow是: UITextEffectsWindow"></a>最上层的UIWindow是: <code>UITextEffectsWindow</code></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">id window = [[UIApplication sharedApplication].windows lastObject];</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="最终显示UI的容器是UIWindow"><a href="#最终显示UI的容器是UIWindow" class="headerlink" title="最终显示UI的容器是UIWindow"></a>最终显示UI的容器是UIWindow</h3><ul>
+<li>系统将UIViewController实例内部的UIView实例及所有subviews，全部复制到当前接收时间的keyWindow上进行显示</li>
+</ul>
+<ul>
+<li>举例: UITableViewController、UINavigationController如何显示在UIWindow的</li>
+</ul>
+<p><img src="http://i12.tietuku.com/b6478850ece2edc7.png" alt></p>
+<ul>
+<li>UINavigationController实例的UIView提供</li>
+<li>提供两个UI控件，并且添加到<code>UITableView</code>上</li>
+<li>顶部导航栏 UINavigationBar</li>
+<li>底部工具栏 UIToolBar</li>
+<li>提供两个栈结构</li>
+<li>UIViewController实例栈</li>
+<li><p>UITabBarButtonItem实例栈</p>
+</li>
+<li><p>UITableViewController</p>
+</li>
+<li>将内部的UITableView实例，添加到<code>UIWindow</code>实例上</li>
+<li>iOS7后，以window的左上角<code>(0,0)</code>为坐标系原点</li>
+<li>如果将某些UI添加到<code>UITableView上的最顶部</code>，以<code>(0,0)</code>为坐标系原点</li>
+<li><p>但是会随着UITableView滚动一起滚动</p>
+</li>
+<li><p>而UINavigationBar、UIToolBar、UITableView</p>
+</li>
+<li>最终都是添加到 <code>UIViewController实例的UIView实例</code> 中</li>
+<li><p>UITableViewController是继承自UIViewController，只是多了一个UITableView和实现了UITableViewDelegate和UITableViewDataSource的方法</p>
+</li>
+<li><p>最后负责显示所有UI控件的容器</p>
+</li>
+<li>UIWindow实例</li>
+<li>并且是keyWindow当前显示的、接收事件的主窗口</li>
+<li>将UIViewController实例的UIView实例中的，所有的subviews，都复制添加到keyWindow进行显示、接收事件</li>
+</ul>
+<hr>
+<h3 id="将一个View插入到一个superView上如下四种方法"><a href="#将一个View插入到一个superView上如下四种方法" class="headerlink" title="将一个View插入到一个superView上如下四种方法"></a>将一个View插入到一个superView上如下四种方法</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">//1. 添加到最上面</span><br><span class="line">addSubview:</span><br><span class="line"></span><br><span class="line">//2. 添加到指定层次</span><br><span class="line">insertSubview:atIndex:</span><br><span class="line"></span><br><span class="line">//3. 将subview调整 或 添加 到最上面</span><br><span class="line">insertSubview:aboveSubview:</span><br><span class="line"></span><br><span class="line">//4. 将subview调整 或 添加 到最下面</span><br><span class="line">insertSubview:belowSubview:</span><br></pre></td></tr></table></figure>
+<p>比如、将UILabel添加到导航栏控制器navigationBar的下面</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">- (void)setupTopLabel &#123;</span><br><span class="line"></span><br><span class="line">_label = [[UILabel alloc] init];</span><br><span class="line">_label.font = [UIFont systemFontOfSize:17.f];</span><br><span class="line">_label.backgroundColor = [UIColor redColor];</span><br><span class="line"></span><br><span class="line">_label.originX = 0;</span><br><span class="line">_label.width = [UIScreen mainScreen].bounds.size.width;</span><br><span class="line">_label.height = 44;</span><br><span class="line">_label.originY = 64 - _label.height;</span><br><span class="line"></span><br><span class="line">//将UILabel添加到导航栏控制器navigationBar的下面</span><br><span class="line">[self.navigationController.view insertSubview:_label belowSubview:self.navigationController.navigationBar];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2016/11/20/UIWindow/" data-title="UIWindow | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2016/12/20/weibo/" title="weibo">
+  <strong>上一篇：</strong><br>
+  <span>
+  weibo</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/09/26/Runtime-Part13-TypeEncodings/" title="Runtime Part13 TypeEncodings">
+ <strong>下一篇：</strong><br> 
+ <span>Runtime Part13 TypeEncodings
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2016/11/20/UIWindow/" data-title="UIWindow" data-url="http://yoursite.com/2016/11/20/UIWindow/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#UIScreen、UIWindow、UIView三者之间的关系"><span class="toc-number">1.</span> <span class="toc-text">UIScreen、UIWindow、UIView三者之间的关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#从main-m开始"><span class="toc-number">2.</span> <span class="toc-text">从main.m开始</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#然后就会执行Appdelegate实例的回调方法，告诉我们UIApplication已经创建完毕"><span class="toc-number">3.</span> <span class="toc-text">然后就会执行Appdelegate实例的回调方法，告诉我们UIApplication已经创建完毕</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#图示-UIApplication、AppDelegate、UIWindow、UIViewController之间的关系"><span class="toc-number">4.</span> <span class="toc-text">图示: UIApplication、AppDelegate、UIWindow、UIViewController之间的关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#UIWindowLevel是系统规定出的window的三个级别"><span class="toc-number">5.</span> <span class="toc-text">UIWindowLevel是系统规定出的window的三个级别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#UIWindow状态发生变化时，发出如下对应的系统通知"><span class="toc-number">6.</span> <span class="toc-text">UIWindow状态发生变化时，发出如下对应的系统通知</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取window的几种方法"><span class="toc-number">7.</span> <span class="toc-text">获取window的几种方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#UIApplication实例，添加多个UIWindow，并作为keyWindow"><span class="toc-number">8.</span> <span class="toc-text">UIApplication实例，添加多个UIWindow，并作为keyWindow</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#winodw-hide-NO也是可以显示window，完成将window添加到application"><span class="toc-number">9.</span> <span class="toc-text">winodw.hide = NO也是可以显示window，完成将window添加到application</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#UIView-window-获取的window不一定是keyWindow，而是view当前所在window"><span class="toc-number">10.</span> <span class="toc-text">-[UIView window]获取的window不一定是keyWindow，而是view当前所在window</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#查找当前App程序中的主事件keyWindow的代码"><span class="toc-number">11.</span> <span class="toc-text">查找当前App程序中的主事件keyWindow的代码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取当前显示的UIViewController"><span class="toc-number">12.</span> <span class="toc-text">获取当前显示的UIViewController</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#最上层的UIWindow是-UITextEffectsWindow"><span class="toc-number">13.</span> <span class="toc-text">最上层的UIWindow是: UITextEffectsWindow</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#最终显示UI的容器是UIWindow"><span class="toc-number">14.</span> <span class="toc-text">最终显示UI的容器是UIWindow</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#将一个View插入到一个superView上如下四种方法"><span class="toc-number">15.</span> <span class="toc-text">将一个View插入到一个superView上如下四种方法</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

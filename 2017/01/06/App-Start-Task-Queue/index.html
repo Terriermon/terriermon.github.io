@@ -1,0 +1,514 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>App Start Task Queue | 次元空间</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="terriermon">
+    
+
+    
+    <meta name="description" content="通常App程序启动，我们需要做一些初始化事件: 选择最优网络通道 加载初始化服务器数据 版本更新监测   但是希望有一个Manager类，来管理所有的Task，让每一种不同的业务单独封装到一个Task类中. 那么，可以单独抽一个启动任务管理Manager类接下来开始抽象出需要的角色.  角色1、什么样的才是启动任务？1234567891011121314@protocol AppStartTask">
+<meta property="og:type" content="article">
+<meta property="og:title" content="App Start Task Queue">
+<meta property="og:url" content="http://yoursite.com/2017/01/06/App-Start-Task-Queue/index.html">
+<meta property="og:site_name" content="次元空间">
+<meta property="og:description" content="通常App程序启动，我们需要做一些初始化事件: 选择最优网络通道 加载初始化服务器数据 版本更新监测   但是希望有一个Manager类，来管理所有的Task，让每一种不同的业务单独封装到一个Task类中. 那么，可以单独抽一个启动任务管理Manager类接下来开始抽象出需要的角色.  角色1、什么样的才是启动任务？1234567891011121314@protocol AppStartTask">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://i4.tietuku.com/c8a58fa67e1fa771.jpg">
+<meta property="og:updated_time" content="2019-04-08T13:12:17.463Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="App Start Task Queue">
+<meta name="twitter:description" content="通常App程序启动，我们需要做一些初始化事件: 选择最优网络通道 加载初始化服务器数据 版本更新监测   但是希望有一个Manager类，来管理所有的Task，让每一种不同的业务单独封装到一个Task类中. 那么，可以单独抽一个启动任务管理Manager类接下来开始抽象出需要的角色.  角色1、什么样的才是启动任务？1234567891011121314@protocol AppStartTask">
+<meta name="twitter:image" content="http://i4.tietuku.com/c8a58fa67e1fa771.jpg">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/courage.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/courage.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="次元空间" title="次元空间"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="次元空间">次元空间</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">异世界的大门</a></li>
+					
+						<li><a href="/archives">档案岛</a></li>
+					
+						<li><a href="/about">AboutMe</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/01/06/App-Start-Task-Queue/" title="App Start Task Queue" itemprop="url">App Start Task Queue</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="terriermon" target="_blank" itemprop="author">terriermon</a>
+		
+  </p><p class="article-time">
+    <time datetime="2017-01-06T10:54:04.000Z" itemprop="datePublished"> Published 2017-01-06</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#通常App程序启动，我们需要做一些初始化事件"><span class="toc-number">1.</span> <span class="toc-text">通常App程序启动，我们需要做一些初始化事件:</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#但是希望有一个Manager类，来管理所有的Task，让每一种不同的业务单独封装到一个Task类中"><span class="toc-number">1.1.</span> <span class="toc-text">但是希望有一个Manager类，来管理所有的Task，让每一种不同的业务单独封装到一个Task类中.</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#那么，可以单独抽一个启动任务管理Manager类"><span class="toc-number">2.</span> <span class="toc-text">那么，可以单独抽一个启动任务管理Manager类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#角色1、什么样的才是启动任务？"><span class="toc-number">3.</span> <span class="toc-text">角色1、什么样的才是启动任务？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#角色2、启动任务的需要-回传什么数据-或-回调执行什么代码？"><span class="toc-number">4.</span> <span class="toc-text">角色2、启动任务的需要 回传什么数据 或 回调执行什么代码？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#角色3、AppStartTaskManager-管理所有的-启动Task任务"><span class="toc-number">5.</span> <span class="toc-text">角色3、AppStartTaskManager 管理所有的 启动Task任务.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AppDelegate-m中使用TaskManager开始所有的Task"><span class="toc-number">6.</span> <span class="toc-text">AppDelegate.m中使用TaskManager开始所有的Task</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AppStartTaskManager单例，remove掉所有的Task，并将自己作为第一个进入队列的Task任务"><span class="toc-number">7.</span> <span class="toc-text">AppStartTaskManager单例，remove掉所有的Task，并将自己作为第一个进入队列的Task任务.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AppStartTaskManager单例，开始执行所有的任务-id-lt-AppStartTask-gt"><span class="toc-number">8.</span> <span class="toc-text">AppStartTaskManager单例，开始执行所有的任务 id&lt;AppStartTask&gt;</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#上面其实把AppStartTaskManager也当做一个实现了-AppStartTask协议-的Task。那么此时AppStartTaskManager有两个工作"><span class="toc-number">9.</span> <span class="toc-text">上面其实把AppStartTaskManager也当做一个实现了 AppStartTask协议 的Task。那么此时AppStartTaskManager有两个工作:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AppStartTaskManager单例，中对Task添加、Task删除，使用dispatch-async-串行队列完成同步多线程"><span class="toc-number">10.</span> <span class="toc-text">AppStartTaskManager单例，中对Task添加、Task删除，使用dispatch_async + 串行队列完成同步多线程.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AppStartTaskManager单例，是taskQueue中的第一个Taskid-lt-AppStartTask-gt-，然后被执行"><span class="toc-number">11.</span> <span class="toc-text">AppStartTaskManager单例，是taskQueue中的第一个Taskid&lt;AppStartTask&gt;，然后被执行.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#如上是AppStartTaskManager单例提供了App的版本监测业务，所以AppStartTaskManager单例被当做Task执行完之后，需要将监测版本回传给AppDelegate单例进行处理"><span class="toc-number">12.</span> <span class="toc-text">如上是AppStartTaskManager单例提供了App的版本监测业务，所以AppStartTaskManager单例被当做Task执行完之后，需要将监测版本回传给AppDelegate单例进行处理.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AppStartTaskManager单例，又是-AppStartTaskManager单例-作为Task-的回调代理对象。那么就负责Task的回调操作-成功结束、错误结束。"><span class="toc-number">13.</span> <span class="toc-text">AppStartTaskManager单例，又是 AppStartTaskManager单例(作为Task) 的回调代理对象。那么就负责Task的回调操作:成功结束、错误结束。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AppDelegate-m中实现AppStartTaskManagerDelegate协议，接收AppStartTaskManager单例对象的回调，知道某个Task的执行情况"><span class="toc-number">14.</span> <span class="toc-text">AppDelegate.m中实现AppStartTaskManagerDelegate协议，接收AppStartTaskManager单例对象的回调，知道某个Task的执行情况.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#那么到此AppStartTaskManager被当做Task执行完毕，也完成了通知代理AppDelegate对象，此时继续执行taskQueue中的下一个Task"><span class="toc-number">15.</span> <span class="toc-text">那么到此AppStartTaskManager被当做Task执行完毕，也完成了通知代理AppDelegate对象，此时继续执行taskQueue中的下一个Task.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#将Task抽象、TaskDelegate抽象，从AppStartTaskManager-h中剥离出来，使用一个单独的-h文件描述"><span class="toc-number">16.</span> <span class="toc-text">将Task抽象、TaskDelegate抽象，从AppStartTaskManager.h中剥离出来，使用一个单独的.h文件描述.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#假设Manager1是作为下一个Task执行一些操作，那么Manager1必须实现-AppStartTask协议才能成为Task。"><span class="toc-number">17.</span> <span class="toc-text">假设Manager1是作为下一个Task执行一些操作，那么Manager1必须实现 AppStartTask协议才能成为Task。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#后续增加每一个启动Task，就添加一个实现AppStartTask协议的NSObject子类，然后添加到AppStartTaskManager单例的taskQueue数组。"><span class="toc-number">18.</span> <span class="toc-text">后续增加每一个启动Task，就添加一个实现AppStartTask协议的NSObject子类，然后添加到AppStartTaskManager单例的taskQueue数组。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#最后小结Task结构图"><span class="toc-number">19.</span> <span class="toc-text">最后小结Task结构图</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="通常App程序启动，我们需要做一些初始化事件"><a href="#通常App程序启动，我们需要做一些初始化事件" class="headerlink" title="通常App程序启动，我们需要做一些初始化事件:"></a>通常App程序启动，我们需要做一些初始化事件:</h3><ul>
+<li>选择最优网络通道</li>
+<li>加载初始化服务器数据</li>
+<li>版本更新监测</li>
+</ul>
+<hr>
+<h4 id="但是希望有一个Manager类，来管理所有的Task，让每一种不同的业务单独封装到一个Task类中"><a href="#但是希望有一个Manager类，来管理所有的Task，让每一种不同的业务单独封装到一个Task类中" class="headerlink" title="但是希望有一个Manager类，来管理所有的Task，让每一种不同的业务单独封装到一个Task类中."></a>但是希望有一个Manager类，来管理所有的Task，让每一种不同的业务单独封装到一个Task类中.</h4><hr>
+<h3 id="那么，可以单独抽一个启动任务管理Manager类"><a href="#那么，可以单独抽一个启动任务管理Manager类" class="headerlink" title="那么，可以单独抽一个启动任务管理Manager类"></a>那么，可以单独抽一个启动任务管理Manager类</h3><p>接下来开始抽象出需要的角色.</p>
+<hr>
+<h3 id="角色1、什么样的才是启动任务？"><a href="#角色1、什么样的才是启动任务？" class="headerlink" title="角色1、什么样的才是启动任务？"></a>角色1、什么样的才是启动任务？</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">@protocol AppStartTask &lt;NSObject&gt;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">*  Task的名字</span><br><span class="line">*/</span><br><span class="line">- (NSString *)taskName;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">*  启动Task，回传实现了AppStartTaskDelegate协议的对象</span><br><span class="line">*  （此方法由AppTaskManager执行）</span><br><span class="line">*/</span><br><span class="line">- (void)startWithDelegate:(id&lt;AppStartTaskDelegate&gt;)delegate;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<h3 id="角色2、启动任务的需要-回传什么数据-或-回调执行什么代码？"><a href="#角色2、启动任务的需要-回传什么数据-或-回调执行什么代码？" class="headerlink" title="角色2、启动任务的需要 回传什么数据 或 回调执行什么代码？"></a>角色2、启动任务的需要 回传什么数据 或 回调执行什么代码？</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">@protocol AppStartTaskDelegate &lt;NSObject&gt;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">*  告诉delegate Task正常结束</span><br><span class="line">*/</span><br><span class="line">-(void)startupTaskDidCompleted:(id&lt;AppStartTask&gt;)startupTask;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">*  告诉delegate Task错误结束</span><br><span class="line">*/</span><br><span class="line">-(void)startupTaskDidFailed:(id&lt;AppStartTask&gt;)startupTask</span><br><span class="line">error:(NSError*)error;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<h3 id="角色3、AppStartTaskManager-管理所有的-启动Task任务"><a href="#角色3、AppStartTaskManager-管理所有的-启动Task任务" class="headerlink" title="角色3、AppStartTaskManager 管理所有的 启动Task任务."></a>角色3、AppStartTaskManager 管理所有的 启动Task任务.</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">@interface AppStartTaskManager : NSObject &lt;AppStartTaskManagerDelegate&gt;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">*  单例</span><br><span class="line">*/</span><br><span class="line">+ (instancetype)sharedInstance;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">*  开始执行队列中的所有Task</span><br><span class="line">*/</span><br><span class="line">- (void)startAllTask;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">*  添加Task</span><br><span class="line">*/</span><br><span class="line">-(void)addStartupTask:(id&lt;AppStartTask&gt;)task;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">*  移除Task</span><br><span class="line">*/</span><br><span class="line">-(void)removeStartupTask:(id&lt;AppStartTask&gt;)task;</span><br><span class="line"></span><br><span class="line">/*!</span><br><span class="line">*  移除所有Task</span><br><span class="line">*/</span><br><span class="line">-(void)removeAllStartupTask;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<p>AppStartTaskManager自己实现AppStartTaskManagerDelegate，自己作为回调对象.</p>
+<hr>
+<h3 id="AppDelegate-m中使用TaskManager开始所有的Task"><a href="#AppDelegate-m中使用TaskManager开始所有的Task" class="headerlink" title="AppDelegate.m中使用TaskManager开始所有的Task"></a>AppDelegate.m中使用TaskManager开始所有的Task</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">- (void)startupApplication &#123;</span><br><span class="line"></span><br><span class="line">//弄一个遮盖加载View</span><br><span class="line">self.window.rootViewController = [VSLoadingViewController defaultView];</span><br><span class="line"></span><br><span class="line">//获取AppStartTaskManager单例</span><br><span class="line">AppStartTaskManager* startupManager = [AppStartTaskManager sharedInstance];</span><br><span class="line"></span><br><span class="line">//设置AppStartTaskManager单例的回调对象</span><br><span class="line">startupManager.delegate = self;</span><br><span class="line"></span><br><span class="line">//先将AppStartTaskManager单例的所有task删除</span><br><span class="line">//注意，remove方法中，将AppStartTaskManager单例对象，作为第一个Task对象</span><br><span class="line">[startupManager removeAllStartupTask];</span><br><span class="line"></span><br><span class="line">//向AppStartTaskManager单例，添加新的Task</span><br><span class="line">[startupManager addStartupTask:[Manager1 sharedInstance]];</span><br><span class="line">[startupManager addStartupTask:[Manager2 sharedInstance]];</span><br><span class="line">[startupManager addStartupTask:[Manager3 sharedInstance]];</span><br><span class="line">[startupManager addStartupTask:[Manager4 sharedInstance]];</span><br><span class="line">[startupManager addStartupTask:[Manager5 sharedInstance]];</span><br><span class="line"></span><br><span class="line">//......其他的Manager</span><br><span class="line">//注意:这些manager实现了task协议的，封装一些业务代码.</span><br><span class="line"></span><br><span class="line">//开始执行所有的Task</span><br><span class="line">[startupManager startup];</span><br><span class="line"></span><br><span class="line">// 启动时执行的附加任务</span><br><span class="line">//...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="AppStartTaskManager单例，remove掉所有的Task，并将自己作为第一个进入队列的Task任务"><a href="#AppStartTaskManager单例，remove掉所有的Task，并将自己作为第一个进入队列的Task任务" class="headerlink" title="AppStartTaskManager单例，remove掉所有的Task，并将自己作为第一个进入队列的Task任务."></a>AppStartTaskManager单例，remove掉所有的Task，并将自己作为第一个进入队列的Task任务.</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">@implementation AppStartTaskManager</span><br><span class="line"></span><br><span class="line">- (void)removeAllStartupTask &#123;</span><br><span class="line"></span><br><span class="line">dispatch_async(self.serialQueue, ^&#123;</span><br><span class="line"></span><br><span class="line">//1. 先删除其他Task</span><br><span class="line">[self.taskQueue removeAllObjects];</span><br><span class="line"></span><br><span class="line">//2. 然后将当前Manager对象作为Task，加入到队列的第一个元素</span><br><span class="line">//为了执行当前Manager对象执行task开始的方法</span><br><span class="line">[self.taskQueue addObject:(id&lt;AppStartTask&gt;)self];</span><br><span class="line">&#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="AppStartTaskManager单例，开始执行所有的任务-id-lt-AppStartTask-gt"><a href="#AppStartTaskManager单例，开始执行所有的任务-id-lt-AppStartTask-gt" class="headerlink" title="AppStartTaskManager单例，开始执行所有的任务 id&lt;AppStartTask&gt;"></a>AppStartTaskManager单例，开始执行所有的任务 <code>id&lt;AppStartTask&gt;</code></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">@implementation AppStartTaskManager</span><br><span class="line"></span><br><span class="line">- (void)startAllTask &#123;</span><br><span class="line"></span><br><span class="line">__weak __typeof(self)weakSelf = self;</span><br><span class="line"></span><br><span class="line">dispatch_async(self.serialQueue, ^&#123;</span><br><span class="line"></span><br><span class="line">//依次取出数组最前面的Task执行</span><br><span class="line">id&lt;AppStartTask&gt; task = ( self.taskQueue.count &gt; 0 ) ? self.taskQueue.firstObject : nil;</span><br><span class="line"></span><br><span class="line">//如果Task存在就执行</span><br><span class="line">if (task) &#123;</span><br><span class="line"></span><br><span class="line">//打印Task名字</span><br><span class="line">NSLog(@&quot;task name = %@\n&quot;, [task taskName]);</span><br><span class="line"></span><br><span class="line">//执行Task，当前AppStartTaskManager是回传当前Manager对象    </span><br><span class="line">//在其他Manager就回传其他Manager对象</span><br><span class="line">[task startWithDelegate:weakSelf];</span><br><span class="line"></span><br><span class="line">//从TaskQueue移除当前已经执行的Task</span><br><span class="line">[self.taskQueue removeObjectAtIndex:0];</span><br><span class="line">&#125;</span><br><span class="line">&#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="上面其实把AppStartTaskManager也当做一个实现了-AppStartTask协议-的Task。那么此时AppStartTaskManager有两个工作"><a href="#上面其实把AppStartTaskManager也当做一个实现了-AppStartTask协议-的Task。那么此时AppStartTaskManager有两个工作" class="headerlink" title="上面其实把AppStartTaskManager也当做一个实现了 AppStartTask协议 的Task。那么此时AppStartTaskManager有两个工作:"></a>上面其实把AppStartTaskManager也当做一个实现了 AppStartTask协议 的Task。那么此时AppStartTaskManager有两个工作:</h3><ul>
+<li><p>工作一、完成一些业务操作（版本监测），然后回传给AppDelegate对象进行处理.</p>
+</li>
+<li><p>工作二、管理 其他的Task 进行执行.</p>
+</li>
+</ul>
+<hr>
+<h3 id="AppStartTaskManager单例，中对Task添加、Task删除，使用dispatch-async-串行队列完成同步多线程"><a href="#AppStartTaskManager单例，中对Task添加、Task删除，使用dispatch-async-串行队列完成同步多线程" class="headerlink" title="AppStartTaskManager单例，中对Task添加、Task删除，使用dispatch_async + 串行队列完成同步多线程."></a>AppStartTaskManager单例，中对Task添加、Task删除，使用<code>dispatch_async + 串行队列</code>完成同步多线程.</h3><ul>
+<li>注意:<code>全部删除Task情况不同</code>.</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">@implementation AppStartTaskManager</span><br><span class="line"></span><br><span class="line">- (instancetype)init &#123;</span><br><span class="line">self = [super init];</span><br><span class="line">if (self) &#123;</span><br><span class="line"></span><br><span class="line">//同步多线程执行数组创建</span><br><span class="line">dispatch_async(self.serialQueue, ^&#123;</span><br><span class="line">self.taskQueue = [[NSMutableArray alloc] init];</span><br><span class="line">&#125;);</span><br><span class="line">&#125;</span><br><span class="line">return self;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (dispatch_queue_t)serialQueue &#123;</span><br><span class="line">if (!_serialQueue) &#123;</span><br><span class="line">_serialQueue = dispatch_queue_create(&quot;com.cn.UserInfoManager&quot;, DISPATCH_QUEUE_SERIAL);</span><br><span class="line">&#125;</span><br><span class="line">return _serialQueue;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)addStartupTask:(id&lt;AppStartTask&gt;)task &#123;</span><br><span class="line"></span><br><span class="line">dispatch_async(self.serialQueue, ^&#123;</span><br><span class="line">[self.taskQueue addObject:task];</span><br><span class="line">&#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)removeStartupTask:(id&lt;AppStartTask&gt;)task &#123;</span><br><span class="line"></span><br><span class="line">dispatch_async(self.serialQueue, ^&#123;</span><br><span class="line">[self.taskQueue removeObject:task];</span><br><span class="line">&#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="AppStartTaskManager单例，是taskQueue中的第一个Taskid-lt-AppStartTask-gt-，然后被执行"><a href="#AppStartTaskManager单例，是taskQueue中的第一个Taskid-lt-AppStartTask-gt-，然后被执行" class="headerlink" title="AppStartTaskManager单例，是taskQueue中的第一个Taskid&lt;AppStartTask&gt;，然后被执行."></a>AppStartTaskManager单例，是taskQueue中的第一个Task<code>id&lt;AppStartTask&gt;</code>，然后被执行.</h3><p>虽然主要是用来管理所有的Task类对象的执行，但其实也是一个Task <code>id&lt;AppStartTask&gt;</code>，那么也可以当做一个Task执行。那么AppStartTaskManager要当做Task，就必须实现<code>AppStartTask 协议</code>.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line">*  1. 当前Manager对象要作为所有Task的delegate</span><br><span class="line">*     所以实现AppStartTaskDelegate协议方法</span><br><span class="line">*</span><br><span class="line">*  2. 当前Manager也是一个Task，所以实现AppStartTask协议</span><br><span class="line">*/</span><br><span class="line">@interface AppStartTaskManager () &lt;AppStartTask, AppStartTaskDelegate&gt;</span><br><span class="line"></span><br><span class="line">//临时保存每一个被执行的Task的回调对象delegate</span><br><span class="line">@property (nonatomic, weak) id&lt;AppStartTaskDelegate&gt; taskDelegate;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">@implementation AppStartTaskManager</span><br><span class="line"></span><br><span class="line">#pragma mark - AppStartTask 协议实现</span><br><span class="line"></span><br><span class="line">- (NSString *)taskName &#123;</span><br><span class="line">return @&quot;我是应用程序的启动任务&quot;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)startWithDelegate:(id&lt;AppStartTaskDelegate&gt;)delegate &#123;//delegate其实就是当前AppStartTaskManager对象</span><br><span class="line"></span><br><span class="line">//1. 保存传入的delegate，方便在网络异步回调时使用</span><br><span class="line">self.taskDelegate = delegate;</span><br><span class="line"></span><br><span class="line">//2. 发起网络请求</span><br><span class="line">//比如做App版本监测...等等</span><br><span class="line">//然后异步回调通知AppDelegate做出一些处理</span><br><span class="line"></span><br><span class="line">//3. （假设为异步回调执行的）网络请求回调完毕时，通知Task成功执行完毕</span><br><span class="line">//此处的taskDelegate其实就是当前Manager对象</span><br><span class="line">//通知Manager对象</span><br><span class="line">if ([self.taskDelegate respondsToSelector:@selector(startupTaskDidCompleted:)])</span><br><span class="line">&#123;</span><br><span class="line">//AppTaskManager监测版本任务结束</span><br><span class="line">//执行Task回调对象</span><br><span class="line">[self.taskDelegate startupTaskDidCompleted:self];</span><br><span class="line"></span><br><span class="line">//清除delegate，因为每次启动Task都会传入delegate</span><br><span class="line">self.taskDelegate = nil;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//错误执行就不写了...</span><br><span class="line"></span><br><span class="line">//4. （假设为异步回调执行的）通知Manager的delegate，Task成功结束执行</span><br><span class="line">//此处的managerDelegate其实就是AppDelegate单例对象</span><br><span class="line">//通知AppDelegate单例对象</span><br><span class="line">if ([self.managerDelegate respondsToSelector:@selector(taskDidCompleted)])</span><br><span class="line">&#123;</span><br><span class="line">//告诉Manager对象的代理，有一个Task执行完毕</span><br><span class="line">[self.managerDelegate taskDidCompleted];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//错误执行就不写了...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<h3 id="如上是AppStartTaskManager单例提供了App的版本监测业务，所以AppStartTaskManager单例被当做Task执行完之后，需要将监测版本回传给AppDelegate单例进行处理"><a href="#如上是AppStartTaskManager单例提供了App的版本监测业务，所以AppStartTaskManager单例被当做Task执行完之后，需要将监测版本回传给AppDelegate单例进行处理" class="headerlink" title="如上是AppStartTaskManager单例提供了App的版本监测业务，所以AppStartTaskManager单例被当做Task执行完之后，需要将监测版本回传给AppDelegate单例进行处理."></a>如上是AppStartTaskManager单例提供了<code>App的版本监测业务</code>，所以AppStartTaskManager单例被当做Task执行完之后，需要将监测版本回传给AppDelegate单例进行处理.</h3><ul>
+<li>使用定义protocol + delegate 方式回传AppDelegate数据</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line">*  为了给AppDelegate单例回传Task执行情况</span><br><span class="line">*/</span><br><span class="line">@protocol AppStartTaskManagerDelegate &lt;NSObject&gt;</span><br><span class="line"></span><br><span class="line">@optional</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">*  告诉AppDelegate单例，Task正常启动完毕</span><br><span class="line">*/</span><br><span class="line">- (void)taskDidCompleted;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">*  告诉AppDelegate单例，Task启动错误结束</span><br><span class="line">*/</span><br><span class="line">- (void)taskManagerDidErrorCompleted:(id&lt;AppStartTask&gt;)task</span><br><span class="line">Error:(NSError *)error;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<ul>
+<li>创建AppStartTaskManager单例时，设置为该代理的实现对象</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">AppDelegate.m</span><br><span class="line"></span><br><span class="line">//获取AppStartTaskManager单例</span><br><span class="line">AppStartTaskManager* startupManager = [AppStartTaskManager sharedInstance];</span><br><span class="line"></span><br><span class="line">//设置AppStartTaskManager单例的回调对象</span><br><span class="line">startupManager.delegate = self;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>那么AppStartTaskManager单例当做Task执行完毕之后，回传给AppDelegate</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">AppStartTaskManager.m</span><br><span class="line"></span><br><span class="line">- (void)startWithDelegate:(id&lt;AppStartTaskDelegate&gt;)delegate &#123;</span><br><span class="line"></span><br><span class="line">//1. 保存传入的delegate，方便在网络异步回调时使用</span><br><span class="line">self.taskDelegate = delegate;</span><br><span class="line"></span><br><span class="line">//2. 发起网络请求</span><br><span class="line">//版本监测...</span><br><span class="line"></span><br><span class="line">//3. （假设为异步回调执行的）网络请求回调完毕时，通知Task成功执行完毕</span><br><span class="line">//...    </span><br><span class="line">//错误执行就不写了...</span><br><span class="line"></span><br><span class="line">//----------------------- 如下回调AppDelegate ------------------------</span><br><span class="line">//4. （假设为异步回调执行的）通知Manager的delegate，Task成功结束执行</span><br><span class="line">if ([self.managerDelegate respondsToSelector:@selector(taskDidCompleted)])</span><br><span class="line">&#123;</span><br><span class="line">//告诉Manager对象的代理，有一个Task执行完毕</span><br><span class="line">[self.managerDelegate taskDidCompleted];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//错误执行就不写了...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="AppStartTaskManager单例，又是-AppStartTaskManager单例-作为Task-的回调代理对象。那么就负责Task的回调操作-成功结束、错误结束。"><a href="#AppStartTaskManager单例，又是-AppStartTaskManager单例-作为Task-的回调代理对象。那么就负责Task的回调操作-成功结束、错误结束。" class="headerlink" title="AppStartTaskManager单例，又是 AppStartTaskManager单例(作为Task) 的回调代理对象。那么就负责Task的回调操作:成功结束、错误结束。"></a>AppStartTaskManager单例，又是 AppStartTaskManager单例(作为Task) 的回调代理对象。那么就负责Task的回调操作:成功结束、错误结束。</h3><blockquote>
+<p>AppStartTaskManager 实现了 AppStartTaskDelegate协议</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">@implementation AppStartTaskManager </span><br><span class="line"></span><br><span class="line">#pragma mark - AppStartTaskDelegate 协议方法实现</span><br><span class="line"></span><br><span class="line">-(void)startupTaskDidCompleted:(id&lt;AppStartTask&gt;)startupTask</span><br><span class="line">&#123;</span><br><span class="line">//Task成功执行完毕，那么就继续往下执行下一个Task</span><br><span class="line">[self startAllTask];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">-(void)startupTaskDidFailed:(id&lt;AppStartTask&gt;)startupTask</span><br><span class="line">error:(NSError*)error</span><br><span class="line">&#123;</span><br><span class="line">//Task执行失败（当前AppStartTaskManager监测版本或其他业务操作失败）</span><br><span class="line">//需要通知AppDelegate做出处理</span><br><span class="line">if ([self.managerDelegate respondsToSelector:@selector(taskManagerDidErrorCompleted:Error:)])</span><br><span class="line">&#123;</span><br><span class="line">[self.managerDelegate taskManagerDidErrorCompleted:startupTask Error:error];</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="AppDelegate-m中实现AppStartTaskManagerDelegate协议，接收AppStartTaskManager单例对象的回调，知道某个Task的执行情况"><a href="#AppDelegate-m中实现AppStartTaskManagerDelegate协议，接收AppStartTaskManager单例对象的回调，知道某个Task的执行情况" class="headerlink" title="AppDelegate.m中实现AppStartTaskManagerDelegate协议，接收AppStartTaskManager单例对象的回调，知道某个Task的执行情况."></a>AppDelegate.m中实现AppStartTaskManagerDelegate协议，接收AppStartTaskManager单例对象的回调，知道某个Task的执行情况.</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">#pragma mark - AppStartTaskManagerDelegate 协议实现</span><br><span class="line"></span><br><span class="line">- (void)taskDidCompleted</span><br><span class="line">&#123;</span><br><span class="line">//接收到AppStartTaskManager处理版本检测 成功</span><br><span class="line">//..进行处理</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)taskManagerDidErrorCompleted:(id&lt;AppStartTask&gt;)task</span><br><span class="line">Error:(NSError *)error</span><br><span class="line">&#123;</span><br><span class="line">//接收到AppStartTaskManager处理版本检测 失败</span><br><span class="line">//..进行处理</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="那么到此AppStartTaskManager被当做Task执行完毕，也完成了通知代理AppDelegate对象，此时继续执行taskQueue中的下一个Task"><a href="#那么到此AppStartTaskManager被当做Task执行完毕，也完成了通知代理AppDelegate对象，此时继续执行taskQueue中的下一个Task" class="headerlink" title="那么到此AppStartTaskManager被当做Task执行完毕，也完成了通知代理AppDelegate对象，此时继续执行taskQueue中的下一个Task."></a>那么到此AppStartTaskManager被当做Task执行完毕，也完成了通知代理AppDelegate对象，此时继续执行taskQueue中的下一个Task.</h3><hr>
+<h3 id="将Task抽象、TaskDelegate抽象，从AppStartTaskManager-h中剥离出来，使用一个单独的-h文件描述"><a href="#将Task抽象、TaskDelegate抽象，从AppStartTaskManager-h中剥离出来，使用一个单独的-h文件描述" class="headerlink" title="将Task抽象、TaskDelegate抽象，从AppStartTaskManager.h中剥离出来，使用一个单独的.h文件描述."></a>将Task抽象、TaskDelegate抽象，从AppStartTaskManager.h中剥离出来，使用一个单独的.h文件描述.</h3><blockquote>
+<p>AppStartTaskProtocol.h</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;Foundation/Foundation.h&gt;</span><br><span class="line"></span><br><span class="line">@protocol AppStartTaskDelegate;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">*  Task的抽象</span><br><span class="line">*/</span><br><span class="line">@protocol AppStartTask &lt;NSObject&gt;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">*  Task的名字</span><br><span class="line">*/</span><br><span class="line">- (NSString *)taskName;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">*  启动Task，回传实现了AppStartTaskDelegate协议的对象</span><br><span class="line">*  （此方法由AppTaskManager执行）</span><br><span class="line">*/</span><br><span class="line">- (void)startWithDelegate:(id&lt;AppStartTaskDelegate&gt;)delegate;</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">*  TaskDelegate的抽象</span><br><span class="line">*/</span><br><span class="line">@protocol AppStartTaskDelegate &lt;NSObject&gt;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">*  Task正常结束</span><br><span class="line">*/</span><br><span class="line">-(void)startupTaskDidCompleted:(id&lt;AppStartTask&gt;)startupTask;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">*  Task错误结束</span><br><span class="line">*/</span><br><span class="line">-(void)startupTaskDidFailed:(id&lt;AppStartTask&gt;)startupTask</span><br><span class="line">error:(NSError*)error;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="假设Manager1是作为下一个Task执行一些操作，那么Manager1必须实现-AppStartTask协议才能成为Task。"><a href="#假设Manager1是作为下一个Task执行一些操作，那么Manager1必须实现-AppStartTask协议才能成为Task。" class="headerlink" title="假设Manager1是作为下一个Task执行一些操作，那么Manager1必须实现 AppStartTask协议才能成为Task。"></a>假设Manager1是作为下一个Task执行一些操作，那么Manager1必须实现 <code>AppStartTask协议</code>才能成为Task。</h3><ul>
+<li>Manager1.h</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@interface Manager1 : NSObject&lt;AppStartTask&gt; //实现了AppStartTask协议才能成为Task</span><br><span class="line"></span><br><span class="line">//...</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Manager1.m</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@interface Manager1 ()</span><br><span class="line"></span><br><span class="line">//临时保存每一个被执行的Task的回调对象delegate</span><br><span class="line">@property(nonatomic, weak) id&lt;AppStartTaskDelegate&gt; taskDelegate;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">@implementation Manager1</span><br><span class="line"></span><br><span class="line">#pragma mark - AppStartTask 协议实现，作为一个Task的行为</span><br><span class="line"></span><br><span class="line">- (NSString *)taskName &#123;</span><br><span class="line">return @&quot;Manager1 Task&quot;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)startWithDelegate:(id&lt;AppStartTaskDelegate&gt;)delegate &#123;</span><br><span class="line"></span><br><span class="line">//1. 保存传入的delegate，方便后面使用</span><br><span class="line">self.taskDelegate = delegate;</span><br><span class="line"></span><br><span class="line">//2. 完成当前Manager作为task要完成的业务操作</span><br><span class="line">//...</span><br><span class="line"></span><br><span class="line">//3. 完成后，异步通知传入的delegate（AppStartTaskManager单例对象）执行结果</span><br><span class="line">//3.1 假设异步执行成功</span><br><span class="line">if ([self.taskDelegate respondsToSelector:@selector(startupTaskDidCompleted:)]) &#123;</span><br><span class="line">[self.taskDelegate startupTaskDidCompleted:self];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//3.1 假设异步执行失败</span><br><span class="line">if ([self.taskDelegate respondsToSelector:@selector(startupTaskDidFailed:error:)]) &#123;</span><br><span class="line">[self.taskDelegate startupTaskDidFailed:self error:nil];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//4. 那么最终会回到 AppStartTaskManager单例中，继续往下执行其他的Task</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="后续增加每一个启动Task，就添加一个实现AppStartTask协议的NSObject子类，然后添加到AppStartTaskManager单例的taskQueue数组。"><a href="#后续增加每一个启动Task，就添加一个实现AppStartTask协议的NSObject子类，然后添加到AppStartTaskManager单例的taskQueue数组。" class="headerlink" title="后续增加每一个启动Task，就添加一个实现AppStartTask协议的NSObject子类，然后添加到AppStartTaskManager单例的taskQueue数组。"></a>后续增加每一个启动Task，就添加一个实现<code>AppStartTask协议</code>的NSObject子类，然后添加到AppStartTaskManager单例的taskQueue数组。</h3><hr>
+<h3 id="最后小结Task结构图"><a href="#最后小结Task结构图" class="headerlink" title="最后小结Task结构图"></a>最后小结Task结构图</h3><p><img src="http://i4.tietuku.com/c8a58fa67e1fa771.jpg" alt></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2017/01/06/App-Start-Task-Queue/" data-title="App Start Task Queue | 次元空间" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2017/01/08/CFSocket底层网络请求/" title="CFSocket底层网络请求">
+  <strong>上一篇：</strong><br>
+  <span>
+  CFSocket底层网络请求</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/01/05/APNS优化/" title="APNS优化">
+ <strong>下一篇：</strong><br> 
+ <span>APNS优化
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/01/06/App-Start-Task-Queue/" data-title="App Start Task Queue" data-url="http://yoursite.com/2017/01/06/App-Start-Task-Queue/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#通常App程序启动，我们需要做一些初始化事件"><span class="toc-number">1.</span> <span class="toc-text">通常App程序启动，我们需要做一些初始化事件:</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#但是希望有一个Manager类，来管理所有的Task，让每一种不同的业务单独封装到一个Task类中"><span class="toc-number">1.1.</span> <span class="toc-text">但是希望有一个Manager类，来管理所有的Task，让每一种不同的业务单独封装到一个Task类中.</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#那么，可以单独抽一个启动任务管理Manager类"><span class="toc-number">2.</span> <span class="toc-text">那么，可以单独抽一个启动任务管理Manager类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#角色1、什么样的才是启动任务？"><span class="toc-number">3.</span> <span class="toc-text">角色1、什么样的才是启动任务？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#角色2、启动任务的需要-回传什么数据-或-回调执行什么代码？"><span class="toc-number">4.</span> <span class="toc-text">角色2、启动任务的需要 回传什么数据 或 回调执行什么代码？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#角色3、AppStartTaskManager-管理所有的-启动Task任务"><span class="toc-number">5.</span> <span class="toc-text">角色3、AppStartTaskManager 管理所有的 启动Task任务.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AppDelegate-m中使用TaskManager开始所有的Task"><span class="toc-number">6.</span> <span class="toc-text">AppDelegate.m中使用TaskManager开始所有的Task</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AppStartTaskManager单例，remove掉所有的Task，并将自己作为第一个进入队列的Task任务"><span class="toc-number">7.</span> <span class="toc-text">AppStartTaskManager单例，remove掉所有的Task，并将自己作为第一个进入队列的Task任务.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AppStartTaskManager单例，开始执行所有的任务-id-lt-AppStartTask-gt"><span class="toc-number">8.</span> <span class="toc-text">AppStartTaskManager单例，开始执行所有的任务 id&lt;AppStartTask&gt;</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#上面其实把AppStartTaskManager也当做一个实现了-AppStartTask协议-的Task。那么此时AppStartTaskManager有两个工作"><span class="toc-number">9.</span> <span class="toc-text">上面其实把AppStartTaskManager也当做一个实现了 AppStartTask协议 的Task。那么此时AppStartTaskManager有两个工作:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AppStartTaskManager单例，中对Task添加、Task删除，使用dispatch-async-串行队列完成同步多线程"><span class="toc-number">10.</span> <span class="toc-text">AppStartTaskManager单例，中对Task添加、Task删除，使用dispatch_async + 串行队列完成同步多线程.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AppStartTaskManager单例，是taskQueue中的第一个Taskid-lt-AppStartTask-gt-，然后被执行"><span class="toc-number">11.</span> <span class="toc-text">AppStartTaskManager单例，是taskQueue中的第一个Taskid&lt;AppStartTask&gt;，然后被执行.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#如上是AppStartTaskManager单例提供了App的版本监测业务，所以AppStartTaskManager单例被当做Task执行完之后，需要将监测版本回传给AppDelegate单例进行处理"><span class="toc-number">12.</span> <span class="toc-text">如上是AppStartTaskManager单例提供了App的版本监测业务，所以AppStartTaskManager单例被当做Task执行完之后，需要将监测版本回传给AppDelegate单例进行处理.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AppStartTaskManager单例，又是-AppStartTaskManager单例-作为Task-的回调代理对象。那么就负责Task的回调操作-成功结束、错误结束。"><span class="toc-number">13.</span> <span class="toc-text">AppStartTaskManager单例，又是 AppStartTaskManager单例(作为Task) 的回调代理对象。那么就负责Task的回调操作:成功结束、错误结束。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AppDelegate-m中实现AppStartTaskManagerDelegate协议，接收AppStartTaskManager单例对象的回调，知道某个Task的执行情况"><span class="toc-number">14.</span> <span class="toc-text">AppDelegate.m中实现AppStartTaskManagerDelegate协议，接收AppStartTaskManager单例对象的回调，知道某个Task的执行情况.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#那么到此AppStartTaskManager被当做Task执行完毕，也完成了通知代理AppDelegate对象，此时继续执行taskQueue中的下一个Task"><span class="toc-number">15.</span> <span class="toc-text">那么到此AppStartTaskManager被当做Task执行完毕，也完成了通知代理AppDelegate对象，此时继续执行taskQueue中的下一个Task.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#将Task抽象、TaskDelegate抽象，从AppStartTaskManager-h中剥离出来，使用一个单独的-h文件描述"><span class="toc-number">16.</span> <span class="toc-text">将Task抽象、TaskDelegate抽象，从AppStartTaskManager.h中剥离出来，使用一个单独的.h文件描述.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#假设Manager1是作为下一个Task执行一些操作，那么Manager1必须实现-AppStartTask协议才能成为Task。"><span class="toc-number">17.</span> <span class="toc-text">假设Manager1是作为下一个Task执行一些操作，那么Manager1必须实现 AppStartTask协议才能成为Task。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#后续增加每一个启动Task，就添加一个实现AppStartTask协议的NSObject子类，然后添加到AppStartTaskManager单例的taskQueue数组。"><span class="toc-number">18.</span> <span class="toc-text">后续增加每一个启动Task，就添加一个实现AppStartTask协议的NSObject子类，然后添加到AppStartTaskManager单例的taskQueue数组。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#最后小结Task结构图"><span class="toc-number">19.</span> <span class="toc-text">最后小结Task结构图</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 业精于勤而荒于嬉，行成于思而毁于随 <br>
+			天空不曾流过痕迹，但鸟儿已飞过天空</p>
+	</section>
+	 
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:codermoe@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="terriermon">terriermon</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"codermoe"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77667620-1', '');  
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

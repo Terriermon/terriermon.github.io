@@ -74,17 +74,16 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/01/11/设计模式-模板模式/" title="设计模式-模板模式" itemprop="url">
+    <a href="/2017/01/08/CFSocket底层网络请求/" title="CFSocket底层网络请求" itemprop="url">
   
-    <h1 itemprop="name">设计模式-模板模式</h1>
+    <h1 itemprop="name">CFSocket底层网络请求</h1>
     
      
-           <p itemprop="description">模板模式、提供一些基础的模板方法、步骤性的逻辑代码框架给其他的子类.之前BaseViewController使用过这个模式.
-
-抽象模板接口12345678910111213141516171819202122232425262728////  Template.h//  dem</p>
+           <p itemprop="description">刚好今天回看自己之前的文章，突然不经意看到了CFSocket最终使用NSMachPort完成向用户子线程发送获取到的网络数据这个部分，所以觉得还是有必要仔细学习一下这个部分做的一些事情.
+网络请求delegate回调 使用到了 RunLoop + Mach Port完成不同线程之</p>
         
     
-    <time datetime="2016-01-11T04:32:29.000Z" itemprop="datePublished">2016-01-11</time>
+    <time datetime="2017-01-08T03:40:16.000Z" itemprop="datePublished">2017-01-08</time>
   </a>
 </section>
 
@@ -96,25 +95,22 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/01/10/设计模式-代理模式/" title="设计模式-代理模式" itemprop="url">
+    <a href="/2017/01/06/App-Start-Task-Queue/" title="App Start Task Queue" itemprop="url">
   
-    <h1 itemprop="name">设计模式-代理模式</h1>
+    <h1 itemprop="name">App Start Task Queue</h1>
     
      
-           <p itemprop="description">代理模式、可谓是在iOS用的最多、最经典的模式具体应用场景
+           <p itemprop="description">通常App程序启动，我们需要做一些初始化事件:
+选择最优网络通道
+加载初始化服务器数据
+版本更新监测
 
-NSProxy应用拦截目标对象方法
-UITableView中UI效果展示与数据源获取的逻辑分离
 
-小结代理的应用场景
-需要拦截目标方法执行、面向切面编程
-代理对象
-继承类
-swizzle方法实现
-消息转发（动态代理对象</p>
+但是希望有一个Manager类，来管理所有的Task，让每一种不同的业务单独封装到一个Task类中.
+那么，可以单独抽一个启动任务管理Manager类接下来开始抽象出需要的角</p>
         
     
-    <time datetime="2016-01-10T03:14:16.000Z" itemprop="datePublished">2016-01-10</time>
+    <time datetime="2017-01-06T10:54:04.000Z" itemprop="datePublished">2017-01-06</time>
   </a>
 </section>
 
@@ -126,20 +122,20 @@ swizzle方法实现
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/01/09/设计模式-享元模式/" title="设计模式-享元模式" itemprop="url">
+    <a href="/2017/01/05/APNS优化/" title="APNS优化" itemprop="url">
   
-    <h1 itemprop="name">设计模式-享元模式</h1>
+    <h1 itemprop="name">APNS优化</h1>
     
      
-           <p itemprop="description">享元模式、我理解就类似缓存优化，先取缓存，没有就创建新的，再存入缓存.
-简单 享元
-复合 享元
+           <p itemprop="description">苹果对ios push发送的长度有限制(官方文档提示ios 8以下是256byte，ios 8以上是2k，目前从发送反馈来看，一致定位256byte) ，其中包括push的属性字段。所以为了提高push中字段尽可能多一些，只能通过缩减push属性字段的长度
 
 
-抽象享元接口定义1234567891011/***  抽象享元接口*/@protocol Flyweight &amp;lt;NSObject&amp;gt;/***  功能函数定义*/- (vo</p>
+序号
+修改前
+修改</p>
         
     
-    <time datetime="2016-01-09T02:28:07.000Z" itemprop="datePublished">2016-01-09</time>
+    <time datetime="2017-01-05T03:53:18.000Z" itemprop="datePublished">2017-01-05</time>
   </a>
 </section>
 
@@ -151,21 +147,15 @@ swizzle方法实现
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/01/08/设计模式-外观模式/" title="设计模式-外观模式" itemprop="url">
+    <a href="/2017/01/05/Ping-Host-Select-Best-NetworkConnection/" title="Ping Host Select Best NetworkConnection" itemprop="url">
   
-    <h1 itemprop="name">设计模式-外观模式</h1>
+    <h1 itemprop="name">Ping Host Select Best NetworkConnection</h1>
     
      
-           <p itemprop="description">外观模式、为内部子系统的复杂逻辑，提供一个简单的入口.
-为 复杂的子系统 向外提供一个简单的接口
-给每一层的子系统提供一个统一的入口
-
-
-模拟照相、灯光、传感器三种硬件互相配合完成一个复杂的功能.
-照相机123456789101112#import &amp;lt;Foundation/</p>
+           <p itemprop="description">获取当前手机的dns1234567891011121314#import &amp;lt;netinet/in.h&amp;gt;#import &amp;lt;netdb.h&amp;gt;#import &amp;lt;ifaddrs.h&amp;gt;#import &amp;lt;arpa/inet.h&amp;gt;#import </p>
         
     
-    <time datetime="2016-01-07T16:09:03.000Z" itemprop="datePublished">2016-01-08</time>
+    <time datetime="2017-01-05T03:11:46.000Z" itemprop="datePublished">2017-01-05</time>
   </a>
 </section>
 
@@ -177,20 +167,18 @@ swizzle方法实现
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/01/07/设计模式-装饰器模式/" title="设计模式-装饰器模式" itemprop="url">
+    <a href="/2016/12/20/weibo/" title="weibo" itemprop="url">
   
-    <h1 itemprop="name">设计模式-装饰器模式</h1>
+    <h1 itemprop="name">weibo</h1>
     
      
-           <p itemprop="description">装饰模式、在不修改原始类代码的情况下，动态的给对象添加一些额外的功能
-适配器模式，针对类方法和对象方法都可以进行扩展
-装饰器模式，只针对对象方法进行扩展，又有点类似代理模式
+           <p itemprop="description">###自己模仿Sina Weibo做了一个Demo，记录一下。
 
-
-如下举个简单的例子，假设Manager项目管理者本身只有管理项目的职责，但是需要扩展写代码的职责，但是</p>
+###使用CocoaPods导入第三方的框架
+1234567891011121314151617181920212223242526#自动布局pod &amp;apos;Masonry&amp;apos;				#依赖注入pod </p>
         
     
-    <time datetime="2016-01-07T15:01:46.000Z" itemprop="datePublished">2016-01-07</time>
+    <time datetime="2016-12-20T06:51:04.000Z" itemprop="datePublished">2016-12-20</time>
   </a>
 </section>
 
@@ -202,17 +190,21 @@ swizzle方法实现
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/01/06/设计模式-桥接模式/" title="设计模式-桥接模式" itemprop="url">
+    <a href="/2016/11/20/UIWindow/" title="UIWindow" itemprop="url">
   
-    <h1 itemprop="name">设计模式-桥接模式</h1>
+    <h1 itemprop="name">UIWindow</h1>
     
      
-           <p itemprop="description">桥接模式、组合不同抽象类型的具体实现类的对象，个人觉得和组合模式和策略模式差不多，就是使用抽象类型来解耦具体类的关联.
-模拟 PC组合CPU ，使用 桥接模式 实现.
-CPU类型的抽象1234567891011#import &amp;lt;Foundation/Foundation.h</p>
+           <p itemprop="description">UIScreen、UIWindow、UIView三者之间的关系
+(1) UIScreen为硬件设备的屏幕抽象，其中一个属性是整个屏幕区域bounds
+
+(2) UIWindow为内容显示提供背景平台，一个App程序必须至少要有一个UIWindow，否则不会显示任何的东西
+
+
+12</p>
         
     
-    <time datetime="2016-01-06T13:20:22.000Z" itemprop="datePublished">2016-01-06</time>
+    <time datetime="2016-11-20T09:21:06.000Z" itemprop="datePublished">2016-11-20</time>
   </a>
 </section>
 
@@ -224,22 +216,20 @@ CPU类型的抽象1234567891011#import &amp;lt;Foundation/Foundation.h</p>
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/01/05/设计模式-适配器/" title="设计模式-适配器" itemprop="url">
+    <a href="/2016/09/26/Runtime-Part13-TypeEncodings/" title="Runtime Part13 TypeEncodings" itemprop="url">
   
-    <h1 itemprop="name">设计模式-适配器</h1>
+    <h1 itemprop="name">Runtime Part13 TypeEncodings</h1>
     
      
-           <p itemprop="description">适配器、将 一个类的接口 转换成客户希望的 另外一个接口，使得原本由于接口不兼容而不能一起工作的那些类可以一起工作。
-适配器模式有3种
-面向 接口 的适配器模式 
-面向 类 的适配器模式
-面向 对象 的适配器模式
+           <p itemprop="description">类型编码: 苹果会对每一种数据类型，统一按照特定的格式进行编码，得到一个格式化字符串，作用是可以加快消息分发
+对所有的开发者使用的数据类型，按照特定的格式进行编码
 
+系统按照特定的格式进行解码，找到最终要执行的方法、是被方法参数，类型、返回值类型…等等
 
-先看下 面向接口 适配器# 语言能力抽象接口123456789</p>
+而如果不使用这种特定的格</p>
         
     
-    <time datetime="2016-01-05T11:58:02.000Z" itemprop="datePublished">2016-01-05</time>
+    <time datetime="2016-09-26T07:25:28.000Z" itemprop="datePublished">2016-09-26</time>
   </a>
 </section>
 
@@ -251,24 +241,16 @@ CPU类型的抽象1234567891011#import &amp;lt;Foundation/Foundation.h</p>
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/01/04/设计模式-原型模式/" title="设计模式-原型模式" itemprop="url">
+    <a href="/2016/09/25/Runtime-Part12-Intercept/" title="Runtime Part12 Intercept" itemprop="url">
   
-    <h1 itemprop="name">设计模式-原型模式</h1>
+    <h1 itemprop="name">Runtime Part12 Intercept</h1>
     
      
-           <p itemprop="description">原型模式、通过对一个对象进行复制后，得到一个相同类型的对象，而不需要关心: 被复制的对象类型或实现的接口原型模式分为两种:
-
-简单形式的复制
-登记形式的复制
-
-
-简单形式
-对象复制的功能抽象
-
-12345678910#import &amp;lt;Foundation/Foundatio</p>
+           <p itemprop="description">方法拦截的途径方法一、执行一个SEL不存在Method的消息
+然后不让方法继续执行，直接拦截掉 （resolve）转发给其他具有这个Method实例的Target （forward）方法二、使用runtime api，直接替换掉SEL指向的Method实例，让其找到一个假的函数实</p>
         
     
-    <time datetime="2016-01-04T11:26:22.000Z" itemprop="datePublished">2016-01-04</time>
+    <time datetime="2016-09-25T12:49:50.000Z" itemprop="datePublished">2016-09-25</time>
   </a>
 </section>
 
@@ -280,20 +262,16 @@ CPU类型的抽象1234567891011#import &amp;lt;Foundation/Foundation.h</p>
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/01/03/设计模式-建造者模式/" title="设计模式-建造者模式" itemprop="url">
+    <a href="/2016/09/25/Runtime-Part11-NSInvocation/" title="Runtime Part11 NSInvocation" itemprop="url">
   
-    <h1 itemprop="name">设计模式-建造者模式</h1>
+    <h1 itemprop="name">Runtime Part11 NSInvocation</h1>
     
      
-           <p itemprop="description">建造者、向外屏蔽内部复杂的流程步骤
-存在很多固定的步骤话操作
-且不希望外界知道内部这么多的步骤
-
-
-对要构造的房子这类事物的抽象1234567891011121314#import &amp;lt;Foundation/Foundation.h&amp;gt;/***  房子具备的行为*/@pr</p>
+           <p itemprop="description">NSInvocation学习记录首先看一个简单的示例代码
+1234567891011121314151617181920212223242526//1. 创建要调用方法的SEL标识SEL myMethod = @selector(myLog:parm:parm:);//2. 设置</p>
         
     
-    <time datetime="2016-01-03T10:49:55.000Z" itemprop="datePublished">2016-01-03</time>
+    <time datetime="2016-09-24T16:39:25.000Z" itemprop="datePublished">2016-09-25</time>
   </a>
 </section>
 
@@ -305,28 +283,22 @@ CPU类型的抽象1234567891011#import &amp;lt;Foundation/Foundation.h</p>
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2016/01/02/设计模式-抽象工厂模式/" title="设计模式-抽象工厂模式" itemprop="url">
+    <a href="/2016/09/24/Runtime-Part10-Forward/" title="Runtime Part10 Forward" itemprop="url">
   
-    <h1 itemprop="name">设计模式-抽象工厂模式</h1>
+    <h1 itemprop="name">Runtime Part10 Forward</h1>
     
      
-           <p itemprop="description">抽象工厂、简单工厂的升级版，解决简单工厂只针对一个抽象接口
-同时有多个 抽象接口
-每个抽象接口，有多种实现情况
+           <p itemprop="description">完整的消息转发阶段
+foward to a target 
+forward with NSInvocation
 
 
-抽象工厂模式结构 &amp;gt;&amp;gt;&amp;gt; 延伸至类簇模式
-两种抽象产品标准
-ProductA
-ProductB
+当向对象或类发送一个没有对应方法实现的消息SEL时，由系统自动调用消息转发的几个系统函数。注意： 必须是执行一个不存在方法实现的SEL，才会调用如下的几个函数.
 
-抽象工厂
-
-生产ProductA类型的具体产品
 </p>
         
     
-    <time datetime="2016-01-02T09:49:47.000Z" itemprop="datePublished">2016-01-02</time>
+    <time datetime="2016-09-23T16:26:56.000Z" itemprop="datePublished">2016-09-24</time>
   </a>
 </section>
 
@@ -337,7 +309,7 @@ ProductB
 
 
   <nav id="page-nav" class="clearfix unexpand">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next<span></span></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/2/">Next<span></span></a>
   </nav>
 
 </div>
